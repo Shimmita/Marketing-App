@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/shaping"
+    android:orientation="horizontal"
+    android:padding="2dp">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/headerImage"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_marginTop="20dp"
+        app:civ_border_width="1.5dp"
+        app:civ_border_color="@color/white"
+        android:scaleType="centerCrop"
+        android:src="@drawable/dillan" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/general_alert_dg"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <TextView
+            android:id="@+id/emailVerifyHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed-light"
+            android:textColor="@color/red"
+            android:text="@string/email_warn"
+            android:layout_marginBottom="5dp"
+            android:textStyle="bold"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/usernameHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/general_alert_dg"
+            android:fontFamily="sans-serif-condensed"
+            android:padding="5dp"
+            android:text="Allan Okoth Onyango"
+            android:textColor="#C00EE8"
+            android:textSize="15.7sp"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:id="@+id/universityHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/general_alert_dg"
+            android:fontFamily="sans-serif-condensed-light"
+            android:padding="8dp"
+            android:text="Maseno University"
+            android:textColor="#A26CAE"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/emailHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/general_alert_dg"
+            android:fontFamily="sans-serif-condensed-light"
+            android:padding="8dp"
+            android:text="username@gmail.com"
+            android:textColor="#A26CAE"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/phoneNumberHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/general_alert_dg"
+            android:fontFamily="sans-serif-condensed-light"
+            android:padding="8dp"
+            android:text="0752525276"
+            android:textColor="#A26CAE"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCompatHeaderVerify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="verify email"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/androidx_core_ripple_material_light"
+            android:textColor="#6C5B29" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCompatHeaderUpdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="update account"
+            android:textAllCaps="false"
+            android:textColor="#6C5B29" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

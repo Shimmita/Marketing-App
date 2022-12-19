@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Market CM</string>
+    <string name="passwarn"><u>Password Warning</u></string>
+    <string name="messge_pass_warn">your password is less than 8 characters, for security reasons we recommend using a password containing eight or more characters!</string>
+    <string name="comrade_market_your_products_easily_powered_by_shimitadouglas_gmail_com">comrades market your products so easily moulded by shimitadouglas@gmail.com</string>
+    <string name="not_having_an_account_yet_click_here">not having an account yet? click here</string>
+
+    <string name="drawerOpen">open</string>
+    <string name="drawerClose">close</string>
+    <string name="email_warn">please verify your email address within 2 days to avoid account closure!</string>
+</resources>

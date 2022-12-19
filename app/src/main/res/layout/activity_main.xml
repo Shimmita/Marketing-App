@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeMainLogin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_material_light"
+    android:gravity="center"
+    android:padding="5dp"
+    tools:context=".MainActivity">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/cart"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:civ_border_color="@color/abc_search_url_text_normal"
+        app:civ_border_width="1dp"
+        android:layout_marginBottom="10dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/cart" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:layout_toEndOf="@id/cart"
+        android:background="@drawable/shaping"
+        android:gravity="center_horizontal"
+        android:padding="15dp"
+        android:text="Account Login"
+        android:textAllCaps="true"
+        android:textColor="@color/androidx_core_secondary_text_default_material_light"
+        android:textSize="18sp"
+        android:textStyle="bold|italic" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_login_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        app:cardCornerRadius="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/layout_backg"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                app:counterEnabled="true"
+                app:counterMaxLength="30"
+                app:counterTextColor="@color/abc_search_url_text_selected"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/loginEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shaping"
+                    android:clickable="true"
+                    android:hint="enter email address"
+                    android:inputType="textEmailAddress" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                app:counterEnabled="true"
+                app:counterMaxLength="18"
+                app:counterTextColor="@color/abc_decor_view_status_guard"
+                app:endIconMode="password_toggle"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/loginPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shaping"
+                    android:hint="enter password"
+                    android:inputType="textPassword" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonLogin"
+                style="@style/Base.CardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="25dp"
+                android:backgroundTint="@color/abc_search_url_text_normal"
+                android:text="Login"
+                android:textColor="@color/design_dark_default_color_on_surface"
+                app:rippleColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="sans-serif-condensed-light"
+                android:text="Account Creation/Password Recovery"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/linearRecovery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shaping"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/tv_register_account"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/text_bg"
+                    android:drawablePadding="5dp"
+                    android:fontFamily="sans-serif-condensed-light"
+                    android:padding="10dp"
+                    android:text="@string/not_having_an_account_yet_click_here"
+                    android:textColor="@color/design_default_color_secondary_variant"
+                    android:textStyle="italic|bold"
+                    app:drawableEndCompat="@drawable/ic_touch" />
+
+
+                <TextView
+                    android:id="@+id/tv_recover_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/text_bg"
+                    android:drawablePadding="5dp"
+                    android:fontFamily="sans-serif-condensed-light"
+                    android:padding="10dp"
+                    android:text="password recovery? click here"
+                    android:textColor="@color/design_default_color_secondary_variant"
+                    android:textStyle="italic|bold"
+                    app:drawableEndCompat="@drawable/ic_touch" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/text_bg"
+                android:padding="10dp"
+                android:text="ultimate marketing platform for a comrade "
+                android:textAllCaps="true"
+                android:textColor="@color/design_default_color_secondary_variant"
+                android:textSize="10sp"
+                android:textStyle="italic" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</RelativeLayout>

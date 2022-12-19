@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/ic_home"
+        android:title="home"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/post"
+        android:icon="@drawable/ic_add"
+        android:title="post"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/notification"
+        android:icon="@drawable/ic_notification"
+        android:title="notification"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/ic_power"
+        android:title="logout"
+        app:showAsAction="always" />
+</menu>

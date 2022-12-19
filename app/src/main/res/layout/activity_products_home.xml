@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerProducts"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ProductsHome">
+
+    <RelativeLayout
+        android:id="@+id/mainParentRelativeProducts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/coordinatorProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/appBarLayoutProducts"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:fitsSystemWindows="true"
+                android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
+
+                <com.google.android.material.appbar.CollapsingToolbarLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:contentScrim="@color/abc_decor_view_status_guard_light"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                    app:scrimAnimationDuration="500"
+                    app:toolbarId="@id/toolbarProducts">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/back_balls" />
+
+                    <androidx.appcompat.widget.Toolbar
+                        android:id="@+id/toolbarProducts"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        app:layout_collapseMode="pin"
+                        app:navigationIcon="@drawable/ic_menu"
+                        app:popupTheme="@style/Theme.Design.Light.NoActionBar"
+                        app:title="Explore More" />
+
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="10dp"
+                            android:orientation="horizontal"
+                            android:padding="20dp">
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:layout_marginEnd="20dp"
+                                android:src="@drawable/cart" />
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:layout_marginEnd="20dp"
+                                android:src="@drawable/cart" />
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:layout_marginEnd="20dp"
+                                android:src="@drawable/cart" />
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:layout_marginEnd="20dp"
+                                android:src="@drawable/cart" />
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:layout_marginEnd="20dp"
+                                android:src="@drawable/cart" />
+
+                        </LinearLayout>
+
+                    </HorizontalScrollView>
+
+
+                </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            </com.google.android.material.appbar.AppBarLayout>
+
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/coordinatorProducts">
+
+            <FrameLayout
+                android:id="@+id/frameLayoutContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/bottomNavProducts" />
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavProducts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="1.2dp"
+                android:background="@drawable/shaper_3"
+                android:padding="5dp"
+                app:backgroundTint="@color/abc_decor_view_status_guard_light"
+                app:itemIconSize="25dp"
+                app:itemTextColor="#E4056C09"
+                app:menu="@menu/products_menu" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navProducts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@drawable/general_alert_dg"
+        android:fitsSystemWindows="true"
+        app:itemIconTint="#A25FCD"
+        app:itemRippleColor="#FF9800"
+        app:itemTextColor="#FF9800"
+        app:menu="@menu/menu_header"
+        app:subheaderColor="@color/abc_decor_view_status_guard" />
+
+
+</androidx.drawerlayout.widget.DrawerLayout>
