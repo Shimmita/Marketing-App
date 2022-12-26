@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent_linear_change_username"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical">
-
 
 
     <LinearLayout
@@ -14,7 +14,6 @@
         android:padding="10dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/cart"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginStart="30dp"
@@ -31,7 +30,7 @@
             android:background="@drawable/shaper_2"
             android:fontFamily="sans-serif-condensed-light"
             android:padding="10dp"
-            android:text="Change Password"
+            android:text="update username"
             android:textAllCaps="true"
             android:textColor="@color/colorButtonQuiz"
             android:textStyle="bold" />
@@ -50,30 +49,48 @@
             android:layout_height="wrap_content"
             android:padding="3dp"
             app:counterEnabled="true"
-            app:counterMaxLength="30"
+            app:counterMaxLength="20"
             app:counterTextColor="@color/abc_search_url_text_selected"
             app:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edtChangePasswordHeader"
+                android:id="@+id/edtUpdateFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:background="@drawable/general_alert_dg"
                 android:clickable="true"
                 android:elevation="10dp"
-                android:hint="enter new password"
-                android:inputType="textPassword"
+                android:hint="firstName"
+                android:inputType="textPersonName"
                 android:padding="20dp"
                 android:textStyle="italic" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
-        <CheckBox
-            android:id="@+id/cbShowPassword"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="show password" />
+            android:padding="3dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="20"
+            app:counterTextColor="@color/abc_search_url_text_selected"
+            app:errorEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtUpdateLastName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/general_alert_dg"
+                android:clickable="true"
+                android:elevation="10dp"
+                android:hint="last name"
+                android:inputType="textPersonName"
+                android:padding="20dp"
+                android:textStyle="italic" />
+        </com.google.android.material.textfield.TextInputLayout>
 
 
     </LinearLayout>

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="300dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/shaping"
+    android:background="@drawable/material_one"
     android:orientation="horizontal"
     android:padding="2dp">
 
@@ -14,7 +14,7 @@
         android:layout_height="110dp"
         android:layout_marginTop="20dp"
         app:civ_border_width="1.5dp"
-        app:civ_border_color="@color/white"
+        app:civ_border_color="@color/bright_foreground_disabled_material_dark"
         android:scaleType="centerCrop"
         android:src="@drawable/dillan" />
 
@@ -23,7 +23,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="10dp"
         android:layout_marginTop="18dp"
-        android:background="@drawable/general_alert_dg"
+        android:background="@drawable/layout_backg"
         android:orientation="vertical"
         android:padding="15dp">
 
@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/general_alert_dg"
+            android:background="@drawable/material_congratulations"
             android:fontFamily="sans-serif-condensed"
             android:padding="5dp"
             android:text="Allan Okoth Onyango"
@@ -56,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/general_alert_dg"
+            android:background="@drawable/material_congratulations"
             android:fontFamily="sans-serif-condensed-light"
             android:padding="8dp"
             android:text="Maseno University"
@@ -69,7 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/general_alert_dg"
+            android:background="@drawable/material_congratulations"
             android:fontFamily="sans-serif-condensed-light"
             android:padding="8dp"
             android:text="username@gmail.com"
@@ -83,7 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/general_alert_dg"
+            android:background="@drawable/material_congratulations"
             android:fontFamily="sans-serif-condensed-light"
             android:padding="8dp"
             android:text="0752525276"
@@ -93,20 +93,29 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnCompatHeaderVerify"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:text="verify email"
+            android:textStyle="bold|italic"
+            android:background="@drawable/layout_backg"
             android:textAllCaps="false"
+            android:textSize="15sp"
+            android:fontFamily="georgia"
             android:backgroundTint="@color/androidx_core_ripple_material_light"
-            android:textColor="#6C5B29" />
+            android:textColor="@color/green" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnCompatHeaderUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="update account"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
+            android:background="@drawable/layout_backg"
+            android:textStyle="bold|italic"
             android:textAllCaps="false"
-            android:textColor="#6C5B29" />
+            android:textColor="@color/green" />
 
     </LinearLayout>
 

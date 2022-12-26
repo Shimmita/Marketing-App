@@ -212,6 +212,8 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             editTextPhone.error = "number less than 10 digits!"
         } else if (TextUtils.isEmpty(password_data)) {
             editPassword.error = "account password is missing!"
+        } else if (password_data.length < 6) {
+            editPassword.error = "password must be at least 6 characters long"
         } else if (uriPath == null) {
 
             //create a snack
@@ -397,76 +399,83 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         keyImageUri: String,
         currentUID: String
     ) {
-        //code begins
-        val fabUserEmail= FirebaseAuth.getInstance().currentUser?.email
-        val fabStorageInt = FirebaseStorage.getInstance().getReference("$ComRadeUser/$currentUID/${fabUserEmail}")
+        //code begins   "$ComRadeUser/$currentUID/${fabUserEmail}
+        val fabUserEmail = FirebaseAuth.getInstance().currentUser?.email
+        val fabStorageInt =
+            fabUserEmail?.let {
+                FirebaseStorage.getInstance().reference.child(ComRadeUser).child(currentUID).child(
+                    it
+                )
+            }
         //putting the uri path to the fabStorage
-        uriPath?.let {
-            fabStorageInt.putFile(it).addOnCompleteListener(this@Registration,
-                OnCompleteListener { it ->
-                    if (it.isSuccessful) {
-                        //task is successful thus update the message of the progressDialog
-                        createNewUserProgressDialog.setMessage("finalising...")
-                        //
-                        //get the download uri of the saved image then update the fStore uri path
-                        fabStorageInt.downloadUrl.addOnSuccessListener {
-                            //update the status of the progress dialog
-                            createNewUserProgressDialog.setMessage("almost done...")
-                            //create a function to update the fStore Path With this new URi downloadable
-                            val uriDownLoadAble = it.toString()
-                            funUpdateFStore(
-                                uriDownLoadAble,
-                                keyImageUri,
-                                createNewUserProgressDialog
-                            )
+        if (fabStorageInt != null) {
+            uriPath?.let {
+                fabStorageInt.putFile(it).addOnCompleteListener(this@Registration,
+                    OnCompleteListener { it ->
+                        if (it.isSuccessful) {
+                            //task is successful thus update the message of the progressDialog
+                            createNewUserProgressDialog.setMessage("finalising...")
+                            //
+                            //get the download uri of the saved image then update the fStore uri path
+                            fabStorageInt.downloadUrl.addOnSuccessListener {
+                                //update the status of the progress dialog
+                                createNewUserProgressDialog.setMessage("almost done...")
+                                //create a function to update the fStore Path With this new URi downloadable
+                                val uriDownLoadAble = it.toString()
+                                funUpdateFStore(
+                                    uriDownLoadAble,
+                                    keyImageUri,
+                                    createNewUserProgressDialog
+                                )
+                                //
+                                //
+
+                            }.addOnFailureListener {
+
+                                //dismiss the progress dialog
+                                createNewUserProgressDialog.dismiss()
+                                //
+
+                                //failed to obtain the download Uri alert
+                                val alertUriFailure = MaterialAlertDialogBuilder(this@Registration)
+                                alertUriFailure.setMessage("we encountered an error while completing your registration please try again later thank you")
+                                alertUriFailure.setIcon(
+                                    resources.getDrawable(
+                                        R.drawable.android,
+                                        theme
+                                    )
+                                )
+                                alertUriFailure.show()
+                                alertUriFailure.create()
+                                //
+                            }
                             //
                             //
 
-                        }.addOnFailureListener {
-
-                            //dismiss the progress dialog
+                        }
+                        //failed to upload the image to the fabStorage
+                        else {
+                            //dismiss progressDialog
                             createNewUserProgressDialog.dismiss()
                             //
-
-                            //failed to obtain the download Uri alert
-                            val alertUriFailure = MaterialAlertDialogBuilder(this@Registration)
-                            alertUriFailure.setMessage("we encountered an error while completing your registration please try again later thank you")
-                            alertUriFailure.setIcon(
-                                resources.getDrawable(
-                                    R.drawable.android,
-                                    theme
-                                )
-                            )
-                            alertUriFailure.show()
-                            alertUriFailure.create()
-                            //
-                        }
-                        //
-                        //
-
-                    }
-                    //failed to upload the image to the fabStorage
-                    else {
-                        //dismiss progressDialog
-                        createNewUserProgressDialog.dismiss()
-                        //
-                        //show snackBar Of this error
-                        Snackbar.make(
-                            linearLayoutParentRegistration,
-                            "we encountered an error while uploading the data!",
-                            Snackbar.LENGTH_INDEFINITE
-                        ).setAction("what then?", View.OnClickListener {
+                            //show snackBar Of this error
                             Snackbar.make(
                                 linearLayoutParentRegistration,
-                                "check your internet connection",
-                                Snackbar.LENGTH_SHORT
-                            ).show()
-                        }).show()
-                        //
+                                "we encountered an error while uploading the data!",
+                                Snackbar.LENGTH_INDEFINITE
+                            ).setAction("what then?", View.OnClickListener {
+                                Snackbar.make(
+                                    linearLayoutParentRegistration,
+                                    "check your internet connection",
+                                    Snackbar.LENGTH_SHORT
+                                ).show()
+                            }).show()
+                            //
 
-                    }
+                        }
 
-                })
+                    })
+            }
         }
         //
         //code ends
