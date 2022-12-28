@@ -1,4 +1,4 @@
-package com.shimitadouglas.marketcm
+package com.shimitadouglas.marketcm.mains
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
@@ -28,6 +28,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.shimitadouglas.marketcm.R
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlin.random.Random
 import kotlin.system.exitProcess

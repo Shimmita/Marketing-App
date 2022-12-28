@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ProductsHome">
+    tools:context=".mains.ProductsHome">
 
     <RelativeLayout
         android:id="@+id/mainParentRelativeProducts"
@@ -18,7 +18,7 @@
             android:id="@+id/toolbarProducts"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/material_one"
+            android:background="@drawable/material_four"
             android:paddingBottom="5dp"
             app:layout_collapseMode="pin"
             app:navigationIcon="@drawable/ic_menu"
@@ -29,6 +29,7 @@
             android:id="@+id/frameLayoutContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/material_one"
             android:layout_above="@id/bottomNavProducts"
             android:layout_below="@id/toolbarProducts"
              />
@@ -38,11 +39,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="1.2dp"
-            android:padding="5dp"
             app:backgroundTint="@color/abc_decor_view_status_guard_light"
             app:itemIconSize="25dp"
+            android:padding="10dp"
             app:itemTextColor="#E4056C09"
+            app:itemBackground="@drawable/material_six"
             app:menu="@menu/products_menu" />
     </RelativeLayout>
 
@@ -52,11 +53,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/design_dark_default_color_on_surface"
+        android:background="@drawable/shaping"
         android:fitsSystemWindows="true"
-        app:itemIconTint="@color/accent_material_light"
-        app:itemRippleColor="@color/accent_material_light"
-        app:itemTextColor="#4CAF50"
+        app:itemIconTint="@color/bright_foreground_disabled_material_dark"
+        app:itemRippleColor="@color/design_dark_default_color_error"
+        app:itemTextColor="@color/abc_decor_view_status_guard_light"
         app:menu="@menu/menu_header"
         app:subheaderColor="@color/abc_decor_view_status_guard" />
 </androidx.drawerlayout.widget.DrawerLayout>

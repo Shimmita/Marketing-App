@@ -1,4 +1,4 @@
-package com.shimitadouglas.marketcm
+package com.shimitadouglas.marketcm.mains
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -7,7 +7,7 @@ import android.os.Handler
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.TextView
-import android.widget.Toast
+import com.shimitadouglas.marketcm.R
 import de.hdodenhof.circleimageview.CircleImageView
 
 class SplashScreenIndex : AppCompatActivity() {

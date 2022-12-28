@@ -1,4 +1,4 @@
-package com.shimitadouglas.marketcm
+package com.shimitadouglas.marketcm.mains
 
 import android.os.Bundle
 import android.text.TextUtils
@@ -12,6 +12,7 @@ import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.shimitadouglas.marketcm.R
 
 class ModalRec : BottomSheetDialogFragment() {
     //init of the globals

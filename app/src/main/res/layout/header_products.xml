@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="300dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/material_one"
-    android:orientation="horizontal"
-    android:padding="2dp">
+    android:orientation="horizontal">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -13,17 +12,18 @@
         android:layout_width="110dp"
         android:layout_height="110dp"
         android:layout_marginTop="20dp"
-        app:civ_border_width="1.5dp"
-        app:civ_border_color="@color/bright_foreground_disabled_material_dark"
+        android:layout_marginStart="1dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/dillan" />
+        android:src="@drawable/dillan"
+        app:civ_border_color="@color/bright_foreground_disabled_material_dark"
+        app:civ_border_width="1.5dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="10dp"
         android:layout_marginTop="18dp"
-        android:background="@drawable/layout_backg"
+        android:background="@drawable/material_two"
         android:orientation="vertical"
         android:padding="15dp">
 
@@ -31,23 +31,23 @@
             android:id="@+id/emailVerifyHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-condensed-light"
-            android:textColor="@color/red"
-            android:text="@string/email_warn"
             android:layout_marginBottom="5dp"
-            android:textStyle="bold"
-            android:textSize="12sp" />
+            android:fontFamily="sans-serif-condensed-light"
+            android:text="@string/email_warn"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/usernameHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/material_congratulations"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/general_alert_dg"
             android:fontFamily="sans-serif-condensed"
-            android:padding="5dp"
-            android:text="Allan Okoth Onyango"
-            android:textColor="#C00EE8"
+            android:padding="7dp"
+            android:text="@string/allan_okoth_onyango"
+            android:textColor="#811798"
             android:textSize="15.7sp"
             android:textStyle="bold|italic" />
 
@@ -55,12 +55,12 @@
             android:id="@+id/universityHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/material_congratulations"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/general_alert_dg"
             android:fontFamily="sans-serif-condensed-light"
             android:padding="8dp"
-            android:text="Maseno University"
-            android:textColor="#A26CAE"
+            android:text="@string/maseno_university"
+            android:textColor="#811798"
             android:textSize="13sp"
             android:textStyle="bold" />
 
@@ -68,12 +68,12 @@
             android:id="@+id/emailHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/material_congratulations"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/general_alert_dg"
             android:fontFamily="sans-serif-condensed-light"
             android:padding="8dp"
-            android:text="username@gmail.com"
-            android:textColor="#A26CAE"
+            android:text="@string/username_gmail_com"
+            android:textColor="#811798"
             android:textSize="13sp"
             android:textStyle="bold" />
 
@@ -82,12 +82,12 @@
             android:id="@+id/phoneNumberHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/material_congratulations"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/general_alert_dg"
             android:fontFamily="sans-serif-condensed-light"
             android:padding="8dp"
-            android:text="0752525276"
-            android:textColor="#A26CAE"
+            android:text="@string/_0752525276"
+            android:textColor="#811798"
             android:textSize="13sp"
             android:textStyle="bold" />
 
@@ -96,26 +96,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="verify email"
-            android:textStyle="bold|italic"
-            android:background="@drawable/layout_backg"
-            android:textAllCaps="false"
-            android:textSize="15sp"
+            android:background="@drawable/general_alert_dg"
             android:fontFamily="georgia"
-            android:backgroundTint="@color/androidx_core_ripple_material_light"
-            android:textColor="@color/green" />
+            android:padding="10dp"
+            android:text="@string/verify_email"
+            android:textAllCaps="false"
+            android:textColor="@color/dim_foreground_material_light"
+            android:textSize="15sp"
+            android:textStyle="bold|italic" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnCompatHeaderUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="update account"
             android:layout_marginTop="20dp"
+            android:background="@drawable/general_alert_dg"
+            android:fontFamily="georgia"
+            android:padding="10dp"
             android:visibility="gone"
-            android:background="@drawable/layout_backg"
-            android:textStyle="bold|italic"
+            android:text="@string/update_account"
             android:textAllCaps="false"
-            android:textColor="@color/green" />
+            android:textColor="@color/green"
+            android:textStyle="bold|italic" />
 
     </LinearLayout>
 

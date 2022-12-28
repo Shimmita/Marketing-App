@@ -7,10 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fragment.app.FragmentResultListener
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -21,6 +22,7 @@ class HomeFragment : Fragment() {
     //init of the global
     private lateinit var viewHome: View
     lateinit var toolbarHome: Toolbar
+
     //lateinit var recyclerViewHome: RecyclerView
     lateinit var collapsingToolbarLayoutHome: CollapsingToolbarLayout
     lateinit var appBarLayoutHome: AppBarLayout
@@ -38,11 +40,10 @@ class HomeFragment : Fragment() {
         //init of collapsing toolbar and other globals
         functionInit()
         //setting listener on the appbar using a function
-        funListenerAppBar()
+        funListenerAppBarHome()
         //setting listener on the fab
         funFabListener()
         //
-
         //
         return viewHome
         //code ends
@@ -52,23 +53,36 @@ class HomeFragment : Fragment() {
         //code begins
         floatingActionButtonHome.setOnClickListener {
             //code begins
-            //parent animate
-            val parentLayoutHomeAnim =
+            //fab self anim
+            floatingActionButtonHome.startAnimation(
+                AnimationUtils.loadAnimation(
+                    requireActivity(),
+                    R.anim.bottom_up
+                )
+            )
+            //
+
+            //appbar animate
+            val homeAppBarContentRefreshAnim =
                 LayoutAnimationController(
                     AnimationUtils.loadAnimation(
                         requireActivity(),
-                        R.anim.grow_from_top
+                        R.anim.bottom_up
                     )
                 )
-            parentLayoutHomeAnim.delay = 0.65f
-            parentLayoutHomeAnim.order=LayoutAnimationController.ORDER_REVERSE
-            coordinatorLayout.layoutAnimation = parentLayoutHomeAnim
-            coordinatorLayout.startLayoutAnimation()
+            homeAppBarContentRefreshAnim.delay = 2.0f
+            homeAppBarContentRefreshAnim.order = LayoutAnimationController.ORDER_REVERSE
+            appBarLayoutHome.layoutAnimation = homeAppBarContentRefreshAnim
+            appBarLayoutHome.startLayoutAnimation()
             //
 
-            //start fab functionality here
+            //start fab functionality here after delay elapse
+            floatingActionButtonHome.postDelayed(Runnable {
+                //code functionality herein
+                Toast.makeText(requireActivity(), "fab clicked", Toast.LENGTH_SHORT).show()
+                //code ends
 
-
+            }, 450)
             //end of fab functionality
 
             //code ends
@@ -76,7 +90,8 @@ class HomeFragment : Fragment() {
         //code ends
     }
 
-    private fun funListenerAppBar() {
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun funListenerAppBarHome() {
         //code begins
         var scrollRange = -1
         appBarLayoutHome.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
@@ -87,10 +102,14 @@ class HomeFragment : Fragment() {
                 //collapsing toolbar fully collapsed and the toolbar should be given title
                 collapsingToolbarLayoutHome.title = "hot products"
                 //
+                toolbarHome.background =
+                    resources.getDrawable(R.drawable.material_four, requireActivity().theme);
+                //
 
             } else {
                 //the collapsing toolbar is expanded hence no ned to display the title text
                 collapsingToolbarLayoutHome.title = ""
+                toolbarHome.background = null
                 //
 
             }
@@ -118,11 +137,11 @@ class HomeFragment : Fragment() {
             LayoutAnimationController(
                 AnimationUtils.loadAnimation(
                     requireActivity(),
-                    R.anim.grow_from_top
+                    R.anim.bottom_up
                 )
             )
-        parentLayoutHomeAnim.delay = 0.88f
-        parentLayoutHomeAnim.order=LayoutAnimationController.ORDER_REVERSE
+        parentLayoutHomeAnim.delay = 0.5f
+        parentLayoutHomeAnim.order = LayoutAnimationController.ORDER_REVERSE
         coordinatorLayout.layoutAnimation = parentLayoutHomeAnim
         coordinatorLayout.startLayoutAnimation()
         //

@@ -8,7 +8,7 @@
     android:background="@color/button_material_light"
     android:gravity="center"
     android:padding="5dp"
-    tools:context=".MainActivity">
+    tools:context=".mains.MainActivity">
 
 
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:angle="-45"
+        android:centerColor="@color/button_material_light"
+        android:endColor="@color/abc_decor_view_status_guard_light"
+        android:startColor="@color/abc_decor_view_status_guard_light" />
+
+    <corners android:radius="20dp" />
+
+    <stroke
+        android:width="2dp"
+        android:color="@color/abc_search_url_text_normal" />
+</shape>

@@ -13,14 +13,14 @@
         android:theme="@style/Theme.MarketCM"
         tools:targetApi="31">
         <activity
-            android:name=".Registration"
+            android:name=".mains.Registration"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".ProductsHome"
+            android:name=".mains.ProductsHome"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +32,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".SplashScreenIndex"
+            android:name=".mains.SplashScreenIndex"
             android:exported="true">
               <!--  <intent-filter>
                     <action android:name="android.intent.action.MAIN" />
@@ -45,7 +45,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".mains.MainActivity"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"

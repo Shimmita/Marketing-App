@@ -1,4 +1,4 @@
-package com.shimitadouglas.marketcm
+package com.shimitadouglas.marketcm.mains
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
@@ -35,7 +35,8 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.shimitadouglas.marketcm.Registration.Companion.ComRadeUser
+import com.shimitadouglas.marketcm.R
+import com.shimitadouglas.marketcm.mains.Registration.Companion.ComRadeUser
 import com.shimitadouglas.marketcm.fragment.HomeFragment
 import com.shimitadouglas.marketcm.fragment.NotificationFragment
 import com.shimitadouglas.marketcm.fragment.PostFragment
@@ -108,6 +109,18 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //code begins
         supportFragmentManager.beginTransaction().replace(R.id.frameLayoutContainer, fragment, tag)
             .commitNow()
+
+        //animate bottom nav
+        val layoutAnimationController = LayoutAnimationController(
+            AnimationUtils.loadAnimation(
+                this@ProductsHome,
+                R.anim.bottom_up
+            )
+        )
+        layoutAnimationController.order = LayoutAnimationController.ORDER_REVERSE
+        botomNav.layoutAnimation = layoutAnimationController
+        botomNav.startLayoutAnimation()
+        //
         //code ends
 
     }
@@ -146,7 +159,12 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 R.id.logout -> {
                     //snack user will be logged out
                     Snackbar.make(botomNav, "you are going to log out", Snackbar.LENGTH_LONG)
-                        .setBackgroundTint(resources.getColor(R.color.accent_material_light, theme))
+                        .setBackgroundTint(
+                            resources.getColor(
+                                R.color.cardview_dark_background,
+                                theme
+                            )
+                        )
                         .setActionTextColor(Color.parseColor("#E9F90A"))
                         .setAction("sure") {
                             //code begins
@@ -293,6 +311,9 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //disable button verify email,textViewBannerEmailVerify
                 headerVerificationEmail.visibility = View.GONE
                 headerButtonVerifyEmail.visibility = View.GONE
+                //enabling the visibility of the update button since a user cannot update his/her a/c unless is verified
+                //the email
+                headerButtonUpdate.visibility = View.VISIBLE
                 //show snack congrats email verified
                 MaterialAlertDialogBuilder(this@ProductsHome)
                     .setTitle("Congratulations!")
@@ -300,7 +321,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .setIcon(R.drawable.ic_copy_right_co)
                     .setBackground(
                         resources.getDrawable(
-                            R.drawable.material_congratulations,
+                            R.drawable.material_six,
                             theme
                         )
                     )
@@ -414,8 +435,8 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val itemSelected = 0
             val alertOptionsUpdate = MaterialAlertDialogBuilder(this@ProductsHome)
             alertOptionsUpdate.setTitle("Select Your Option")
-            alertOptionsUpdate.background = resources.getDrawable(R.drawable.layout_backg, theme)
-            alertOptionsUpdate.setIcon(R.drawable.cart)
+            alertOptionsUpdate.background = resources.getDrawable(R.drawable.material_two, theme)
+            alertOptionsUpdate.setIcon(R.drawable.ic_question)
             alertOptionsUpdate.setSingleChoiceItems(
                 arrayOptionsUpdate,
                 itemSelected
@@ -1025,10 +1046,10 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val controllerAnimDrawerLayout = LayoutAnimationController(
                 AnimationUtils.loadAnimation(
                     this@ProductsHome,
-                    R.anim.abc_slide_in_top
+                    R.anim.bottom_up
                 )
             )
-            controllerAnimDrawerLayout.delay = 1.0f
+            controllerAnimDrawerLayout.delay = 0.2f
             drawerLayout.layoutAnimation = controllerAnimDrawerLayout
             //
 

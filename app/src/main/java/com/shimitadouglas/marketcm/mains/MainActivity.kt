@@ -1,4 +1,4 @@
-package com.shimitadouglas.marketcm
+package com.shimitadouglas.marketcm.mains
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
@@ -18,6 +18,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.shimitadouglas.marketcm.R
 
 class MainActivity : AppCompatActivity() {
     companion object {
