@@ -1,7 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_views_posting"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="5dp"
+    app:cardCornerRadius="25dp">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/linearPostParentModal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/material_six"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/material_congratulations"
+                android:fontFamily="georgia"
+                android:text="PRODUCT POSTING WINDOW"
+                android:textColor="#03675D"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnProvideImagePost"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/material_six"
+                    android:padding="15dp"
+                    android:text="provide image"
+                    android:textAllCaps="false"
+                    android:textColor="#786C08"
+                    android:textStyle="italic|bold" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/circleProvideImagePost"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_photo_placeholder"
+                    android:visibility="gone"
+                    app:civ_border_color="@color/green"
+                    app:civ_border_width="2dp" />
+
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnCheckHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="20dp"
+                    android:textColor="@color/abc_search_url_text_normal"
+                    android:text="suggestion"
+                    android:visibility="gone"
+                    android:background="@drawable/shaper_2"
+                    android:textStyle="bold"
+                    android:textAllCaps="false"
+                    />
+
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/material_six"
+                app:startIconDrawable="@drawable/ic_cart">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:hint="product category(type of the product)"
+                    android:textColorHint="@color/material_grey_900" />
+
+                <Spinner
+                    android:id="@+id/spinnerPostProduct"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/layout_backg" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/material_six"
+                app:counterEnabled="true"
+                android:id="@+id/layoutTitlle"
+                app:counterMaxLength="30"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtTitleProductPost"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/material_six"
+                    android:drawableStart="@drawable/ic_title"
+                    android:drawablePadding="10dp"
+                    android:hint="title of the product here (brief)"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:id="@+id/layoutDescription"
+                android:background="@drawable/material_six"
+                app:counterEnabled="true"
+                app:counterMaxLength="60"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtDescriptionProductPost"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/material_six"
+                    android:drawableStart="@drawable/ic_description"
+                    android:drawablePadding="10dp"
+                    android:hint="description of the product here (brief)"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/material_six"
+                app:counterEnabled="true"
+                app:counterMaxLength="5"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtPriceProductPost"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/material_six"
+                    android:drawableStart="@drawable/ic_money"
+                    android:drawablePadding="10dp"
+                    android:hint="price of the product in ksh"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnPost"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/material_congratulations"
+                android:drawableTop="@drawable/ic_cart"
+                android:fontFamily="georgia"
+                android:text="post now"
+                android:textAllCaps="true"
+                android:textColor="@color/cardview_light_background"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.cardview.widget.CardView>

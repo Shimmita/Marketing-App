@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.shimitadouglas.marketcm.R
+import com.shimitadouglas.marketcm.modals.ModalPostProducts
 
 class PostFragment : Fragment() {
     //init of the globals
@@ -152,7 +153,8 @@ class PostFragment : Fragment() {
         //code begins
         val alertPostingHint = MaterialAlertDialogBuilder(requireActivity())
         alertPostingHint.setTitle("How To Post")
-        alertPostingHint.background=resources.getDrawable(R.drawable.material_seven,requireActivity().theme)
+        alertPostingHint.background =
+            resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
         alertPostingHint.setMessage(
             "With Market CM, posting a product to the online market involves:\n" +
                     "\n1.providing an image of an item(product)\n\n2.providing the name(title) of the product\n\n3.providing description of the product i.e condition of the " +
@@ -193,7 +195,9 @@ class PostFragment : Fragment() {
     private fun funBeginPosting() {
         //code begins
         //display modal sheet that will be invoked which contains all views for the posting
-
+        val displayPostingModal = ModalPostProducts()
+        displayPostingModal.show(this.childFragmentManager, "modal_posting")
+        //
         //code ends
     }
 

@@ -57,7 +57,7 @@ class HomeFragment : Fragment() {
             floatingActionButtonHome.startAnimation(
                 AnimationUtils.loadAnimation(
                     requireActivity(),
-                    R.anim.bottom_up
+                    R.anim.push_left_out
                 )
             )
             //

@@ -19,6 +19,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.shimitadouglas.marketcm.R
+import com.shimitadouglas.marketcm.modals.ModalRecoverPassword
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -109,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             //
             linearRec.postDelayed(Runnable {
                 //begin the operation of modal show password recovery
-                val holderModalPasscodeRecModal = ModalRec()
+                val holderModalPasscodeRecModal = ModalRecoverPassword()
                 holderModalPasscodeRecModal.show(supportFragmentManager, "fragment_modal_pass_rec")
                 //
 

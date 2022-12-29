@@ -1,4 +1,4 @@
-package com.shimitadouglas.marketcm.mains
+package com.shimitadouglas.marketcm.modals
 
 import android.os.Bundle
 import android.text.TextUtils
@@ -14,7 +14,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.shimitadouglas.marketcm.R
 
-class ModalRec : BottomSheetDialogFragment() {
+class ModalRecoverPassword : BottomSheetDialogFragment() {
     //init of the globals
     lateinit var viewAttach: View
     lateinit var btnRec: MaterialButton
