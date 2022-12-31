@@ -1183,7 +1183,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         R.anim.rotate
                     )
                 )
-                //
 
                 //alert the user of beginning the process of updating the profile picture
                 //after delay 3 seconds
@@ -1199,7 +1198,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         alertUserPictureUpdating.setMessage("your selected profile picture is going to be updated")
                         alertUserPictureUpdating.setPositiveButton("update") { dialog, _ ->
                             //
-                            updateProfilePictureNow(uriDataUpdatePic)
+                            funCompleteUpdatingProfileImage(uriDataUpdatePic)
                             //
                             //dialog dismiss
                             dialog.dismiss()
@@ -1230,73 +1229,24 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-    private fun updateProfilePictureNow(uriDataUpdatePic: Uri?) {
-        //todo: there is a problem in the functions of updating the profile picture image.need resolve
+
+    private fun funCompleteUpdatingProfileImage(uriDataUpdatePic: Uri?) {
         //code begins
+        //pgD
         val progressDg = ProgressDialog(this@ProductsHome)
         progressDg.setCancelable(false)
         progressDg.setMessage("uploading image...")
         progressDg.create()
         progressDg.show()
-        //"$ComRadeUser/$currentUID/${fabUserEmail}/uri
-        val currentUID = FirebaseAuth.getInstance().uid
-        val emailOfUser = FirebaseAuth.getInstance().currentUser?.email
-        val fabStorageIntUpdate =
-            currentUID?.let {
-                if (emailOfUser != null) {
-                    if (uriDataUpdatePic != null) {
-                        FirebaseStorage.getInstance().reference.child(ComRadeUser).child(it)
-                            .child(emailOfUser).delete().addOnCompleteListener {
-
-
-                                //successfully deleted the image
-                                if (it.isSuccessful) {
-                                    //code begins
-                                    progressDg.setMessage("finishing...")
-                                    //call function complete updating
-                                    funCompleteUpdatingProfileImage(
-                                        uriDataUpdatePic,
-                                        currentUID,
-                                        progressDg
-                                    )
-                                    //
-                                    //code begins
-                                }
-                                //failed to delete the image
-                                if (!it.isSuccessful) {
-                                    //code begins
-                                    //dismiss the pg
-                                    progressDg.dismiss()
-                                    //
-
-                                    AlertDialog.Builder(this@ProductsHome)
-                                        .setMessage(it.exception?.message)
-                                        .setIcon(R.drawable.ic_warning)
-                                        .create()
-                                        .show()
-
-                                    //code ends
-
-                                }
-
-                            }
-                    }
-                }
-            }
         //
-        //code ends
-    }
 
-    private fun funCompleteUpdatingProfileImage(
-        uriDataUpdatePic: Uri?,
-        currentUID: String?,
-        progressDg: ProgressDialog
-    ) {
-        //code begins
+        //
+        val currentUID = FirebaseAuth.getInstance().uid
         val fabUserEmail = FirebaseAuth.getInstance().currentUser?.email
         val fabStorageInt = FirebaseStorage.getInstance().reference
-
         //initiate the update of image at fab storage with the selected image from gallery
+        //"$ComRadeUser/$currentUID/${fabUserEmail}/uri
+
         if (currentUID != null) {
             if (uriDataUpdatePic != null) {
                 if (fabUserEmail != null) {
@@ -1309,13 +1259,13 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 val keyImageUri = "ImagePath"
                                 //
                                 //get download URI from fabStorage
-                                fabStorageInt.downloadUrl.addOnCompleteListener {
+                                it.result.storage.downloadUrl.addOnCompleteListener {
                                     if (it.isSuccessful) {
                                         //download uri was fetched successfully hence get the download Uri to string
                                         //updating the pg to
                                         progressDg.setMessage("Congratulations...")
                                         //obtaining the uri from
-                                        var urlDownloadUrlString = it.toString()
+                                        var urlDownloadUrlString = it.result.toString()
                                         //
                                         //calling a function that will allow now continuation to the fStore for Storing new Update imageLink
                                         //call function to update the mapping data in the fStore

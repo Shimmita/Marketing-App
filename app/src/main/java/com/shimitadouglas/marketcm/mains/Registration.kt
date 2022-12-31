@@ -3,11 +3,9 @@ package com.shimitadouglas.marketcm.mains
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
@@ -17,7 +15,6 @@ import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
@@ -42,17 +39,16 @@ import kotlin.system.exitProcess
 class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     companion object {
-        val REQUEST_CODE_PICK_IMAGE = 1224;
         private const val TAG = "Registration"
-        val ComRadeUser = "ComradeUsers"
+        const val ComRadeUser = "Comrade Users"
     }
 
     //image uri path
-    var uriPath: Uri? = null
+    private var uriPath: Uri? = null
     //
 
     //init of globals
-    var university = arrayOf(
+    private var university = arrayOf(
         "Maseno University",
         "Nairobi University",
         "Laikipia University",
@@ -131,25 +127,24 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
 
     //init globals
-    lateinit var linearLayoutParentRegistration: LinearLayout
-    lateinit var spinnerUniversity: Spinner
-    lateinit var btnRegistration: MaterialButton
-    lateinit var editTextFirstName: TextInputEditText
-    lateinit var editTextLastName: TextInputEditText
-    lateinit var editTextEmail: TextInputEditText
-    lateinit var editTextPhone: TextInputEditText
-    lateinit var circProfileImage: CircleImageView
-    lateinit var editPassword: TextInputEditText
+    private lateinit var linearLayoutParentRegistration: LinearLayout
+    private lateinit var spinnerUniversity: Spinner
+    private lateinit var btnRegistration: MaterialButton
+    private lateinit var editTextFirstName: TextInputEditText
+    private lateinit var editTextLastName: TextInputEditText
+    private lateinit var editTextEmail: TextInputEditText
+    private lateinit var editTextPhone: TextInputEditText
+    private lateinit var circleProfileImage: CircleImageView
+    private lateinit var editPassword: TextInputEditText
 
     //val holding the spinner
-    lateinit var spinner_returned: String
+    private lateinit var spinnerReturned: String
     //
 
     //
-    lateinit var array_adapter: ArrayAdapter<String>
+    private lateinit var stringArrayAdapter: ArrayAdapter<String>
     //
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration)
@@ -172,12 +167,15 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             //code ends
         }
 
-        circProfileImage.setOnClickListener {
+        circleProfileImage.setOnClickListener {
 
             //check if the permission read_write external storage are granted or null
             Dexter.withContext(this@Registration)
-                .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .withListener(object :MultiplePermissionsListener{
+                .withPermissions(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+                .withListener(object : MultiplePermissionsListener {
                     override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                         //permissions allowed (granted) launch the gallery activity
                         //start intent pick image
@@ -219,7 +217,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     " grant the permissions to use the application"
         )
         alertPermissionRationale.background =
-            resources.getDrawable(R.drawable.material_six,theme)
+            resources.getDrawable(R.drawable.material_six, theme)
         alertPermissionRationale.setCancelable(false)
         alertPermissionRationale.setPositiveButton("do") { dialog, _ ->
             //start the intent of launching the settings for app info
@@ -240,33 +238,33 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         //code begins
         //checking the legitimacy of the credentials entered by the user
-        val data_first_name = editTextFirstName.text.toString()
-        val las_name_data = editTextLastName.text.toString()
-        val email_data = editTextEmail.text.toString()
-        val phone_data = editTextPhone.text.toString()
-        val password_data = editPassword.text.toString()
+        val dataFirstName = editTextFirstName.text.toString()
+        val lasNameData = editTextLastName.text.toString()
+        val emailData = editTextEmail.text.toString()
+        val phoneData = editTextPhone.text.toString()
+        val passwordData = editPassword.text.toString()
         //to obtain uni selection check the returned value from the spinner
-        val spinnerDataUniversity = spinner_returned.toString()
+        val spinnerDataUniversity = spinnerReturned
         //
 
-        if (TextUtils.isEmpty(data_first_name)) {
+        if (TextUtils.isEmpty(dataFirstName)) {
             editTextFirstName.error = "field is mandatory!"
-        } else if (TextUtils.isEmpty(las_name_data)) {
+        } else if (TextUtils.isEmpty(lasNameData)) {
             editTextLastName.error = "field is mandatory!"
 
-        } else if (TextUtils.isEmpty(email_data)) {
+        } else if (TextUtils.isEmpty(emailData)) {
             editTextEmail.error = "field is mandatory!"
 
-        } else if (TextUtils.isEmpty(phone_data)) {
+        } else if (TextUtils.isEmpty(phoneData)) {
             editTextPhone.error = "field is mandatory!"
 
         } else if (TextUtils.isEmpty(spinnerDataUniversity)) {
             Toast.makeText(this@Registration, "University Not Selected", Toast.LENGTH_LONG).show()
-        } else if (phone_data.length < 10) {
+        } else if (phoneData.length < 10) {
             editTextPhone.error = "number less than 10 digits!"
-        } else if (TextUtils.isEmpty(password_data)) {
+        } else if (TextUtils.isEmpty(passwordData)) {
             editPassword.error = "account password is missing!"
-        } else if (password_data.length < 6) {
+        } else if (passwordData.length < 6) {
             editPassword.error = "password must be at least 6 characters long"
         } else if (uriPath == null) {
 
@@ -277,10 +275,10 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 Snackbar.LENGTH_INDEFINITE
             ).setAction("Ok,fix") {
                 //setting the border color of the image to magenta for easier evaluation
-                circProfileImage.borderColor = resources.getColor(R.color.red, theme)
+                circleProfileImage.borderColor = resources.getColor(R.color.red, theme)
 
                 //animate the image
-                circProfileImage.startAnimation(
+                circleProfileImage.startAnimation(
                     AnimationUtils.loadAnimation(
                         this@Registration, R.anim.abc_fade_out
                     )
@@ -298,14 +296,14 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             //call function proceed registration
             //parameters passed to the function=email,password,phone,university,firstname,lastname,image url
             funCreateUserNew(
-                email_data,
-                password_data,
-                data_first_name,
-                las_name_data,
-                phone_data,
+                emailData,
+                passwordData,
+                dataFirstName,
+                lasNameData,
+                phoneData,
                 spinnerDataUniversity,
                 uriPath!!
-            );
+            )
             //
         }
         //
@@ -392,7 +390,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val fabInstanceFireStore = FirebaseAuth.getInstance()
         val currentUID = fabInstanceFireStore.currentUser?.uid
         //creating instance of fStore
-        val fStoreUsers = FirebaseFirestore.getInstance();
+        val fStoreUsers = FirebaseFirestore.getInstance()
 
         //creating the keys for the user data in respective mapping to the data
         val keyEmail = "Email"
@@ -405,7 +403,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         //
 
         //creating the hashmap for the data be stored in fireStore
-        val mapUserData = hashMapOf<String, String>(
+        val mapUserData = hashMapOf(
             keyEmail to emailData,
             keyPassword to passwordData,
             keyFirstName to dataFirstName,
@@ -464,71 +462,71 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         //putting the uri path to the fabStorage
         if (fabStorageInt != null) {
             uriPath?.let {
-                fabStorageInt.putFile(it).addOnCompleteListener(this@Registration,
-                    OnCompleteListener { it ->
-                        if (it.isSuccessful) {
-                            //task is successful thus update the message of the progressDialog
-                            createNewUserProgressDialog.setMessage("finalising...")
-                            //
-                            //get the download uri of the saved image then update the fStore uri path
-                            fabStorageInt.downloadUrl.addOnSuccessListener {
-                                //update the status of the progress dialog
-                                createNewUserProgressDialog.setMessage("almost done...")
-                                //create a function to update the fStore Path With this new URi downloadable
-                                val uriDownLoadAble = it.toString()
-                                funUpdateFStore(
-                                    uriDownLoadAble,
-                                    keyImageUri,
-                                    createNewUserProgressDialog
-                                )
-                                //
-                                //
-
-                            }.addOnFailureListener {
-
-                                //dismiss the progress dialog
-                                createNewUserProgressDialog.dismiss()
-                                //
-
-                                //failed to obtain the download Uri alert
-                                val alertUriFailure = MaterialAlertDialogBuilder(this@Registration)
-                                alertUriFailure.setMessage("we encountered an error while completing your registration please try again later thank you")
-                                alertUriFailure.setIcon(
-                                    resources.getDrawable(
-                                        R.drawable.android,
-                                        theme
-                                    )
-                                )
-                                alertUriFailure.show()
-                                alertUriFailure.create()
-                                //
-                            }
+                fabStorageInt.putFile(it).addOnCompleteListener(this@Registration
+                ) { it ->
+                    if (it.isSuccessful) {
+                        //task is successful thus update the message of the progressDialog
+                        createNewUserProgressDialog.setMessage("finalising...")
+                        //
+                        //get the download uri of the saved image then update the fStore uri path
+                        fabStorageInt.downloadUrl.addOnSuccessListener {
+                            //update the status of the progress dialog
+                            createNewUserProgressDialog.setMessage("almost done...")
+                            //create a function to update the fStore Path With this new URi downloadable
+                            val uriDownLoadAble = it.toString()
+                            funUpdateFStore(
+                                uriDownLoadAble,
+                                keyImageUri,
+                                createNewUserProgressDialog
+                            )
                             //
                             //
 
-                        }
-                        //failed to upload the image to the fabStorage
-                        else {
-                            //dismiss progressDialog
+                        }.addOnFailureListener {
+
+                            //dismiss the progress dialog
                             createNewUserProgressDialog.dismiss()
                             //
-                            //show snackBar Of this error
+
+                            //failed to obtain the download Uri alert
+                            val alertUriFailure = MaterialAlertDialogBuilder(this@Registration)
+                            alertUriFailure.setMessage("we encountered an error while completing your registration please try again later thank you")
+                            alertUriFailure.setIcon(
+                                resources.getDrawable(
+                                    R.drawable.android,
+                                    theme
+                                )
+                            )
+                            alertUriFailure.show()
+                            alertUriFailure.create()
+                            //
+                        }
+                        //
+                        //
+
+                    }
+                    //failed to upload the image to the fabStorage
+                    else {
+                        //dismiss progressDialog
+                        createNewUserProgressDialog.dismiss()
+                        //
+                        //show snackBar Of this error
+                        Snackbar.make(
+                            linearLayoutParentRegistration,
+                            "we encountered an error while uploading the data!",
+                            Snackbar.LENGTH_INDEFINITE
+                        ).setAction("what then?") {
                             Snackbar.make(
                                 linearLayoutParentRegistration,
-                                "we encountered an error while uploading the data!",
-                                Snackbar.LENGTH_INDEFINITE
-                            ).setAction("what then?", View.OnClickListener {
-                                Snackbar.make(
-                                    linearLayoutParentRegistration,
-                                    "check your internet connection",
-                                    Snackbar.LENGTH_SHORT
-                                ).show()
-                            }).show()
-                            //
+                                "check your internet connection",
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        }.show()
+                        //
 
-                        }
+                    }
 
-                    })
+                }
             }
         }
         //
@@ -575,13 +573,13 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                             linearLayoutParentRegistration,
                             "we encountered an error while uploading the data!",
                             Snackbar.LENGTH_INDEFINITE
-                        ).setAction("what then?", View.OnClickListener {
+                        ).setAction("what then?") {
                             Snackbar.make(
                                 linearLayoutParentRegistration,
                                 "check your internet connection",
                                 Snackbar.LENGTH_SHORT
                             ).show()
-                        }).show()
+                        }.show()
                     }
 
 
@@ -599,19 +597,19 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         alertSuccess.setCancelable(false)
         alertSuccess.setMessage("you have now successfully registered with us @ Comrade Market (Market CM).Login to your account using your EMAIL and PASSWORD")
         alertSuccess.setPositiveButton(
-            "Login",
-            DialogInterface.OnClickListener { dialogInterface, i ->
-                //start activity migration to Login==Main
-                val intentMainLogin = Intent(this@Registration, MainActivity::class.java)
-                intentMainLogin.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                intentMainLogin.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intentMainLogin)
-                finish()
-                //
-                //dismiss the dialog
-                dialogInterface.dismiss()
-                //
-            })
+            "Login"
+        ) { dialogInterface, _ ->
+            //start activity migration to Login==Main
+            val intentMainLogin = Intent(this@Registration, MainActivity::class.java)
+            intentMainLogin.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intentMainLogin.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intentMainLogin)
+            finish()
+            //
+            //dismiss the dialog
+            dialogInterface.dismiss()
+            //
+        }
         alertSuccess.show()
         alertSuccess.create()
         //code ends
@@ -685,7 +683,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 if (it.resultCode == RESULT_OK) {
                     //set the image to the circle profile
                     uriPath = it.data!!.data!!
-                    circProfileImage.setImageURI(uriPath)
+                    circleProfileImage.setImageURI(uriPath)
                     //
                     //snack the image a success
                     Snackbar.make(
@@ -696,7 +694,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                         Color.parseColor("#ffffff")
                     ).setBackgroundTint(resources.getColor(R.color.black, theme)).setAction("Ok") {
                         //animate the profile
-                        circProfileImage.startAnimation(
+                        circleProfileImage.startAnimation(
                             AnimationUtils.loadAnimation(
                                 this@Registration, R.anim.rotate
                             )
@@ -738,7 +736,6 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         //code ends
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     private fun funInitGlobals() {
         //code begins
         spinnerUniversity = findViewById(R.id.registrationSpinnerUniversity)
@@ -748,16 +745,16 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         editTextPhone = findViewById(R.id.registrationPhoneNumber)
         editTextLastName = findViewById(R.id.registrationLastName)
         linearLayoutParentRegistration = findViewById(R.id.parentLinearRegistration)
-        circProfileImage = findViewById(R.id.circleProfileImage)
+        circleProfileImage = findViewById(R.id.circleProfileImage)
         editPassword = findViewById(R.id.registrationPassword)
         //
-        array_adapter = ArrayAdapter(
+        stringArrayAdapter = ArrayAdapter(
             this@Registration, android.R.layout.simple_selectable_list_item, university
         )
         //sorting the elements in the spinner
-        array_adapter.setNotifyOnChange(true)
-        array_adapter.sort(Comparator.naturalOrder())
-        spinnerUniversity.adapter = array_adapter
+        stringArrayAdapter.setNotifyOnChange(true)
+        stringArrayAdapter.sort(Comparator.naturalOrder())
+        spinnerUniversity.adapter = stringArrayAdapter
 
         //setting onItemSelectedListener on the spinner
         spinnerUniversity.onItemSelectedListener = this
@@ -778,10 +775,10 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
         if (p0 != null) {
-            spinner_returned = university[p2]
+            spinnerReturned = university[p2]
 
         }
-        Log.d(TAG, "onItemSelected: university:$spinner_returned")
+        Log.d(TAG, "onItemSelected: university:$spinnerReturned")
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
