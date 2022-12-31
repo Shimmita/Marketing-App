@@ -1,5 +1,6 @@
 package com.shimitadouglas.marketcm.mains
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.DialogInterface
@@ -28,6 +29,11 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.R
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlin.random.Random
@@ -168,18 +174,65 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         circProfileImage.setOnClickListener {
 
-            //start intent pick image
-            val intentPickImage = Intent()
-            intentPickImage.action = Intent.ACTION_PICK
-            intentPickImage.type = "image/*"
+            //check if the permission read_write external storage are granted or null
+            Dexter.withContext(this@Registration)
+                .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(object :MultiplePermissionsListener{
+                    override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
+                        //permissions allowed (granted) launch the gallery activity
+                        //start intent pick image
+                        val intentPickImage = Intent()
+                        intentPickImage.action = Intent.ACTION_PICK
+                        intentPickImage.type = "image/*"
 
-            //launching the gallery activity
-            galleryLaunch.launch(intentPickImage)
+                        //launching the gallery activity
+                        galleryLaunch.launch(intentPickImage)
+                        //
+                        //
+                    }
 
+                    override fun onPermissionRationaleShouldBeShown(
+                        p0: MutableList<PermissionRequest>?,
+                        p1: PermissionToken?
+                    ) {
+                        //permission no granted @rationale dialog show why the permissions required are mandatory
+                        funShowAlertPermissionRationale()
+                        //
+                    }
+                }).check()
             //
 
         }
 
+
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun funShowAlertPermissionRationale() {
+        //code begins
+        //show  the alert of provided by the rationale dialog
+        val alertPermissionRationale = MaterialAlertDialogBuilder(this@Registration)
+        alertPermissionRationale.setTitle("Permissions")
+        alertPermissionRationale.setIcon(R.drawable.ic_info)
+        alertPermissionRationale.setMessage(
+            "Market CM requires that the requested permissions are necessary for it to function properly." +
+                    " grant the permissions to use the application"
+        )
+        alertPermissionRationale.background =
+            resources.getDrawable(R.drawable.material_six,theme)
+        alertPermissionRationale.setCancelable(false)
+        alertPermissionRationale.setPositiveButton("do") { dialog, _ ->
+            //start the intent of launching the settings for app info
+            val intentSettingsApp = Intent()
+            intentSettingsApp.action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+            //
+            dialog.dismiss()
+            //
+        }
+        alertPermissionRationale.create()
+        alertPermissionRationale.show()
+
+        //code ends
 
     }
 

@@ -1,5 +1,6 @@
 package com.shimitadouglas.marketcm.mains
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
@@ -35,11 +36,16 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.R
-import com.shimitadouglas.marketcm.mains.Registration.Companion.ComRadeUser
 import com.shimitadouglas.marketcm.fragment.HomeFragment
 import com.shimitadouglas.marketcm.fragment.NotificationFragment
 import com.shimitadouglas.marketcm.fragment.PostFragment
+import com.shimitadouglas.marketcm.mains.Registration.Companion.ComRadeUser
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlin.random.Random
 import kotlin.system.exitProcess
@@ -92,6 +98,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         funHandleButtonUpdateVerify()
         //call function to perform default fragment addition
         fragmentDefaultAdd()
+
         //
 
     }
@@ -101,6 +108,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //inflate default home fragment
         val homeFragment = HomeFragment()
         val stringHomeFragment = "homeFragment"
+        //
         fragmentInit(homeFragment, stringHomeFragment)
         //
     }
@@ -853,7 +861,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //
             } else {
                 //begin update of username
-                //launch a coroutine to start the process
                 startUpdateOfUserName(textFirstName, textLastName)
                 //
                 dialog.dismiss()
@@ -978,15 +985,67 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Snackbar.LENGTH_INDEFINITE
         )
             .setAction("pick") {
-                //code begins
-                val intentUpdatePicture = Intent()
-                intentUpdatePicture.action = Intent.ACTION_PICK
-                intentUpdatePicture.type = "image/*"
-                galleryPickUpdate.launch(intentUpdatePicture)
-                //code ends
+                //check if the permissions read_write are granted or null
+                Dexter.withContext(this@ProductsHome)
+                    .withPermissions(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ).withListener(object : MultiplePermissionsListener {
+                        override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
+
+                            //permissions granted
+                            //launch intent update image
+                            val intentUpdatePicture = Intent()
+                            intentUpdatePicture.action = Intent.ACTION_PICK
+                            intentUpdatePicture.type = "image/*"
+                            galleryPickUpdate.launch(intentUpdatePicture)
+                            //code ends
+                            //
+                        }
+
+                        override fun onPermissionRationaleShouldBeShown(
+                            p0: MutableList<PermissionRequest>?,
+                            p1: PermissionToken?
+                        ) {
+                            //permission not granted
+                            funShowAlertPermissionRationale()
+                            //
+                        }
+                    }).check()
+                //
 
             }.setBackgroundTint(resources.getColor(R.color.accent_material_light, theme)).show()
         //code ends
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun funShowAlertPermissionRationale() {
+
+        //code begins
+        //show  the alert of provided by the rationale dialog
+        val alertPermissionRationale = MaterialAlertDialogBuilder(this@ProductsHome)
+        alertPermissionRationale.setTitle("Permissions")
+        alertPermissionRationale.setIcon(R.drawable.ic_info)
+        alertPermissionRationale.setMessage(
+            "Market CM requires that the requested permissions are necessary for it to function properly." +
+                    " grant the permissions to use the application"
+        )
+        alertPermissionRationale.background =
+            resources.getDrawable(R.drawable.material_six, theme)
+        alertPermissionRationale.setCancelable(false)
+        alertPermissionRationale.setPositiveButton("do") { dialog, _ ->
+            //start the intent of launching the settings for app info
+            val intentSettingsApp = Intent()
+            intentSettingsApp.action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+            //
+            dialog.dismiss()
+            //
+        }
+        alertPermissionRationale.create()
+        alertPermissionRationale.show()
+
+        //code ends
+
     }
 
     private fun funInitNavHeaderContent() {
