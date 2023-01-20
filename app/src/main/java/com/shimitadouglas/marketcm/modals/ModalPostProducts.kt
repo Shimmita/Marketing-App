@@ -6,6 +6,7 @@ import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.app.ProgressDialog
 import android.content.Intent
+import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -36,9 +37,10 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
-import com.shimitadouglas.marketcm.utilities.JavaProductIDGenerator
+import com.shimitadouglas.marketcm.utilities.ProductIDGenerator
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.DelicateCoroutinesApi
+import java.util.*
 import kotlin.random.Random
 
 class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelectedListener {
@@ -81,6 +83,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         appCompatButtonHint = view.findViewById(R.id.btnCheckHint)
         //inflating the array of the items in the adapter
         listOfCategory.add("PowerBanks")
+        listOfCategory.add("Laptop RAM")
         listOfCategory.add("SmartPhones")
         listOfCategory.add("Tablets/Ipads")
         listOfCategory.add("SSDs/Hard Disk")
@@ -132,8 +135,8 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             //alerting the user with hint on how to fill the title and description based on the item type
             if (spinnerData.contains("SmartPhones")) {
                 //alert hint smartphone
-                var random = Random.nextInt(6)
-                var random2 = Random.nextInt(6)
+                val random = Random.nextInt(6)
+                val random2 = Random.nextInt(6)
                 val nameList = listOf(
                     "Oppo Reno 8",
                     "Samsung Galaxy A13",
@@ -143,7 +146,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "Xiami Redmi 10C"
                 )
 
-                var detailList = listOf(
+                val detailList = listOf(
                     "4Gb Ram, 32Gb Internal,good condition",
                     "6Gb Ram, 128Gb Internal,working fine",
                     "4gb Ram, 64gb Internal,minor screen crack",
@@ -151,23 +154,41 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "8gb Ram, 256gb Internal,working fine",
                     "X Gb Ram, XGb Internal,minor screen crack"
                 )
-                var randomIcons = Random.nextInt(1)
-                var icon = listOf(R.drawable.phonee, R.drawable.phones)
 
-                var title = "$spinnerData Suggestion"
+                val priceList = arrayListOf(
+                    "12,000",
+                    "20,000",
+                    "8,000",
+                    "15,000",
+                    "10,000",
+                    "13,000"
+                )
+                val randomPrice = Random.nextInt(6)
+
+                val randomIcons = Random.nextInt(1)
+                val icon = listOf(R.drawable.phonee, R.drawable.phones)
+
+                val title = "$spinnerData Suggestion"
                 val name = nameList[random]
                 val state = detailList[random2]
-                var message =
-                    "the title and description of your item could be:\n\ntitle:\n$name\n\n" + "description:\n$state"
+                val message =
+                    "the title and description of your item could be:\n\ntitle:\n$name\n\ndescription:\n$state"
                 //pass the items to the alert
-                generalAlertHint(title, message, icon[randomIcons], name, state)
+                generalAlertHint(
+                    title,
+                    message,
+                    icon[randomIcons],
+                    name,
+                    state,
+                    priceList[randomPrice]
+                )
                 //
                 //
 
             } else if (spinnerData.contains("Tablets")) {
                 //alert hint tablet
-                var random = Random.nextInt(6)
-                var random2 = Random.nextInt(6)
+                val random = Random.nextInt(6)
+                val random2 = Random.nextInt(6)
                 val nameList = listOf(
                     "Samsung Tablet",
                     "Apple Ipad",
@@ -177,7 +198,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "Vivo Tablet"
                 )
 
-                var detailList = listOf(
+                val detailList = listOf(
                     "4Gb Ram, 32Gb Internal,good condition",
                     "6Gb Ram, 128Gb Internal,working fine",
                     "4gb Ram, 64gb Internal,minor screen crack",
@@ -185,22 +206,39 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "8gb Ram, 256gb Internal,working fine",
                     "X Gb Ram, XGb Internal,minor screen crack"
                 )
-                var randomIcons = Random.nextInt(1)
-                var icon = listOf(R.drawable.tablet, R.drawable.tabs)
-                var title = "$spinnerData Suggestion"
+                val priceList = arrayListOf(
+                    "12,000",
+                    "20,000",
+                    "8,000",
+                    "15,000",
+                    "10,000",
+                    "13,000"
+                )
+                val randomPrice = Random.nextInt(6)
+
+                val randomIcons = Random.nextInt(1)
+                val icon = listOf(R.drawable.tablet, R.drawable.tabs)
+                val title = "$spinnerData Suggestion"
                 val name = nameList[random]
                 val state = detailList[random2]
-                var message =
-                    "title and description of your item could be:" + "\n\ntitle:\n$name\n\n" + "description:\n$state"
+                val message =
+                    "title and description of your item could be:\n\ntitle:\n$name\n\ndescription:\n$state"
                 //pass the items to the alert
-                generalAlertHint(title, message, icon[randomIcons], name, state)
+                generalAlertHint(
+                    title,
+                    message,
+                    icon[randomIcons],
+                    name,
+                    state,
+                    priceList[randomPrice]
+                )
                 //
                 //
 
             } else if (spinnerData.contains("Tvs")) {
                 //alert hint Tvs
-                var random = Random.nextInt(6)
-                var random2 = Random.nextInt(6)
+                val random = Random.nextInt(6)
+                val random2 = Random.nextInt(6)
                 val nameList = listOf(
                     "Hisense Television ",
                     "Samsung Television",
@@ -210,7 +248,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "HTC Television"
                 )
 
-                var detailList = listOf(
+                val detailList = listOf(
                     "32 inches, in good condition",
                     "43 inches, working fine",
                     "19 inches, minor display issues",
@@ -218,23 +256,39 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "X inches, working fine",
                     "X inches, minor power issues"
                 )
+                val priceList = arrayListOf(
+                    "12,000",
+                    "5,000",
+                    "8,000",
+                    "15,000",
+                    "10,000",
+                    "3,500"
+                )
+                val randomPrice = Random.nextInt(6)
 
-                var randomIcons = Random.nextInt(1)
-                var icon = listOf(R.drawable.tv, R.drawable.tv2)
-                var title = "$spinnerData Suggestion"
+                val randomIcons = Random.nextInt(1)
+                val icon = listOf(R.drawable.tv, R.drawable.tv2)
+                val title = "$spinnerData Suggestion"
                 val name = nameList[random]
                 val state = detailList[random2]
-                var message =
-                    "the title and description of your item could be:\n\ntitle:\n$name\n\n" + "description:\n$state"
+                val message =
+                    "the title and description of your item could be:\n\ntitle:\n$name\n\ndescription:\n$state"
                 //pass the items to the alert
-                generalAlertHint(title, message, icon[randomIcons], name, state)
+                generalAlertHint(
+                    title,
+                    message,
+                    icon[randomIcons],
+                    name,
+                    state,
+                    priceList[randomPrice]
+                )
                 //
                 //
 
             } else if (spinnerData.contains("Laptops")) {
                 //alert hint laptops
-                var random = Random.nextInt(6)
-                var random2 = Random.nextInt(6)
+                val random = Random.nextInt(6)
+                val random2 = Random.nextInt(6)
                 val nameList = listOf(
                     "Hp Probook 650 g2",
                     "Apple MacBook Pro 13",
@@ -244,7 +298,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "Hp Elitebook 840P"
                 )
 
-                var detailList = listOf(
+                val detailList = listOf(
                     " Core i5,8Gb Ram,500Gb Hard Disk/SSD",
                     "Core i3,8Gb Ram,256Gb SSD,working fine",
                     "Intel Celeron,4Gb Ram,128Gb SSD/Hard Disk",
@@ -253,23 +307,40 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "Core X,XGb Ram,XGb Hard Disk/SSD"
                 )
 
-                var randomIcons = Random.nextInt(2)
-                var icon = listOf(R.drawable.lapsz, R.drawable.laptop, R.drawable.lap)
-                var title = "$spinnerData Suggestion"
+                val priceList = arrayListOf(
+                    "15,000",
+                    "20,000",
+                    "17,000",
+                    "25,000",
+                    "18,000",
+                    "13,000"
+                )
+                val randomPrice = Random.nextInt(6)
+
+                val randomIcons = Random.nextInt(2)
+                val icon = listOf(R.drawable.lapsz, R.drawable.laptop, R.drawable.lap)
+                val title = "$spinnerData Suggestion"
                 val name = nameList[random]
                 val state = detailList[random2]
-                var message =
-                    "title and description of your item could be:\n\ntitle:\n$name\n\n" + "description:\n$state"
+                val message =
+                    "title and description of your item could be:\n\ntitle:\n$name\n\ndescription:\n$state"
                 //pass the items to the alert
-                generalAlertHint(title, message, icon[randomIcons], name, state)
+                generalAlertHint(
+                    title,
+                    message,
+                    icon[randomIcons],
+                    name,
+                    state,
+                    priceList[randomPrice]
+                )
                 //
 
                 //code ends
 
             } else if (spinnerData.contains("Shoes")) {
                 //reduce the counter size for shoes
-                var textInputLayoutDe: TextInputLayout = view.findViewById(R.id.layoutDescription)
-                var textInputLayoutT: TextInputLayout = view.findViewById(R.id.layoutTitlle)
+                val textInputLayoutDe: TextInputLayout = view.findViewById(R.id.layoutDescription)
+                val textInputLayoutT: TextInputLayout = view.findViewById(R.id.layoutTitlle)
 
                 textInputLayoutDe.apply {
                     counterMaxLength = 50
@@ -279,12 +350,12 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                 }
                 //
                 //alert hint shoes
-                var random = Random.nextInt(6)
+                val random = Random.nextInt(6)
                 val nameList = listOf(
                     "Airforce", "Timberlands", "Jordans", "Nikes", "Sneakers", "Rubber Shoes"
                 )
 
-                var detailList = listOf(
+                val detailList = listOf(
                     "stay classic,in good condition",
                     "shine wherever you go,brand New",
                     "let you shine,classic",
@@ -292,22 +363,40 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "change your looks,simple and attractive",
                     "stay undisputed,very brandy"
                 )
-                var randomIcons = Random.nextInt(2)
-                var icon = listOf(R.drawable.shoe, R.drawable.shoes, R.drawable.shoesz)
-                var title = "$spinnerData Suggestion"
+
+                val priceList = arrayListOf(
+                    "1,000",
+                    "3,000",
+                    "1,500",
+                    "800",
+                    "500",
+                    "300"
+                )
+                val randomPrice = Random.nextInt(6)
+
+                val randomIcons = Random.nextInt(2)
+                val icon = listOf(R.drawable.shoe, R.drawable.shoes, R.drawable.shoesz)
+                val title = "$spinnerData Suggestion"
                 val name = nameList[random]
                 val state = detailList[random]
-                var message =
-                    "title and description of your item could be:\n\ntitle:\n$name\n\n" + "description:\n$state"
+                val message =
+                    "title and description of your item could be:\n\ntitle:\n$name\n\ndescription:\n$state"
                 //pass the items to the alert
-                generalAlertHint(title, message, icon[randomIcons], name, state)
+                generalAlertHint(
+                    title,
+                    message,
+                    icon[randomIcons],
+                    name,
+                    state,
+                    priceList[randomPrice]
+                )
                 //
                 //
 
             } else if (spinnerData.contains("Earphones")) {
                 //alert hint earphones
-                var random = Random.nextInt(6)
-                var random2 = Random.nextInt(6)
+                val random = Random.nextInt(6)
+                val random2 = Random.nextInt(6)
                 val nameList = listOf(
                     "Oraimo Earphones",
                     "Wired Headphones",
@@ -317,7 +406,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "Bluetooth Earphones"
                 )
 
-                var detailList = listOf(
+                val detailList = listOf(
                     "HD Sound,Still Brandy",
                     "Extra Bass,Brand New",
                     "HD Sound, good condition",
@@ -325,22 +414,39 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "Adjust volume to your demands,Classic",
                     "True Bass Extra,Still Brandy"
                 )
-                var randomIcons = Random.nextInt(1)
-                var icon = listOf(R.drawable.earphones, R.drawable.earp)
-                var title = "$spinnerData Suggestion"
+                val priceList = arrayListOf(
+                    "100",
+                    "150",
+                    "1000",
+                    "500",
+                    "400",
+                    "300"
+                )
+                val randomPrice = Random.nextInt(6)
+
+                val randomIcons = Random.nextInt(1)
+                val icon = listOf(R.drawable.earphones, R.drawable.earp)
+                val title = "$spinnerData Suggestion"
                 val name = nameList[random]
                 val state = detailList[random2]
-                var message =
-                    "title and description of your item could be:\n\ntitle:\n$name\n\n" + "description:\n$state"
+                val message =
+                    "title and description of your item could be:\n\ntitle:\n$name\n\ndescription:\n$state"
                 //pass the items to the alert
-                generalAlertHint(title, message, icon[randomIcons], name, state)
+                generalAlertHint(
+                    title,
+                    message,
+                    icon[randomIcons],
+                    name,
+                    state,
+                    priceList[randomPrice]
+                )
                 //
                 //
 
             } else if (spinnerData.contains("Flash")) {
                 //alert hint Flash
-                var random = Random.nextInt(6)
-                var random2 = Random.nextInt(6)
+                val random = Random.nextInt(6)
+                val random2 = Random.nextInt(6)
                 val nameList = listOf(
                     "SanDisk Flash Drive",
                     "Samsung Flash Drive",
@@ -350,7 +456,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "Advance FlashDisk Drive"
                 )
 
-                var detailList = listOf(
+                val detailList = listOf(
                     "32Gb,fast data transfer",
                     "8gb,Brand New,durable",
                     "64gb,fast data retrieval",
@@ -359,20 +465,30 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "4Gb,store documents safely"
                 )
 
-                var icon = R.drawable.flash
-                var title = "$spinnerData Suggestion"
+                val priceList = arrayListOf(
+                    "350",
+                    "2,000",
+                    "1,500",
+                    "1,000",
+                    "500",
+                    "800"
+                )
+                val randomPrice = Random.nextInt(6)
+
+                val icon = R.drawable.flash
+                val title = "$spinnerData Suggestion"
                 val name = nameList[random]
                 val state = detailList[random2]
-                var message =
-                    "title and description of your item could be:\n\ntitle:\n$name\n\n" + "description:\n$state"
+                val message =
+                    "title and description of your item could be:\n\ntitle:\n$name\n\ndescription:\n$state"
                 //pass the items to the alert
-                generalAlertHint(title, message, icon, name, state)
+                generalAlertHint(title, message, icon, name, state, priceList[randomPrice])
                 //
                 //
             } else if (spinnerData.contains("Woofer")) {
                 //alert hint woofer
-                var random = Random.nextInt(6)
-                var random2 = Random.nextInt(6)
+                val random = Random.nextInt(6)
+                val random2 = Random.nextInt(6)
                 val nameList = listOf(
                     "Amtec Woofer",
                     "Sony System",
@@ -382,7 +498,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "Robot BT Speaker"
                 )
 
-                var detailList = listOf(
+                val detailList = listOf(
                     "HD Sound With Equalizers,Still Brandy",
                     "Extra Bass,Brand New Stereo System",
                     "Quality Sound,in good condition",
@@ -391,27 +507,44 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "True Bass,White,Still Brandy"
                 )
 
-                var randomIcons = Random.nextInt(2)
-                var icon = listOf(R.drawable.woofer, R.drawable.subwoofer, R.drawable.system)
-                var title = "$spinnerData Suggestion"
+                val priceList = arrayListOf(
+                    "2,000",
+                    "3,000",
+                    "5,000",
+                    "1,800",
+                    "4,500",
+                    "2,500"
+                )
+                val randomPrice = Random.nextInt(6)
+
+                val randomIcons = Random.nextInt(2)
+                val icon = listOf(R.drawable.woofer, R.drawable.subwoofer, R.drawable.system)
+                val title = "$spinnerData Suggestion"
                 val name = nameList[random]
                 val state = detailList[random2]
-                var message =
-                    "title and description of your item could be:\n\ntitle:\n$name\n\n" + "description:\n$state"
+                val message =
+                    "title and description of your item could be:\n\ntitle:\n$name\n\ndescription:\n$state"
                 //pass the items to the alert
-                generalAlertHint(title, message, icon[randomIcons], name, state)
+                generalAlertHint(
+                    title,
+                    message,
+                    icon[randomIcons],
+                    name,
+                    state,
+                    priceList[randomPrice]
+                )
                 //
 
                 //
             } else if (spinnerData.contains("Kaduda")) {
                 //alert hint Kaduda
-                var random = Random.nextInt(6)
-                var random2 = Random.nextInt(6)
+                val random = Random.nextInt(6)
+                val random2 = Random.nextInt(6)
                 val nameList = listOf(
                     "Nokia", "Tecno", "Bontel", "Samsung", "Itel", "Uptel"
                 )
 
-                var detailList = listOf(
+                val detailList = listOf(
                     "supports Opera Mini,in good condition",
                     "black,working fine",
                     "White,no battery,in good condition",
@@ -419,19 +552,36 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "supports whatsapp,Opera,very classic",
                     "yellow,free memory card,working fine"
                 )
-                var randomIcons = Random.nextInt(1)
-                var icon = listOf(R.drawable.kaduda, R.drawable.kabambe)
-                var title = "$spinnerData Suggestion"
+                val priceList = arrayListOf(
+                    "500",
+                    "1,000",
+                    "800",
+                    "600",
+                    "1,500",
+                    "900"
+                )
+                val randomPrice = Random.nextInt(6)
+
+                val randomIcons = Random.nextInt(1)
+                val icon = listOf(R.drawable.kaduda, R.drawable.kabambe)
+                val title = "$spinnerData Suggestion"
                 val name = nameList[random]
                 val state = detailList[random2]
-                var message =
-                    "title and description of your item could be:\n\ntitle:\n$name\n\n" + "description:\n$state"
+                val message =
+                    "title and description of your item could be:\n\ntitle:\n$name\n\ndescription:\n$state"
                 //pass the items to the alert
-                generalAlertHint(title, message, icon[randomIcons], name, state)
+                generalAlertHint(
+                    title,
+                    message,
+                    icon[randomIcons],
+                    name,
+                    state,
+                    priceList[randomPrice]
+                )
                 //
             } else if (spinnerData.contains("PowerBank")) {
                 //alert hint Kaduda
-                var random = Random.nextInt(6)
+                val random = Random.nextInt(6)
                 val nameList = listOf(
                     "Oraimo PowerBank",
                     "Veger PowerBank",
@@ -441,7 +591,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "Excellent PowerBank"
                 )
 
-                var detailList = listOf(
+                val detailList = listOf(
                     "20000Mah,Black,fast charger,in good condition",
                     "15000mah,1 charging port,white,stable in power",
                     "30000mah,4 charging ports,durable",
@@ -449,21 +599,38 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "25000mah,2 charging ports,supports fast charging",
                     "10000mah,with LED lights,charge phone twice"
                 )
-                var randomIcons = Random.nextInt(1)
-                var icon = listOf(R.drawable.powez, R.drawable.power)
-                var title = "$spinnerData Suggestion"
+                val priceList = arrayListOf(
+                    "2,000",
+                    "2,500",
+                    "1,000",
+                    "800",
+                    "500",
+                    "1,800"
+                )
+                val randomPrice = Random.nextInt(6)
+
+                val randomIcons = Random.nextInt(1)
+                val icon = listOf(R.drawable.powez, R.drawable.power)
+                val title = "$spinnerData Suggestion"
                 val name = nameList[random]
                 val state = detailList[random]
-                var message =
-                    "title and description of your item could be:\n\ntitle:\n$name\n\n" + "description:\n$state"
+                val message =
+                    "title and description of your item could be:\n\ntitle:\n$name\n\ndescription:\n$state"
                 //pass the items to the alert
-                generalAlertHint(title, message, icon[randomIcons], name, state)
+                generalAlertHint(
+                    title,
+                    message,
+                    icon[randomIcons],
+                    name,
+                    state,
+                    priceList[randomPrice]
+                )
 
                 //
             } else if (spinnerData.contains("SSD")) {
                 //code begins
-                var random = Random.nextInt(6)
-                var random2 = Random.nextInt(6)
+                val random = Random.nextInt(6)
+                val random2 = Random.nextInt(6)
                 val nameList = listOf(
                     "Sea Gate Hard Disk",
                     "Samsung SSD",
@@ -473,7 +640,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "Netac SSD"
                 )
 
-                var detailList = listOf(
+                val detailList = listOf(
                     "128Gb,fast data loading,Still Brandy",
                     "1Tb,lightening speed,Brand New",
                     "XGb, good condition",
@@ -481,19 +648,77 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     "500Gb,very fast,Classic",
                     "320Gb,say no more hanging to the laptop"
                 )
+                val priceList = arrayListOf(
+                    "5,000",
+                    "2,000",
+                    "2,500",
+                    "3,000",
+                    "4,000",
+                    "3,500"
+                )
+                val randomPrice = Random.nextInt(6)
 
-                var randomIcons = Random.nextInt(2)
-                var icons = listOf(R.drawable.ssd1, R.drawable.ssd, R.drawable.hadd)
+                val randomIcons = Random.nextInt(2)
+                val icons = listOf(R.drawable.ssd1, R.drawable.ssd, R.drawable.hadd)
 
-                var title = "$spinnerData Suggestion"
+                val title = "$spinnerData Suggestion"
                 val name = nameList[random]
                 val state = detailList[random2]
-                var message =
-                    "title and description of your item could be:\n\ntitle:\n$name\n\n" + "description:\n$state"
+                val message =
+                    "title and description of your item could be:\n\ntitle:\n$name\n\ndescription:\n$state"
                 //pass the items to the alert
-                generalAlertHint(title, message, icons[randomIcons], name, state)
+                generalAlertHint(
+                    title,
+                    message,
+                    icons[randomIcons],
+                    name,
+                    state,
+                    priceList[randomPrice]
+                )
                 //
                 //code
+            } else if (spinnerData.contains("RAM")) {
+                //alert hint Flash
+                val random = Random.nextInt(6)
+                val random2 = Random.nextInt(6)
+                val nameList = listOf(
+                    "Samsung RAM",
+                    "Intel RAM",
+                    "Crucial RAM",
+                    "Fujitsu RAM",
+                    "SK Hynix RAM",
+                    "Corsair RAM"
+                )
+
+                val detailList = listOf(
+                    "2Gb,PC3,DDR3",
+                    "8Gb,PC3L,DDR3",
+                    "16GB,PC3L,DDR4",
+                    "4Gb,PC3L-12800S,DDR4",
+                    "4Gb,PC3L,DDR4",
+                    "8Gb,PC3-12800S,DDR3"
+                )
+
+                val priceList = arrayListOf(
+                    "3,000",
+                    "2,000",
+                    "1,500",
+                    "4,000",
+                    "6,000",
+                    "4,500"
+                )
+                val randomPrice = Random.nextInt(6)
+
+                val icon = R.drawable.flash
+                val title = "$spinnerData Suggestion"
+                val name = nameList[random]
+                val state = detailList[random2]
+                val message =
+                    "title and description of your item could be:\n\ntitle:\n$name\n\ndescription:\n$state"
+                //pass the items to the alert
+                generalAlertHint(title, message, icon, name, state, priceList[randomPrice])
+                //
+                //
             }
             //
 
@@ -509,10 +734,10 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
     private fun funPostNow() {
         //code begins
         //obtaining the data from the all views before processing of their post
-        var imageUriDataPost = uriProduct
-        var titleDataPost = editTextTitle.text.toString()
-        var descriptionDataPost = editTextDescription.text.toString()
-        var priceDataPost = editTextPrice.text.toString()
+        val imageUriDataPost = uriProduct
+        val titleDataPost = editTextTitle.text.toString()
+        val descriptionDataPost = editTextDescription.text.toString()
+        val priceDataPost = editTextPrice.text.toString()
 
         //check null presence in the data
         if (imageUriDataPost.equals("")) {
@@ -527,6 +752,8 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             editTextDescription.error = "provide brief description of the item"
         } else if (TextUtils.isEmpty(priceDataPost)) {
             editTextPrice.error = "provide price of the item"
+        } else if (priceDataPost.length > 4 && !priceDataPost.contains(",")) {
+            editTextPrice.error = "separate price  with a comma (,)"
         }
         //everything fine
         else {
@@ -585,7 +812,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                                         titleDataPost,
                                         descriptionDataPost,
                                         spinnerData,
-                                        progD
+                                        progD,priceDataPost
                                     )
                                     //
                                     //
@@ -601,7 +828,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                                         setCancelable(false)
                                         setPositiveButton("retry") { dialog, _ ->
 
-                                            //dismiss dialo to avoid RT errors
+                                            //dismiss dialog to avoid RT errors
                                             dialog.dismiss()
                                             //
                                         }
@@ -649,24 +876,41 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
 
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
+    @SuppressLint("UseCompatLoadingForDrawables", "SimpleDateFormat")
     private fun funUploadPostFstore(
         uriStringItemPosted: String,
         titleDataPost: String,
         descriptionDataPost: String,
         spinnerData: String,
-        progD: ProgressDialog
+        progD: ProgressDialog,
+        priceDataPost: String
     ) {
         //code begins
+        //todo:add UserNameOwner,PhoneNumber,University,image for easier retrieval.(fetchUserDat on launch and obtain em)
         //generate a unique Product key on each item
-        val productUniqueID = JavaProductIDGenerator.generateProductIDNow(10, true, true, true)
-        //
+        val productUniqueID = ProductIDGenerator.generateProductIDNow(10, true, true, true)
+        val uniqueUID=FirebaseAuth.getInstance().uid
         //declaring the keys for the hashMap
-        val keyImagePost = "keyImagePost"
-        val keyTitleItemPost = "keyTitleItemPost"
-        val keyDescriptionItemPost = "keyDescriptionItemPost"
-        val keyCategoryItemPost = "keyCategoryItemPost"
-        val keyProductID = productUniqueID
+        val keyImagePost = "imageProduct"
+        val keyTitleItemPost = "title"
+        val keyDescriptionItemPost = "description"
+        val keyCategoryItemPost = "category"
+        val keyProductID = "productID"
+        val keyDate = "date"
+        val keyPrice="price"
+        val keyUserID="userID"
+
+        //
+        val keyImageOwner="imageOwner"
+        val keyOwnerName="Owner"
+        val keyUniversity="university"
+        val keyPhoneNumber="phone"
+        //
+
+        //creating instances for finding date
+        val timeUsingCalendar = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val formattedTime = dateFormat.format(timeUsingCalendar)
         //
 
         //create hashMap to store data fStore
@@ -675,7 +919,11 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             keyCategoryItemPost to spinnerData,
             keyTitleItemPost to titleDataPost,
             keyDescriptionItemPost to descriptionDataPost,
-            keyImagePost to uriStringItemPosted
+            keyImagePost to uriStringItemPosted,
+            keyDate to formattedTime.toString(),
+            keyPrice to priceDataPost,
+            keyUserID to uniqueUID
+
         )
 
         //fStore Process
@@ -991,7 +1239,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun generalAlertHint(
-        title: String, message: String, icon: Int, name: String, state: String
+        title: String, message: String, icon: Int, name: String, state: String, price: String
     ) {
         val alertMatHint = MaterialAlertDialogBuilder(requireActivity())
         alertMatHint.setTitle(title)
@@ -1007,7 +1255,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         }
         alertMatHint.setNeutralButton("apply") { dialog, _ ->
             //call function to set text title and description for the user
-            funDoFill(name, state)
+            funDoFill(name, state, price)
             //
             //anim the suggestion btn for user interaction
             appCompatButtonHint.startAnimation(
@@ -1026,13 +1274,16 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
 
     }
 
-    private fun funDoFill(title: String, message: String) {
+    private fun funDoFill(title: String, message: String, price: String) {
         //code begins
         editTextTitle.apply {
             setText(title)
         }
         editTextDescription.apply {
             setText(message)
+        }
+        editTextPrice.apply {
+            setText(price)
         }
         //code ends
 

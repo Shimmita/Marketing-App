@@ -16,7 +16,6 @@ import android.view.animation.LayoutAnimationController
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -32,7 +31,9 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.R
+import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
 import de.hdodenhof.circleimageview.CircleImageView
+import es.dmoral.toasty.Toasty
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
@@ -162,7 +163,6 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         btnRegistration.setOnClickListener {
 
             //code begins
-
             funRegistrationBegin()
             //code ends
         }
@@ -275,7 +275,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 Snackbar.LENGTH_INDEFINITE
             ).setAction("Ok,fix") {
                 //setting the border color of the image to magenta for easier evaluation
-                circleProfileImage.borderColor = resources.getColor(R.color.red, theme)
+                circleProfileImage.borderColor = resources.getColor(R.color.white, theme)
 
                 //animate the image
                 circleProfileImage.startAnimation(
@@ -462,7 +462,8 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         //putting the uri path to the fabStorage
         if (fabStorageInt != null) {
             uriPath?.let {
-                fabStorageInt.putFile(it).addOnCompleteListener(this@Registration
+                fabStorageInt.putFile(it).addOnCompleteListener(
+                    this@Registration
                 ) { it ->
                     if (it.isSuccessful) {
                         //task is successful thus update the message of the progressDialog
@@ -589,13 +590,19 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         //code ends
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun callFunctionShowSuccessReg() {
         //code begins
         val alertSuccess = MaterialAlertDialogBuilder(this@Registration)
         alertSuccess.setTitle("CONGRATULATIONS")
         alertSuccess.setIcon(R.drawable.ic_nike_done)
         alertSuccess.setCancelable(false)
-        alertSuccess.setMessage("you have now successfully registered with us @ Comrade Market (Market CM).Login to your account using your EMAIL and PASSWORD")
+        alertSuccess.background = resources.getDrawable(R.drawable.material_three, theme)
+        alertSuccess.setMessage(
+            "You have successfully registered with Comrade Market(Market CM)." +
+                    "\n\nLogin to your account using your" +
+                    " \nEMAIL and PASSWORD"
+        )
         alertSuccess.setPositiveButton(
             "Login"
         ) { dialogInterface, _ ->
@@ -683,24 +690,59 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 if (it.resultCode == RESULT_OK) {
                     //set the image to the circle profile
                     uriPath = it.data!!.data!!
-                    circleProfileImage.setImageURI(uriPath)
-                    //
-                    //snack the image a success
-                    Snackbar.make(
-                        linearLayoutParentRegistration,
-                        "profile picture updated successfully",
-                        Snackbar.LENGTH_INDEFINITE
-                    ).setTextColor(
-                        Color.parseColor("#ffffff")
-                    ).setBackgroundTint(resources.getColor(R.color.black, theme)).setAction("Ok") {
-                        //animate the profile
-                        circleProfileImage.startAnimation(
-                            AnimationUtils.loadAnimation(
-                                this@Registration, R.anim.rotate
-                            )
-                        )
+
+                    //check the size of the image that was picked should be less than 2MB
+                    val initClassSize = FileSizeDeterminant(this)
+                    val imageSizeBytes = initClassSize.funGetSize(uriPath)
+                    val converter = 1024f
+                    val imageSizeKB = imageSizeBytes / converter
+                    val limitKB = 2500
+                    if (imageSizeKB > limitKB) {
+                        //alert user file size too big
+                        Toasty.custom(
+                            this@Registration,
+                            "pick an image less than 2.5MB\n" +
+                                    "Your image is ${imageSizeKB / converter}MB !",
+                            R.drawable.ic_info,
+                            R.color.colorWhite,
+                            Toasty.LENGTH_LONG,
+                            true,
+                            false
+                        ).show()
                         //
-                    }.show()
+                    } else {
+                        //code begins
+                        //file size is okay
+                        circleProfileImage.setImageURI(uriPath)
+                        //
+                        //snack the image a success
+                        Snackbar.make(
+                            linearLayoutParentRegistration,
+                            "profile picture updated successfully",
+                            Snackbar.LENGTH_INDEFINITE
+                        ).setTextColor(
+                            Color.parseColor("#ffffff")
+                        ).setBackgroundTint(resources.getColor(R.color.black, theme))
+                            .setAction("Ok") {
+                                //animate the profile
+                                circleProfileImage.startAnimation(
+                                    AnimationUtils.loadAnimation(
+                                        this@Registration, R.anim.rotate
+                                    )
+                                )
+
+                                //make it visible the button register
+                                btnRegistration.apply {
+                                    visibility = View.VISIBLE
+                                }
+                                //
+                            }.show()
+                        //
+
+
+                        //
+                        //code ends
+                    }
                     //
 
                 }
@@ -708,7 +750,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
                     //image cancelled
                     Toast.makeText(
-                        this@Registration, "the process has been cancelled!", Toast.LENGTH_LONG
+                        this@Registration, "process has been cancelled!", Toast.LENGTH_LONG
                     ).show()
 
                 }

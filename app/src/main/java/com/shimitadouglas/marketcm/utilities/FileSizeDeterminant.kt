@@ -6,7 +6,7 @@ import android.provider.OpenableColumns
 
 class FileSizeDeterminant(val context: Context) {
 
-     val applicationContext=context
+     private val applicationContext=context
 
     fun funGetSize(uriPath: Uri?): Long {
         //code begins

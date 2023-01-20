@@ -6,13 +6,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
+import android.view.View
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -20,6 +18,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.modals.ModalRecoverPassword
+import es.dmoral.toasty.Toasty
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -34,7 +33,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var editLoginPassword: TextInputEditText
     lateinit var tvRecoverPasscode: TextView
     lateinit var linearRec: LinearLayout
-
+    lateinit var checkBox: CheckBox
+    lateinit var textViewMove: TextView
 
     //
 
@@ -118,8 +118,82 @@ class MainActivity : AppCompatActivity() {
             //
             //code ends
         }
-        //
 
+        //setting listener on checkbox
+        checkBox.setOnCheckedChangeListener { _, b ->
+
+            val view: LinearLayout = findViewById(R.id.linearRecoverCreate)
+
+            if (b) {
+                //is checked show the more account info
+                view.apply {
+                    visibility = View.VISIBLE
+                }
+                //
+            } else {
+                //hide the more account info
+                view.apply {
+                    visibility = View.GONE
+                }
+                //
+            }
+
+        }
+        //
+        //fun check auth is null
+        funCheckCurrentUser()
+        //
+        //code ends
+    }
+
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun funCheckCurrentUser() {
+        //code begins
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            //inform the user didn't logout from previous session thus to directly proceed to main Products
+            val alertNoExpiredSession = MaterialAlertDialogBuilder(this@MainActivity)
+            alertNoExpiredSession.setIcon(R.drawable.cart)
+            alertNoExpiredSession.setCancelable(false)
+            alertNoExpiredSession.background =
+                resources.getDrawable(R.drawable.material_seven, theme)
+            alertNoExpiredSession.setTitle("Session")
+            alertNoExpiredSession.setMessage(
+                "seems you did not logout from your previous session.\n" +
+                        "\nproceed to the last session?"
+            )
+            alertNoExpiredSession.setPositiveButton("proceed") { dialog, _ ->
+
+                //launch the products session
+                startActivity(
+                    Intent(this@MainActivity, ProductsHome::class.java).setFlags(
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    )
+                )
+                //
+                //dismiss the dg, avoid RT exceptions
+                dialog.dismiss()
+                //
+            }
+            alertNoExpiredSession.setNegativeButton("No logout") { dialog, _ ->
+                //sign out the user
+                FirebaseAuth.getInstance().signOut()
+                //
+                Toasty.custom(
+                    this@MainActivity,
+                    "Logged Out",
+                    R.drawable.ic_info, R.color.colorWhite, Toasty.LENGTH_SHORT, true, false
+                ).show()
+                //dismiss
+                dialog.dismiss()
+                //
+
+            }
+            alertNoExpiredSession.create()
+            alertNoExpiredSession.show()
+            //
+        }
+        //code ends
     }
 
     private fun funNowLogin(enteredEmail: Editable?, enteredPassword: Editable?) {
@@ -165,7 +239,11 @@ class MainActivity : AppCompatActivity() {
                     progressD.dismiss()
                     //
                     //intent migration to the activity products
-                    Toast.makeText(this@MainActivity, "Login Successful", Toast.LENGTH_LONG).show()
+                    Toasty.custom(
+                        this@MainActivity,
+                        "Login Successful",
+                        R.drawable.ic_nike_done, R.color.colorWhite, Toasty.LENGTH_LONG, true, false
+                    ).show()
                     //intent migration here
                     val intentProductsHome = Intent(this@MainActivity, ProductsHome::class.java)
                     intentProductsHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -184,13 +262,13 @@ class MainActivity : AppCompatActivity() {
                     progressD.dismiss()
 
                     //alert error of login
-                    val alert_dialog = MaterialAlertDialogBuilder(this@MainActivity)
-                    alert_dialog.setTitle("Login Failed")
-                    alert_dialog.setIcon(R.drawable.ic_warning)
-                    alert_dialog.setMessage(it.exception?.message)
-                    alert_dialog.background =
+                    val alertDialog = MaterialAlertDialogBuilder(this@MainActivity)
+                    alertDialog.setTitle("Login Failed")
+                    alertDialog.setIcon(R.drawable.ic_warning)
+                    alertDialog.setMessage(it.exception?.message)
+                    alertDialog.background =
                         resources.getDrawable(R.drawable.general_alert_dg, theme)
-                    alert_dialog.show()
+                    alertDialog.show()
                     //code end
                     //
                 }
@@ -220,7 +298,9 @@ class MainActivity : AppCompatActivity() {
         editLoginEmail = findViewById(R.id.loginEmail)
         editLoginPassword = findViewById(R.id.loginPassword)
         tvRecoverPasscode = findViewById(R.id.tv_recover_password)
-        linearRec = findViewById(R.id.linearRecovery)
+        linearRec = findViewById(R.id.linearRecoverCreate)
+        checkBox = findViewById(R.id.cbMoreAccountInfo)
+        textViewMove = findViewById(R.id.marqueeLogin)
         //parent animate
         val layAnimControl =
             LayoutAnimationController(AnimationUtils.loadAnimation(this@MainActivity, R.anim.down))
@@ -233,6 +313,13 @@ class MainActivity : AppCompatActivity() {
         relativeLoginParent.layoutAnimation = layAnimControl
         relativeLoginParent.startLayoutAnimation()
         //code ends
+
+        //apply moveMaq textLogin
+        textViewMove.setSingleLine()
+        textViewMove.ellipsize = TextUtils.TruncateAt.MARQUEE
+        textViewMove.marqueeRepeatLimit = -1
+        textViewMove.isSelected = true
+        //
     }
 
     private fun funFullScreen() {

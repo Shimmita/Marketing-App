@@ -18,33 +18,28 @@
             android:id="@+id/toolbarProducts"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/material_four"
-            android:paddingBottom="5dp"
             app:layout_collapseMode="pin"
             app:navigationIcon="@drawable/ic_menu"
             app:popupTheme="@style/Theme.Design.Light.NoActionBar"
-            app:titleTextColor="@color/teal_700" />
+            app:titleTextColor="@color/accent_material_light" />
 
         <FrameLayout
             android:id="@+id/frameLayoutContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/material_one"
             android:layout_above="@id/bottomNavProducts"
-            android:layout_below="@id/toolbarProducts"
-             />
+            android:layout_below="@id/toolbarProducts" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavProducts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            app:backgroundTint="@color/abc_decor_view_status_guard_light"
-            app:itemIconSize="25dp"
-            android:padding="10dp"
+            android:padding="2dp"
+            app:backgroundTint="@color/colorWhite"
+            app:itemBackground="@drawable/material_eight"
             app:itemTextColor="#E4056C09"
-            app:itemBackground="@drawable/material_six"
-            app:menu="@menu/products_menu" />
+            app:menu="@menu/bottom_nav_menu" />
     </RelativeLayout>
 
 
@@ -53,12 +48,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@drawable/shaping"
+        android:background="@drawable/material_nine"
         android:fitsSystemWindows="true"
         app:itemIconTint="@color/bright_foreground_disabled_material_dark"
         app:itemRippleColor="@color/design_dark_default_color_error"
         app:itemTextColor="@color/abc_decor_view_status_guard_light"
         app:menu="@menu/menu_header"
-        app:subheaderColor="@color/abc_decor_view_status_guard" />
+        app:subheaderColor="@color/design_dark_default_color_primary" />
 </androidx.drawerlayout.widget.DrawerLayout>
 

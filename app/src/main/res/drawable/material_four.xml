@@ -5,6 +5,4 @@
         android:centerColor="@color/accent_material_dark"
         android:endColor="@color/error_color_material_dark"
         android:startColor="@color/error_color_material_dark" />
-
-    <padding android:left="50dp" />
 </shape>

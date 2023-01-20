@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -42,18 +43,30 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.R
-import com.shimitadouglas.marketcm.fragment.HomeFragment
-import com.shimitadouglas.marketcm.fragment.NotificationFragment
-import com.shimitadouglas.marketcm.fragment.PostFragment
+import com.shimitadouglas.marketcm.fragmentProducts.HomeFragment
+import com.shimitadouglas.marketcm.fragmentProducts.NotificationFragment
+import com.shimitadouglas.marketcm.fragmentProducts.PostFragment
 import com.shimitadouglas.marketcm.mains.Registration.Companion.ComRadeUser
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlin.concurrent.thread
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
 class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     companion object {
         private const val TAG = "ProductsHome"
+
+        //shared prefs for storing the states of some data to avoid constants reloads
+        var sharedPreferenceName: String = "MarketCmSharedPreference"
+        lateinit var sharedPreferenceMarketCM: SharedPreferences;
+        //
     }
+
+
+    //data be put shared prefs
+    var keyShowCongratsEmailVerified = "show"
+    var showCongrats = "yes"
+    //
 
     //declaration of the globals
     lateinit var drawerToggle: ActionBarDrawerToggle
@@ -98,7 +111,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         funHandleButtonUpdateVerify()
         //call function to perform default fragment addition
         fragmentDefaultAdd()
-
         //
 
     }
@@ -117,7 +129,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //code begins
         supportFragmentManager.beginTransaction().replace(R.id.frameLayoutContainer, fragment, tag)
             .commitNow()
-
         //animate bottom nav
         val layoutAnimationController = LayoutAnimationController(
             AnimationUtils.loadAnimation(
@@ -173,7 +184,12 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 theme
                             )
                         )
-                        .setActionTextColor(Color.parseColor("#E9F90A"))
+                        .setActionTextColor(
+                            resources.getColor(
+                                R.color.accent_material_light,
+                                theme
+                            )
+                        )
                         .setAction("sure") {
                             //code begins
                             //call functionLogout
@@ -239,18 +255,21 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (!userCurrent.isEmailVerified) {
                 //disable button Update details
                 headerButtonUpdate.visibility = View.GONE
-
                 //show alert that the email is no verified
-                val alertD = AlertDialog.Builder(this@ProductsHome)
+                val alertD = MaterialAlertDialogBuilder(this@ProductsHome)
                 alertD.setTitle("Email Verification")
+
+                alertD.background =
+                    resources.getDrawable(R.drawable.material_six, theme)
                 alertD.setCancelable(false)
                 alertD.setMessage(
-                    "your email address (${userCurrent.email}) needs to be verified within 2 days in order" +
-                            " to avoid your account from becoming inactive." +
-                            "accounts created with non verified email addresses are deemed to be corrupt accounts," +
+                    "(${userCurrent.email})" +
+                            "\nneeds to be verified within 2 days in order" +
+                            " to avoid your account from becoming inactive.\n" +
+                            "\nAccounts created with non verified email addresses are deemed to be corrupt accounts," +
                             " to avoid this situation, kindly verify your email within the stipulated period of time."
                 )
-                alertD.setIcon(R.drawable.ic_warning)
+                alertD.setIcon(R.drawable.ic_info)
                 alertD.setPositiveButton("verifyNow") { dialog, _ ->
                     //open drawer
                     drawerLayout.openDrawer(GravityCompat.START)
@@ -271,15 +290,21 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 theme
                             )
                         ).setAction("Ok") {
-                            //enable the button verify email
-                            headerButtonVerifyEmail.isEnabled = true
-                            //animate the button
-                            headerButtonVerifyEmail.startAnimation(
-                                AnimationUtils.loadAnimation(
-                                    this@ProductsHome,
-                                    R.anim.fadeout
+                            //enable the button verify email and visible
+                            headerButtonVerifyEmail.apply {
+                                isEnabled = true
+                                visibility = View.VISIBLE
+                            }
+                            //animate the button using the handler 0.5 seconds delay
+                            Handler(mainLooper).postDelayed({
+                                headerButtonVerifyEmail.startAnimation(
+                                    AnimationUtils.loadAnimation(
+                                        this@ProductsHome,
+                                        R.anim.fadeout
+                                    )
                                 )
-                            )
+                            }, 500)
+
                             //
                         }
                         .setActionTextColor(Color.parseColor("#54FA08"))
@@ -322,32 +347,62 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //enabling the visibility of the update button since a user cannot update his/her a/c unless is verified
                 //the email
                 headerButtonUpdate.visibility = View.VISIBLE
-                //show snack congrats email verified
-                MaterialAlertDialogBuilder(this@ProductsHome)
-                    .setTitle("Congratulations!")
-                    .setMessage("email verification was successful.\nyour account has been approved")
-                    .setIcon(R.drawable.ic_copy_right_co)
-                    .setBackground(
-                        resources.getDrawable(
-                            R.drawable.material_six,
-                            theme
-                        )
-                    )
-                    .setNeutralButton("Ok") { dialog, _ ->
-                        //code begins
-                        dialog.dismiss()
-                        //code ends
-                    }
-                    .setNegativeButton("don't show again") { dialog, _ ->
 
-                        //code begins
-                        // TODO: create a variable that will be checked on launching of the application so that
-                        //TODO: showing of the dialog yes or no with respect to the variable state
-                        //code ends
-                    }
-                    .show()
-                    .create()
-                //
+                //basing from the data returned from shared pref define yes/no show congrats alert. default true
+                val sharedPreferences = getSharedPreferences(
+                    sharedPreferenceName, MODE_PRIVATE
+                )
+                val dataFromSharedPreferences =
+                    sharedPreferences.getString(keyShowCongratsEmailVerified, "no")
+
+                //show the alert basing on the value of the data from the shared pref yes=show else no show
+                if (dataFromSharedPreferences.equals("yes")) {
+                    //true show dg
+                    //show snack congrats email verified
+                    MaterialAlertDialogBuilder(this@ProductsHome)
+                        .setTitle("Congratulations!")
+                        .setMessage("email verification was successful.\nyour account has been approved\nsuccessfully")
+                        .setIcon(R.drawable.ic_copy_right_co)
+                        .setCancelable(false)
+                        .setBackground(
+                            resources.getDrawable(
+                                R.drawable.material_six,
+                                theme
+                            )
+                        )
+                        .setNeutralButton("Ok") { dialog, _ ->
+                            //code begins
+                            sharedPreferenceMarketCM =
+                                this.getSharedPreferences(sharedPreferenceName, MODE_PRIVATE)
+                            val sharedPreferencesEditor: SharedPreferences.Editor =
+                                sharedPreferenceMarketCM.edit()
+                            sharedPreferencesEditor.putString(
+                                keyShowCongratsEmailVerified,
+                                showCongrats
+                            )
+                            if (sharedPreferencesEditor.commit()) {
+                                //dismiss the dialog after commit is true
+                                dialog.dismiss()
+                                //
+                            }
+                            //code ends
+                        }
+                        .setNegativeButton("don't show again") { dialog, _ ->
+                            //code begins
+                            //set the value ShowCongrats dialog to no to prevent it from bring shown
+                            sharedPreferences
+                            val editor: SharedPreferences.Editor = sharedPreferences.edit()
+                            editor.putString(keyShowCongratsEmailVerified, "no")
+                            if (editor.commit()) {
+                                //dismiss
+                                dialog.dismiss()
+                                //code ends
+                            }
+                        }
+                        .show()
+                        .create()
+                    //
+                }
             }
             //
 
@@ -386,11 +441,16 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     //
 
                     //creating alertFor notify
-                    val alertShowHowToVerify = AlertDialog.Builder(this@ProductsHome)
+                    val alertShowHowToVerify = MaterialAlertDialogBuilder(this@ProductsHome)
                     alertShowHowToVerify.setCancelable(false)
+                    alertShowHowToVerify.setIcon(R.drawable.ic_info)
+                    alertShowHowToVerify.background =
+                        resources.getDrawable(R.drawable.material_two, theme)
+                    alertShowHowToVerify.setTitle("Email Verification")
                     alertShowHowToVerify.setMessage(
-                        "email verification link has been sent to this email address(${fabAuth.currentUser!!.email})\n" +
-                                "open your email inbox and verify;if this is not the case check it in the spam and do the verification"
+                        "email verification link has been sent to (${fabAuth.currentUser!!.email})\n" +
+                                "\nopen your email inbox and click the email link to verify\n" +
+                                "\nif this is not the case check it in the spam and do the verification"
                     )
                     alertShowHowToVerify.setPositiveButton("Ok") { dialog, _ ->
                         //dismiss the dialog and finish the application processes
@@ -1140,12 +1200,28 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         when (item.itemId) {
             R.id.smsDev -> {
-                Toast.makeText(this@ProductsHome, "sms developer", Toast.LENGTH_LONG).show()
+                //launch function to sms developer thread new
+                thread {
+                    funSMSDev()
+                }
+                //
             }
-            R.id.callDev -> {
-                Toast.makeText(this@ProductsHome, "call developer", Toast.LENGTH_LONG).show()
+            R.id.emailDev -> {
+                //launch function on a different thread to email developer
+                thread {
+                    funEmailDeveloper()
+                }
+                //
 
             }
+            R.id.callDev -> {
+                //launch function call developer on a different thread
+                thread {
+                    funCallDev()
+                }
+                //
+            }
+
             R.id.aboutMarketCM -> {
                 Toast.makeText(this@ProductsHome, "about market cm", Toast.LENGTH_LONG).show()
 
@@ -1158,6 +1234,46 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         return true
+    }
+
+    private fun funEmailDeveloper() {
+        //code begins
+        val emailsMyEmails = arrayOf("douglasshimita3@gmail.com", "shimitadouglas@gmail.com")
+        val emailSubject = "help or question"
+        val messageBodyText = "write your message here"
+        val intentEmail = Intent()
+        intentEmail.action = Intent.ACTION_SEND
+        intentEmail.setDataAndType(Uri.parse("email"), "message/rfc822")
+        intentEmail.putExtra(Intent.EXTRA_EMAIL, emailsMyEmails)
+        intentEmail.putExtra(Intent.EXTRA_SUBJECT, emailSubject)
+        intentEmail.putExtra(Intent.EXTRA_TEXT, messageBodyText)
+        startActivity(Intent.createChooser(intentEmail, "Launch Email"))
+        //code ends
+
+    }
+
+    private fun funSMSDev() {
+        //code begins
+        val phoneNumber = "+254757450727"
+        val messageBody =
+            "hey,write your text here and send it to me, i will be glad to feedback you"
+        val intentMessaging =
+            Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phoneNumber, null))
+        startActivity(Intent.createChooser(intentMessaging, "Launch SMS APP"))
+        //code ends
+
+    }
+
+    private fun funCallDev() {
+        //code begins
+        //start an intent to the phone call
+        val numberIntent = Intent()
+        numberIntent.action = Intent.ACTION_DIAL
+        numberIntent.data = Uri.parse("tel:+254757450727")
+        startActivity(numberIntent)
+        //
+        //code ends
+
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -1338,7 +1454,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     if (it.isSuccessful) {
                         //dismiss the progress dialog
                         progressDg.dismiss()
-                        //
                         //code begins
                         //todo:implement a function that will be always called when a successfully update is done in order to avoid exit of the app
                         //

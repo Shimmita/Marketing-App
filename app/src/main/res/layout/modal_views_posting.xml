@@ -154,7 +154,7 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/material_six"
                 app:counterEnabled="true"
-                app:counterMaxLength="5"
+                app:counterMaxLength="10"
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText

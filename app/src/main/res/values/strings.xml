@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Market CM</string>
     <string name="passwarn"><u>Password Warning</u></string>
-    <string name="messge_pass_warn">your password is less than 8 characters, for security reasons we recommend using a password containing eight or more characters!</string>
+    <string name="messge_pass_warn">your password is less than 6 characters, for security reasons we recommend using a password containing eight or more characters!</string>
     <string name="comrade_market_your_products_easily_powered_by_shimitadouglas_gmail_com">comrades market your products so easily moulded by shimitadouglas@gmail.com</string>
     <string name="not_having_an_account_yet_click_here">not having an account yet? click here</string>
 
@@ -44,5 +44,26 @@
     <string name="_0752525276">0752525276</string>
     <string name="verify_email">verify email</string>
     <string name="update_account">update account</string>
+    <string name="ultimate_marketing">ultimate marketing platform for a comrade to post and advertise products for sale online</string>
+    <string name="vicinity">Vicinity: Maseno University</string>
+    <string name="title">Accer Pro 2023</string>
+    <string name="details">Details: 8Gb Ram,256GB SSD,Good Condition</string>
+    <string name="category_laptops">Category: Laptops</string>
+    <string name="productID">Product ID: GVSH67OBAU</string>
+    <string name="enquire">Enquire @KES 40,000</string>
+    <string name="message_title">message title</string>
+    <string name="message">message</string>
+    <string name="short_summary_text">short summary Text</string>
+    <string name="message_console">message console</string>
+    <string name="send_notification">send notification</string>
+    <string name="notification_type">Notification type</string>
+    <string name="title_normal_notification">title of the message</string>
+    <string name="message_of_normal_notification">message of normal notification</string>
+    <string name="type_normal_notification">type normal notification</string>
+    <string name="title_big_notification">Title BigNotification</string>
+    <string name="message_of_big_text_notification">message of big text notification</string>
+    <string name="by_shimmita_douglas">by: shimmita douglas</string>
+    <string name="big_notification_type">big notification type</string>
+    <string name="notification">Notification</string>
 
 </resources>

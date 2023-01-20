@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace 'com.shimitadouglas.marketcm'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.shimitadouglas.marketcm"
@@ -53,5 +53,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
     implementation 'com.karumi:dexter:6.2.3'
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+    implementation 'com.github.denzcoskun:ImageSlideshow:0.1.0'
+    implementation 'com.github.GrenderG:Toasty:1.5.2'
+
 
 }

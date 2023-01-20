@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="300dp"
-    android:background="@drawable/material_one"
+    android:layout_height="350dp"
+    android:background="@drawable/material_nine"
     android:orientation="horizontal">
 
 
@@ -11,8 +11,8 @@
         android:id="@+id/headerImage"
         android:layout_width="110dp"
         android:layout_height="110dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="20dp"
-        android:layout_marginStart="1dp"
         android:scaleType="centerCrop"
         android:src="@drawable/dillan"
         app:civ_border_color="@color/bright_foreground_disabled_material_dark"
@@ -23,7 +23,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="10dp"
         android:layout_marginTop="18dp"
-        android:background="@drawable/material_two"
+        android:background="@drawable/material_nine"
         android:orientation="vertical"
         android:padding="15dp">
 
@@ -43,12 +43,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/general_alert_dg"
+            android:background="@drawable/backg_slider"
             android:fontFamily="sans-serif-condensed"
             android:padding="7dp"
             android:text="@string/allan_okoth_onyango"
-            android:textColor="#811798"
-            android:textSize="15.7sp"
+            android:textColor="#00BCD4"
             android:textStyle="bold|italic" />
 
         <TextView
@@ -56,11 +55,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/general_alert_dg"
+            android:background="@drawable/backg_slider"
             android:fontFamily="sans-serif-condensed-light"
             android:padding="8dp"
             android:text="@string/maseno_university"
-            android:textColor="#811798"
+            android:textColor="#00BCD4"
             android:textSize="13sp"
             android:textStyle="bold" />
 
@@ -69,11 +68,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/general_alert_dg"
+            android:background="@drawable/backg_slider"
             android:fontFamily="sans-serif-condensed-light"
             android:padding="8dp"
             android:text="@string/username_gmail_com"
-            android:textColor="#811798"
+            android:textColor="#00BCD4"
             android:textSize="13sp"
             android:textStyle="bold" />
 
@@ -83,41 +82,40 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/general_alert_dg"
+            android:background="@drawable/backg_slider"
             android:fontFamily="sans-serif-condensed-light"
             android:padding="8dp"
             android:text="@string/_0752525276"
-            android:textColor="#811798"
+            android:textColor="#00BCD4"
             android:textSize="13sp"
             android:textStyle="bold" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnCompatHeaderVerify"
-            android:layout_width="match_parent"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/general_alert_dg"
+            android:layout_marginTop="25dp"
             android:fontFamily="georgia"
             android:padding="10dp"
             android:text="@string/verify_email"
             android:textAllCaps="false"
-            android:textColor="@color/dim_foreground_material_light"
-            android:textSize="15sp"
+            android:textColor="@color/purple_700"
             android:textStyle="bold|italic" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnCompatHeaderUpdate"
+            style="@style/Widget.AppCompat.Button.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/general_alert_dg"
+            android:layout_marginTop="25dp"
             android:fontFamily="georgia"
             android:padding="10dp"
-            android:visibility="gone"
             android:text="@string/update_account"
             android:textAllCaps="false"
-            android:textColor="@color/green"
-            android:textStyle="bold|italic" />
+            android:textColor="@color/purple_700"
+            android:textStyle="bold|italic"
+            android:visibility="gone" />
 
     </LinearLayout>
 

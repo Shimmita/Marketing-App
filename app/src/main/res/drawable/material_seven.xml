@@ -7,8 +7,9 @@
         android:startColor="@color/abc_decor_view_status_guard_light" />
 
     <corners android:radius="20dp" />
+    <padding android:right="5dp" android:left="5dp"/>
 
     <stroke
-        android:width="2dp"
-        android:color="@color/abc_search_url_text_normal" />
+        android:width="0.1dp"
+        android:color="@color/abc_search_url_text_pressed" />
 </shape>

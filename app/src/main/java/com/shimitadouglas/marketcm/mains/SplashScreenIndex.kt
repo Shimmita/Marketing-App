@@ -30,10 +30,10 @@ class SplashScreenIndex : AppCompatActivity() {
         //code begins
         Handler().postDelayed(kotlinx.coroutines.Runnable {
 
-            val intent_main = Intent(this@SplashScreenIndex, MainActivity::class.java)
-            intent_main.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            intent_main.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent_main)
+            val intentMain = Intent(this@SplashScreenIndex, MainActivity::class.java)
+            intentMain.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intentMain.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intentMain)
             finish()
         }, 5000)
 
@@ -49,9 +49,9 @@ class SplashScreenIndex : AppCompatActivity() {
         //
 
         //ui image rotation
-        val image_rotation = findViewById<CircleImageView>(R.id.circleImageTire)
+        val imageRotation = findViewById<CircleImageView>(R.id.circleImageTire)
         //apply rotation
-        image_rotation.startAnimation(
+        imageRotation.startAnimation(
             AnimationUtils.loadAnimation(
                 this@SplashScreenIndex, R.anim.rotate
             )
