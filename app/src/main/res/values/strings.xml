@@ -64,6 +64,35 @@
     <string name="message_of_big_text_notification">message of big text notification</string>
     <string name="by_shimmita_douglas">by: shimmita douglas</string>
     <string name="big_notification_type">big notification type</string>
-    <string name="notification">Notification</string>
+    <string name="notification">Administration</string>
+    <string name="enquiry_notification">Enquiry Notification</string>
+    <string name="product_enquired">product enquired</string>
+    <string name="enquirer">Enquirer:</string>
+    <string name="place">place:</string>
+    <string name="phone">phone:0757450727</string>
+    <string name="email">email:shimmitadouglas@gmail.com</string>
+    <string name="hey_interested">hey iam interested to know more about this product.we can make things work-out concerning this product.contact via the information above.</string>
+    <string name="owner_angel_michael">Owner: Angel Michael</string>
+    <string name="date_2022_01_15">Date: 2022-01-15</string>
+    <string name="date">Date:</string>
+    <string name="promotional">Promotional</string>
+    <string name="delete">Delete</string>
+    <string name="home">home</string>
+    <string name="post">post</string>
+    <string name="notification_botom_nav">notification</string>
+    <string name="logout">logout</string>
+    <string name="my_product_title">my product title</string>
+    <string name="date_posted">date posted</string>
+    <string name="place_posted">place posted</string>
+    <string name="category_product">category product</string>
+    <string name="phone_number">phone number</string>
+    <string name="update">update</string>
+    <string name="delete_post">delete</string>
+    <string name="product_description">product description</string>
+    <string name="product_email">product email</string>
+    <string name="my_posted_products">My Posted Products</string>
+    <string name="productidstamp">productIDStamp</string>
+    <string name="update_image">update image</string>
+    <string name="file_size_description"></string>
 
 </resources>

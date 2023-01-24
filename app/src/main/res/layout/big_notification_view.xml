@@ -19,12 +19,15 @@
             android:orientation="vertical">
 
             <TextView
+                style="@style/TextAppearance.AppCompat.Widget.ActionMode.Subtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:fontFamily="monospace"
                 android:gravity="center"
-                android:text="@string/notification" />
+                android:text="@string/promotional"
+                android:textColor="#A8914C"
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -44,7 +47,8 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:text="@string/title_big_notification"
-                    android:textSize="15sp"
+                    android:textColor="@color/androidx_core_secondary_text_default_material_light"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -56,6 +60,7 @@
 
                 <TextView
                     android:id="@+id/messageBigTextNotification"
+                    style="@style/TextAppearance.Material3.BodySmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/message_of_big_text_notification"
@@ -64,16 +69,21 @@
 
                 <TextView
                     android:id="@+id/BigNotificationType"
+                    style="@style/TextAppearance.Material3.BodySmall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@string/big_notification_type" />
+                    android:text="@string/big_notification_type"
+                    android:textStyle="italic" />
 
                 <TextView
                     android:id="@+id/summaryTextBigNotification"
+                    style="@style/TextAppearance.Material3.BodySmall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/by_shimmita_douglas" />
+                    android:text="@string/by_shimmita_douglas"
+                    android:textColor="#8C7F5B"
+                    android:textStyle="italic" />
             </LinearLayout>
 
 

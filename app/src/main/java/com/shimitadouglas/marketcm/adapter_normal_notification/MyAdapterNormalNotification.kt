@@ -36,9 +36,9 @@ class MyAdapterNormalNotification(var arrayList: ArrayList<DataClassNormalNotifi
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
         holder.apply {
-            title.text = arrayList[position].keyTitle
-            message.text = arrayList[position].keyMessage
-            type.text = arrayList[position].keyType
+            title.text = arrayList[position].title
+            message.text = arrayList[position].message
+            type.text = arrayList[position].notType
 
 
         }

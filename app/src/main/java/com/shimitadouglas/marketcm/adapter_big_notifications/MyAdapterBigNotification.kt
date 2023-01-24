@@ -1,4 +1,4 @@
-package com.shimitadouglas.marketcm.adapter_normal_notification
+package com.shimitadouglas.marketcm.adapter_big_notifications
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -44,13 +44,13 @@ class MyAdapterBigNotification(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.apply {
-            title.text = arrayList[position].keyTitle
-            message.text = arrayList[position].keyMessage
-            summary.text = arrayList[position].keySummary
-            type.text = arrayList[position].keyType
+            title.text = arrayList[position].title
+            message.text = arrayList[position].message
+            summary.text = arrayList[position].summary
+            type.text = arrayList[position].notType
 
             //loading the image using the glide library
-            Glide.with(context).load(arrayList[position].keyUri).into(image)
+            Glide.with(context).load(arrayList[position].image).into(image)
             //
         }
     }

@@ -13,7 +13,8 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.shimitadouglas.marketcm.R
-import com.shimitadouglas.marketcm.modals.ModalPostProducts
+import com.shimitadouglas.marketcm.modal_sheets.ModalMyPostManager
+import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts
 
 class PostFragment : Fragment() {
     //init of the globals
@@ -58,9 +59,9 @@ class PostFragment : Fragment() {
                 )
             )
             //delay before operations
-            cardViewPostProduct.postDelayed(Runnable {
+            cardViewPostProduct.postDelayed({
 
-                //define posting functionality here
+                //fun modal sheet posting operations
                 funAlertUserHowPosting()
                 //
 
@@ -83,9 +84,9 @@ class PostFragment : Fragment() {
             //
             cardViewMyRecentPost.postDelayed(Runnable {
                 //define  myRecent operation here
-                Toast.makeText(requireActivity(), "clicked my recent post", Toast.LENGTH_SHORT)
-                    .show()
-
+                //fun show modal sheet
+                val section="views"
+                funShowModalSheetMyPostsOp(section)
                 //
             }, 450)
             //
@@ -109,9 +110,9 @@ class PostFragment : Fragment() {
             cardViewUpdatePost.postDelayed(Runnable {
 
                 //perform the update operation here
-                Toast.makeText(requireActivity(), "clicked updated posts", Toast.LENGTH_SHORT)
-                    .show()
-
+                //call fun show modal
+                val section = "update"
+                funShowModalSheetUpdateOp(section)
                 //
 
             }, 450)
@@ -133,10 +134,11 @@ class PostFragment : Fragment() {
                 )
             )
             //delay before the actual operations
-            cardViewDeletePost.postDelayed(Runnable {
+            cardViewDeletePost.postDelayed({
                 //perform the actual delete operations here
-                Toast.makeText(requireActivity(), "clicked delete post", Toast.LENGTH_SHORT).show()
-
+                //call fun to load and show modal sheet
+                val section = "delete"
+                funShowModalSheetDeleteOp(section)
                 //
             }, 450)
             //
@@ -146,6 +148,27 @@ class PostFragment : Fragment() {
         }
 
 
+        //code ends
+    }
+
+    private fun funShowModalSheetMyPostsOp(section: String) {
+        //code begins
+        val modalMyPosts = ModalMyPostManager(section)
+        modalMyPosts.show(this.childFragmentManager, "modal_my_post_manager")
+        //code ends
+    }
+
+    private fun funShowModalSheetUpdateOp(section: String) {
+        //code begins
+        val modalUpdate = ModalMyPostManager(section)
+        modalUpdate.show(this.childFragmentManager, "modal_my_post_manager")
+        //code ends
+    }
+
+    private fun funShowModalSheetDeleteOp(section: String) {
+        //code begins
+        val modalDelete = ModalMyPostManager(section)
+        modalDelete.show(this.childFragmentManager, "modal_my_post_manager")
         //code ends
     }
 

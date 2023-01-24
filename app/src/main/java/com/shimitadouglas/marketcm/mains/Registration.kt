@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Color
+import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
@@ -34,6 +35,8 @@ import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
+import java.util.*
+import kotlin.Comparator
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
@@ -375,6 +378,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun funStoreDataFireStore(
         emailData: String,
         passwordData: String,
@@ -386,6 +390,12 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         createNewUserProgressDialog: ProgressDialog
     ) {
         //code begins
+        //creating instances for finding date so that the dat of registration be obtained
+        val timeUsingCalendar = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy")
+        val formattedTime = dateFormat.format(timeUsingCalendar)
+        //
+
         //creating a firebase instance then acquiring a uniqueUID for differentiation of users Under One Collection Of Document ComradeUsers
         val fabInstanceFireStore = FirebaseAuth.getInstance()
         val currentUID = fabInstanceFireStore.currentUser?.uid
@@ -400,6 +410,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val keyUniversity = "University"
         val keyPhone = "PhoneNumber"
         val keyImageUri = "ImagePath"
+        val keyRegistrationDate="registrationDate"
         //
 
         //creating the hashmap for the data be stored in fireStore
@@ -410,7 +421,8 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             keyLastName to lasNameData,
             keyPhone to phoneData,
             keyUniversity to spinnerDataUniversity,
-            keyImageUri to uriPath.toString()
+            keyImageUri to uriPath.toString(),
+            keyRegistrationDate to formattedTime
         )
         //
 

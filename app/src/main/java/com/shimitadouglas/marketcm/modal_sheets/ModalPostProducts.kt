@@ -1,10 +1,11 @@
-package com.shimitadouglas.marketcm.modals
+package com.shimitadouglas.marketcm.modal_sheets
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
@@ -36,6 +37,7 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.R
+import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreferenceName
 import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
 import com.shimitadouglas.marketcm.utilities.ProductIDGenerator
 import de.hdodenhof.circleimageview.CircleImageView
@@ -46,6 +48,8 @@ import kotlin.random.Random
 class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelectedListener {
     companion object {
         private const val TAG = "ModalPostProducts"
+        const val CollectionPost = "Products Post"
+
     }
 
     //globals
@@ -787,16 +791,19 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
 
         //code begins
         //post image first then get the download uri
-        //path to the storage product images=(ProductImages)/(Email)/(UID)/(file)
+        //path to the storage product images=(ProductImages)/(Email)/(UID)/(combinationUIDTimerID)/(file)
         val parentChild = "ProductImages"
         val minorChildOneEmail = FirebaseAuth.getInstance().currentUser?.email
         val minorChildTwoUniQueUID = FirebaseAuth.getInstance().currentUser?.uid
+        val minorChildThreeTimer = System.currentTimeMillis().toString()
+        val combinationUIDTimerID = minorChildTwoUniQueUID + minorChildThreeTimer
         val firebaseStorage = FirebaseStorage.getInstance().reference
         if (minorChildOneEmail != null) {
             if (minorChildTwoUniQueUID != null) {
 
                 firebaseStorage.child(parentChild).child(minorChildOneEmail)
-                    .child(minorChildTwoUniQueUID).putFile(imageUriDataPost).addOnCompleteListener {
+                    .child(combinationUIDTimerID)
+                    .putFile(imageUriDataPost).addOnCompleteListener {
                         if (it.isSuccessful) {
                             //successfully uploaded to the storage now obtain the download uro
                             it.result.storage.downloadUrl.addOnCompleteListener {
@@ -812,7 +819,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                                         titleDataPost,
                                         descriptionDataPost,
                                         spinnerData,
-                                        progD,priceDataPost
+                                        progD, priceDataPost
                                     )
                                     //
                                     //
@@ -886,10 +893,9 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         priceDataPost: String
     ) {
         //code begins
-        //todo:add UserNameOwner,PhoneNumber,University,image for easier retrieval.(fetchUserDat on launch and obtain em)
         //generate a unique Product key on each item
         val productUniqueID = ProductIDGenerator.generateProductIDNow(10, true, true, true)
-        val uniqueUID=FirebaseAuth.getInstance().uid
+        val uniqueUID = FirebaseAuth.getInstance().uid
         //declaring the keys for the hashMap
         val keyImagePost = "imageProduct"
         val keyTitleItemPost = "title"
@@ -897,20 +903,41 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         val keyCategoryItemPost = "category"
         val keyProductID = "productID"
         val keyDate = "date"
-        val keyPrice="price"
-        val keyUserID="userID"
+        val keyPrice = "price"
+        val keyUserID = "userID"
 
-        //
-        val keyImageOwner="imageOwner"
-        val keyOwnerName="Owner"
-        val keyUniversity="university"
-        val keyPhoneNumber="phone"
+        //to be obtained from the shared pref
+        val keyImageOwner = "imageOwner"
+        val keyOwnerName = "Owner"
+        val keyUniversity = "university"
+        val keyPhoneNumber = "phone"
+        val keyTimerId = "timerControlID"
         //
 
-        //creating instances for finding date
+        //obtain user details saved in the fStore Cloud
+        val sharedPreferences =
+            requireActivity().getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
+
+        var fNameData = sharedPreferences.getString("firstname", "")
+        var lNameData = sharedPreferences.getString("lastname", "")
+        var imageData = sharedPreferences.getString("image", "")
+        var phoneData = sharedPreferences.getString("phone", "")
+        var uniData = sharedPreferences.getString("university", "")
+
+
+        //creating instances for finding date of post
         val timeUsingCalendar = Calendar.getInstance().time
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy")
         val formattedTime = dateFormat.format(timeUsingCalendar)
+        //
+        //obtaining the timer for uniqueness of differentiating posts and also be delete the post
+        //helps controlling the post i.e through update dof the post and delete of the post
+        val timerID = System.currentTimeMillis().toString()
+        //
+        //path=(ProductPost)/(UID+timer)
+        val uniqueUIDDocument = FirebaseAuth.getInstance().currentUser?.uid
+        //document content path
+        val combinationUIDTimer = uniqueUIDDocument + timerID
         //
 
         //create hashMap to store data fStore
@@ -922,49 +949,33 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             keyImagePost to uriStringItemPosted,
             keyDate to formattedTime.toString(),
             keyPrice to priceDataPost,
-            keyUserID to uniqueUID
+            keyUserID to uniqueUID,
+            keyImageOwner to imageData,
+            keyOwnerName to "$fNameData $lNameData",
+            keyUniversity to uniData,
+            keyPhoneNumber to phoneData,
+            keyTimerId to combinationUIDTimer
+
 
         )
 
         //fStore Process
-        //path=(ProductPost)/(UID)
-        val collectionPost = "Product Post"
-        val uniqueUIDDocument = FirebaseAuth.getInstance().currentUser?.uid
-        //
-        val fStore = FirebaseFirestore.getInstance().collection(collectionPost)
+
+        val fStore = FirebaseFirestore.getInstance().collection(CollectionPost)
         //
         if (uniqueUIDDocument != null) {
-            fStore.document(uniqueUIDDocument).set(mapItemPostDataFStore).addOnCompleteListener {
+            fStore.document(combinationUIDTimer).set(mapItemPostDataFStore).addOnCompleteListener {
                 //successfully Uploaded data
                 if (it.isSuccessful) {
                     //dismiss the pg and update user of congrats item posted
-                    progD.apply {
-                        //call fun congrats user of successful upload
-                        val alertPostSuccessful = MaterialAlertDialogBuilder(requireActivity())
-                        alertPostSuccessful.setTitle("Post Successful")
-                        alertPostSuccessful.setIcon(R.drawable.ic_nike_done)
-                        alertPostSuccessful.setCancelable(false)
-                        alertPostSuccessful.background = resources.getDrawable(
-                            R.drawable.material_six, requireActivity().theme
-                        )
-                        alertPostSuccessful.setMessage(
-                            "product posted successfully to the online market interested customers will contact you about the product using your registered phone number via CALL,SMS or EMAIL\n" +
-                                    "\n(PRODUCT ID=$productUniqueID)"
-                        )
-                        alertPostSuccessful.setPositiveButton("thanks") { dialog, _ ->
-                            //dismiss the dialog and the modal
-                            dialog.dismiss()
-                            //
-                        }
-                        alertPostSuccessful.create()
-                        alertPostSuccessful.show()
-                        //dismiss pg
-                        dismiss()
-                        //
-                    }
-
+                    //now post to the user repo for  personal management
+                    funPostToPersonalUserPosts(
+                        progD,
+                        mapItemPostDataFStore,
+                        combinationUIDTimer,
+                        productUniqueID
+                    )
                     //
-
                 } else if (!it.isSuccessful) {
                     //alert user failure
                     val alertFailurePost = MaterialAlertDialogBuilder(requireActivity())
@@ -991,6 +1002,74 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         }
         //
         //code end
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun funPostToPersonalUserPosts(
+        progD: ProgressDialog,
+        mapItemPostDataFStore: HashMap<String, String?>,
+        combinationUIDTimer: String,
+        productUniqueID: String
+    ) {
+        //code begins
+        //userPost path=>(uniqueUID/combinationUIDTimer/data)
+        val userUIDCollection = FirebaseAuth.getInstance().uid
+        //
+
+        //
+        val store = FirebaseFirestore.getInstance()
+        //begin posting operations
+        if (userUIDCollection != null) {
+            store.collection(userUIDCollection).document(combinationUIDTimer)
+                .set(mapItemPostDataFStore)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        //process of posting the data is completely successfully
+
+                        progD.apply {
+                            //call fun congrats user of successful upload
+                            val alertPostSuccessful = MaterialAlertDialogBuilder(requireActivity())
+                            alertPostSuccessful.setTitle("Post Successful")
+                            alertPostSuccessful.setIcon(R.drawable.ic_nike_done)
+                            alertPostSuccessful.setCancelable(false)
+                            alertPostSuccessful.background = resources.getDrawable(
+                                R.drawable.material_six, requireActivity().theme
+                            )
+                            alertPostSuccessful.setMessage(
+                                "product posted successfully to the online market interested customers will contact you about the product using your registered phone number via CALL,SMS or EMAIL\n" +
+                                        "\n(PRODUCT ID=$productUniqueID)"
+                            )
+                            alertPostSuccessful.setPositiveButton("thanks") { dialog, _ ->
+                                //dismiss the dialog and the modal
+                                dialog.dismiss()
+                                //
+                            }
+                            alertPostSuccessful.create()
+                            alertPostSuccessful.show()
+                            //dismiss pg
+                            dismiss()
+                            //
+                        }
+
+                        //
+
+                    } else if (!it.isSuccessful) {
+                        //error of posting to the current user posts collection
+                        Toast.makeText(
+                            requireActivity(),
+                            "known error has occurred",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                        //
+
+                        //dismiss the progD
+                        progD.dismiss()
+                        //
+                    }
+                }
+        }
+        //code ends
     }
 
     private fun funAlertFailureDialog(task: Task<UploadTask.TaskSnapshot>) {

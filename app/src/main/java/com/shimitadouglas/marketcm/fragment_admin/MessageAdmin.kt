@@ -1,5 +1,6 @@
 package com.shimitadouglas.marketcm.fragment_admin
 
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.app.ProgressDialog
 import android.content.Intent
@@ -12,14 +13,25 @@ import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.shimitadouglas.marketcm.R
+import com.shimitadouglas.marketcm.adapter_big_notifications.MyAdapterBigNotification
+import com.shimitadouglas.marketcm.adapter_normal_notification.MyAdapterNormalNotification
+import com.shimitadouglas.marketcm.modal_data_notifications.DataClassBigNotifications
+import com.shimitadouglas.marketcm.modal_data_notifications.DataClassNormalNotification
 
 class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
+    companion object {
+        val BigText: String = "BigText"
+        val BigPicture: String = "BigPicture"
+        val Normal: String = "Normal"
+    }
+
     var uriImage: Uri? = null
     private var imageView: ImageView? = null
     var spinnerMessageType: Spinner? = null
@@ -55,9 +67,9 @@ class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
         editTextMessageTitle = viewMessages.findViewById(R.id.edtTitleMessage)
         editTextSummaryText = viewMessages.findViewById(R.id.edtSummaryText)
         recyclerViewBigNotifications =
-            viewMessages.findViewById(R.id.rvBigNotifications) as RecyclerView
-        recyclerViewNormalNotification =
             viewMessages.findViewById(R.id.rvNormalNotification) as RecyclerView
+        recyclerViewNormalNotification =
+            viewMessages.findViewById(R.id.rvBigNotifications) as RecyclerView
         val buttonSendNotification =
             viewMessages.findViewById(R.id.btnSendNotification) as AppCompatButton
         editTextMessage = viewMessages.findViewById(R.id.edtMessage) as EditText
@@ -109,8 +121,113 @@ class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
             funAlertAdminWhatNotification()
             //
         }
+
+        //load data onto the rv normal
+        funLoadNotificationNormal()
+        //
+        //load not onto the rv big
+        funLoadNotificationBig()
         //
         return viewMessages
+        //code ends
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun funLoadNotificationBig() {
+        //code begins
+        //creating an arrayList  to hold big notifications
+        var arrayListBigNotification = arrayListOf<DataClassBigNotifications>()
+        arrayListBigNotification.clear()
+        val storeBigPicture = FirebaseFirestore.getInstance().collection(BigPicture)
+        val storeBigText = FirebaseFirestore.getInstance()
+
+        //load big text if it contains some data in it
+        storeBigText.collection(BigText).get().addOnSuccessListener {
+            if (!it.isEmpty) {
+                //there is big text notification sent by an admin
+                for (data in it.documents) {
+                    val classBigText: DataClassBigNotifications? =
+                        data.toObject(DataClassBigNotifications::class.java)
+                    if (classBigText != null) {
+                        arrayListBigNotification.add(classBigText)
+                    }
+                }
+                //perform rv operations
+                val adapterBig =
+                    MyAdapterBigNotification(arrayListBigNotification, requireActivity())
+                recyclerViewBigNotifications?.apply {
+                    layoutManager = LinearLayoutManager(requireActivity())
+                    adapter = adapterBig
+                    adapterBig.notifyDataSetChanged()
+                }
+                //
+
+            }
+        }
+        //
+
+        //load bigPic also if it contains some data in it
+        storeBigPicture.get().addOnSuccessListener {
+            if (!it.isEmpty) {
+                //big picture contains data
+                for (data in it.documents) {
+                    val classBigPic: DataClassBigNotifications? = data.toObject(
+                        DataClassBigNotifications::class.java
+                    )
+                    if (classBigPic != null) {
+                        arrayListBigNotification.add(classBigPic)
+                    }
+                }
+                //perform rv operations
+                val adapterBig =
+                    MyAdapterBigNotification(arrayListBigNotification, requireActivity())
+                recyclerViewBigNotifications?.apply {
+                    layoutManager = LinearLayoutManager(requireActivity())
+                    adapter = adapterBig
+                    adapterBig.notifyDataSetChanged()
+                }
+                //
+                //
+            }
+        }
+        //
+
+
+        //code ends
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun funLoadNotificationNormal() {
+        //code begins
+        //code begins
+        //creating arrayList for for normal notifications
+        val arraylistNormalNotification = arrayListOf<DataClassNormalNotification>()
+        arraylistNormalNotification.clear()
+        //
+        val storeNormal =
+            FirebaseFirestore.getInstance().collection(Normal)
+
+        storeNormal.get().addOnSuccessListener {
+            if (!it.isEmpty) {
+                //normal notifications present posted by admin
+                for (data in it.documents) {
+                    val classNormal: DataClassNormalNotification? =
+                        data.toObject(DataClassNormalNotification::class.java)
+                    if (classNormal != null) {
+                        arraylistNormalNotification.add(classNormal)
+                    }
+                }
+                //applying data on the rv Normal
+                recyclerViewNormalNotification?.apply {
+                    val adapterNormal = MyAdapterNormalNotification(arraylistNormalNotification)
+                    layoutManager = LinearLayoutManager(requireActivity())
+                    adapter = adapterNormal
+                    adapterNormal.notifyDataSetChanged()
+                }
+                //
+
+            }
+        }
         //code ends
     }
 
@@ -122,7 +239,7 @@ class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
             .setCancelable(false)
             .setPositiveButton("BPic") { dialog, _ ->
                 //
-                val notType = "BigPicture"
+                val notType = "information"
                 funPostBigPictureNotification(notType)
                 //
 
@@ -133,7 +250,7 @@ class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
             .setNeutralButton("BText") { dialog, _ ->
 
                 //
-                val notType = "BigPicture"
+                val notType = "information"
                 funPostBigTextNotification(notType)
                 //
                 //dismiss the dialog
@@ -142,7 +259,7 @@ class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
             }
             .setNegativeButton("Normal") { dialog, _ ->
                 //
-                val notType = "BigPicture"
+                val notType = "information"
                 funPostNormalNotification(notType)
                 //
                 //dismiss the dialog
@@ -188,11 +305,11 @@ class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
         pg.show()
         //
         val uniqueUID = FirebaseAuth.getInstance().uid
-        //post to the fireSore to make the process xof Obtaining the Image from the FireFireStore
+        //post to the fStorage to make the process xof Obtaining the Image from the FireFireStore
         val firebaseStorage = FirebaseStorage.getInstance().reference
         if (uniqueUID != null) {
             if (uriImage != null) {
-                firebaseStorage.child("BigPicture").child(uniqueUID).putFile(uriImage)
+                firebaseStorage.child(BigPicture).child(uniqueUID).putFile(uriImage)
                     .addOnCompleteListener {
                         if (it.isSuccessful) {
                             //update the pg
@@ -267,7 +384,7 @@ class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
         )
         //
         //begin posting to the google backend
-        val firebaseFirestore = FirebaseFirestore.getInstance().collection("BigPicture")
+        val firebaseFirestore = FirebaseFirestore.getInstance().collection(BigPicture)
         if (uniqueUID != null) {
             firebaseFirestore.document(uniqueUID).set(hashMapData).addOnCompleteListener {
 
@@ -336,7 +453,7 @@ class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
 
         //post to the backend
         uniqueUID?.let {
-            FirebaseFirestore.getInstance().collection("NotificationNorm").document(
+            FirebaseFirestore.getInstance().collection(Normal).document(
                 it
             )
         }?.set(hashMapData)?.addOnCompleteListener {
@@ -409,55 +526,57 @@ class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
         //post the icon first then ease getting the download uri
         val firebaseStorage =
             uriImage?.let {
-                FirebaseStorage.getInstance().reference.child("BigTextNotification").putFile(
-                    it
-                ).addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        //validate the pg
-                        pg.setMessage("completing")
-                        //
-                        //obtain the download uri
-                        it.result.storage.downloadUrl.addOnSuccessListener {
-                            //validate the pg with validating
-                            pg.setMessage("updating...")
+                if (uniqueUID != null) {
+                    FirebaseStorage.getInstance().reference.child(BigText).child(uniqueUID).putFile(
+                        it
+                    ).addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            //validate the pg
+                            pg.setMessage("completing")
                             //
-                            val stringUri = it.toString()
-                            //call function and pass the image uri to it the post to the fireStore
-                            funUploadToFireStoreBigText(
-                                stringUri,
-                                title,
-                                message,
-                                summary,
-                                notType,
-                                pg
-                            )
-                            //
+                            //obtain the download uri
+                            it.result.storage.downloadUrl.addOnSuccessListener {
+                                //validate the pg with validating
+                                pg.setMessage("updating...")
+                                //
+                                val stringUri = it.toString()
+                                //call function and pass the image uri to it the post to the fireStore
+                                funUploadToFireStoreBigText(
+                                    stringUri,
+                                    title,
+                                    message,
+                                    summary,
+                                    notType,
+                                    pg
+                                )
+                                //
 
-                        }
-                            .addOnFailureListener {
-                                //dismiss the pg
-                                pg.dismiss()
-                                //
-                                //show the exception
-                                Toast.makeText(
-                                    requireActivity(),
-                                    "error\n${it.message}",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                                //
                             }
-                        //
-                    } else if (!it.isSuccessful) {
-                        //dismiss the pg
-                        pg.dismiss()
-                        //
-                        //file storage error
-                        Toast.makeText(
-                            requireActivity(),
-                            "error\n${it.exception?.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        //
+                                .addOnFailureListener {
+                                    //dismiss the pg
+                                    pg.dismiss()
+                                    //
+                                    //show the exception
+                                    Toast.makeText(
+                                        requireActivity(),
+                                        "error\n${it.message}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    //
+                                }
+                            //
+                        } else if (!it.isSuccessful) {
+                            //dismiss the pg
+                            pg.dismiss()
+                            //
+                            //file storage error
+                            Toast.makeText(
+                                requireActivity(),
+                                "error\n${it.exception?.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            //
+                        }
                     }
                 }
             }
@@ -491,7 +610,7 @@ class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
             keyUri to stringUri
         )
         //fireStore Data update
-        val firebaseFireStore = FirebaseFirestore.getInstance().collection("NotificationBigText")
+        val firebaseFireStore = FirebaseFirestore.getInstance().collection(BigText)
         //
         if (uniqueUID != null) {
             firebaseFireStore.document(uniqueUID).set(hashMap).addOnCompleteListener {

@@ -1,4 +1,4 @@
-package com.shimitadouglas.marketcm.modals
+package com.shimitadouglas.marketcm.modal_sheets
 
 import android.os.Bundle
 import android.text.TextUtils

@@ -5,11 +5,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.shimitadouglas.marketcm.R
+import com.shimitadouglas.marketcm.adapter_big_notifications.MyAdapterBigNotification
+import com.shimitadouglas.marketcm.adapter_enquiries_notification.MyAdapterEnquiriesNotification
 import com.shimitadouglas.marketcm.adapter_normal_notification.MyAdapterNormalNotification
+import com.shimitadouglas.marketcm.fragment_admin.MessageAdmin.Companion.BigPicture
+import com.shimitadouglas.marketcm.fragment_admin.MessageAdmin.Companion.BigText
+import com.shimitadouglas.marketcm.fragment_admin.MessageAdmin.Companion.Normal
+import com.shimitadouglas.marketcm.modal_data_notifications.DataClassBigNotifications
+import com.shimitadouglas.marketcm.modal_data_notifications.DataClassEnquiryNotifications
 import com.shimitadouglas.marketcm.modal_data_notifications.DataClassNormalNotification
 
 class NotificationFragment : Fragment() {
@@ -41,40 +51,146 @@ class NotificationFragment : Fragment() {
         //loads notification on norm recycler view
         funLoadNotificationOnNormRv()
         //
+        //loads enquiry notifications on the rvEnquiries
+        funLoadEnquiriesOnEnqRv()
         //
         return viewNotification
         //code ends
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun funLoadNotificationOnNormRv() {
+    private fun funLoadEnquiriesOnEnqRv() {
         //code begins
-        val arraylistNormalNotification = arrayListOf<DataClassNormalNotification>()
-        var max = 1
-        while (max <= 100) {
-            arraylistNormalNotification.add(
-                DataClassNormalNotification(
-                    "Account Closure",
-                    "be notified to verify your account within two days." +
-                            "accounts that have not undergone verification process through email verification are deemed to be ingenuity.",
-                    "information message"
-                )
-            )
-            max++
-        }
+        //val uniqueUID
+        val uniqueUID = FirebaseAuth.getInstance().uid
+        //
+        val storeEnquiries = FirebaseFirestore.getInstance()
+        if (uniqueUID != null) {
+            storeEnquiries.collection(uniqueUID).get().addOnSuccessListener {
+                if (!it.isEmpty) {
+                    //creating an arraylist of enquiry class
+                    val arraylistEnquiries = arrayListOf<DataClassEnquiryNotifications>()
+                    arraylistEnquiries.clear()
+                    //
+                    //data present(enquiries)
+                    for (enquiry in it.documents) {
+                        val enquiriesClass: DataClassEnquiryNotifications? =
+                            enquiry.toObject(DataClassEnquiryNotifications::class.java)
+                        if (enquiriesClass != null) {
+                            arraylistEnquiries.add(enquiriesClass)
+                        }
+                    }
 
-        val adapterNorm = MyAdapterNormalNotification(arraylistNormalNotification)
-        recyclerViewNorm.apply {
-            adapter = adapterNorm
-            layoutManager = LinearLayoutManager(requireActivity())
-            adapterNorm.notifyDataSetChanged()
+                    //adapter
+                    val adapterEnquiries =
+                        MyAdapterEnquiriesNotification(requireActivity(), arraylistEnquiries)
+                    //setting adapter and layout on rvEnquiries
+                    recyclerViewEnquiries.apply {
+                        layoutManager = LinearLayoutManager(requireActivity())
+                        adapter = adapterEnquiries
+                        adapterEnquiries.notifyDataSetChanged()
+                    }
+                    //
+                } else if (it.isEmpty) {
+                    //no data (enquiries)
+                    return@addOnSuccessListener
+                }
+            }
         }
         //code ends
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    private fun funLoadNotificationOnNormRv() {
+        //code begins
+        //creating arrayList for for normal notifications
+        val arraylistNormalNotification = arrayListOf<DataClassNormalNotification>()
+        arraylistNormalNotification.clear()
+        //
+        val storeNormal =
+            FirebaseFirestore.getInstance().collection(Normal).get().addOnSuccessListener {
+                if (!it.isEmpty) {
+                    //normal notifications present posted by admin
+                    for (data in it.documents) {
+                        val classNormal: DataClassNormalNotification? =
+                            data.toObject(DataClassNormalNotification::class.java)
+                        if (classNormal != null) {
+                            arraylistNormalNotification.add(classNormal)
+                        }
+                    }
+                    //applying data on the rv Normal
+                    recyclerViewNorm.apply {
+                        val adapterNormal = MyAdapterNormalNotification(arraylistNormalNotification)
+                        layoutManager = LinearLayoutManager(requireActivity())
+                        adapter = adapterNormal
+                        adapterNormal.notifyDataSetChanged()
+                    }
+                    //
+
+                }
+            }
+        //code ends
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     private fun funLoadNotificationsOnBigRv() {
         //code begins
-        //code begins
+        //creating an arrayList  to hold big notifications
+        var arrayListBigNotification = arrayListOf<DataClassBigNotifications>()
+        arrayListBigNotification.clear()
+        val storeBigPicture = FirebaseFirestore.getInstance().collection(BigPicture)
+        val storeBigText = FirebaseFirestore.getInstance()
+
+        //load big text if it contains some data in it
+        storeBigText.collection(BigText).get().addOnSuccessListener {
+            if (!it.isEmpty) {
+                //there is big text notification sent by an admin
+                for (data in it.documents) {
+                    val classBigText: DataClassBigNotifications? =
+                        data.toObject(DataClassBigNotifications::class.java)
+                    if (classBigText != null) {
+                        arrayListBigNotification.add(classBigText)
+                    }
+                }
+                //perform rv operations
+                val adapterBig=MyAdapterBigNotification(arrayListBigNotification,requireActivity())
+                recyclerViewBig.apply {
+                    layoutManager=LinearLayoutManager(requireActivity())
+                    adapter=adapterBig
+                    adapterBig.notifyDataSetChanged()
+                }
+                //
+
+            }
+        }
+        //
+
+        //load bigPic also if it contains some data in it
+        storeBigPicture.get().addOnSuccessListener {
+            if (!it.isEmpty)
+            {
+                //big picture contains data
+                for (data in it.documents)
+                {
+                    val classBigPic: DataClassBigNotifications? =data.toObject(DataClassBigNotifications::class.java)
+                    if (classBigPic != null) {
+                        arrayListBigNotification.add(classBigPic)
+                    }
+                }
+                //perform rv operations
+                val adapterBig=MyAdapterBigNotification(arrayListBigNotification,requireActivity())
+                recyclerViewBig.apply {
+                    layoutManager=LinearLayoutManager(requireActivity())
+                    adapter=adapterBig
+                    adapterBig.notifyDataSetChanged()
+                }
+                //
+                //
+            }
+        }
+        //
+
+        //code ends
 
     }
 

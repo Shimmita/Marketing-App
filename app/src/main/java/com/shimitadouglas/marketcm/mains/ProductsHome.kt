@@ -3,6 +3,7 @@ package com.shimitadouglas.marketcm.mains
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
@@ -12,6 +13,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
 import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
@@ -29,6 +31,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
@@ -47,7 +50,9 @@ import com.shimitadouglas.marketcm.fragmentProducts.HomeFragment
 import com.shimitadouglas.marketcm.fragmentProducts.NotificationFragment
 import com.shimitadouglas.marketcm.fragmentProducts.PostFragment
 import com.shimitadouglas.marketcm.mains.Registration.Companion.ComRadeUser
+import com.shimitadouglas.marketcm.modal_data_profile.DataProfile
 import de.hdodenhof.circleimageview.CircleImageView
+import java.util.*
 import kotlin.concurrent.thread
 import kotlin.random.Random
 import kotlin.system.exitProcess
@@ -57,7 +62,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         private const val TAG = "ProductsHome"
 
         //shared prefs for storing the states of some data to avoid constants reloads
-        var sharedPreferenceName: String = "MarketCmSharedPreference"
+         var sharedPreferenceName: String = "MarketCmSharedPreference"
         lateinit var sharedPreferenceMarketCM: SharedPreferences;
         //
     }
@@ -73,7 +78,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var drawerLayout: DrawerLayout
     lateinit var toolbar: Toolbar
     lateinit var navView: NavigationView
-    lateinit var botomNav: BottomNavigationView
+    lateinit var bottomNav: BottomNavigationView
     lateinit var viewHeader: View
 
     //
@@ -96,10 +101,14 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         funFullScreen()
         //functionInitGlobals and drawers
         funInitGlobals()
-        //functionInit header
-        funInitNavHeaderContent()
+        //fun load the data from the fStore
+        funFetchProfileDataBackend()
+        //
         //call function to handle navView Clicking and in it we link the header of it
         funHandleNavViewProducts()
+        //
+        //functionInit header
+        funInitNavHeaderContent()
         //
         //call function to handle bottom Nav Click of items
         funHandleBottomNavProducts()
@@ -113,6 +122,76 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         fragmentDefaultAdd()
         //
 
+    }
+
+    private fun funFetchProfileDataBackend() {
+        //code begins
+        val uniqueUID = FirebaseAuth.getInstance().uid
+        val backendStoreCloud = FirebaseFirestore.getInstance()
+        //beginning the process of obtaining the data from the cloud path(comrade user/uniqueID)
+        if (uniqueUID != null) {
+            backendStoreCloud.collection(ComRadeUser).document(uniqueUID).get()
+                .addOnSuccessListener {
+                    //check  if the snapshot exits
+                    if (it.exists()) {
+                        Log.d(TAG, "funFetchProfileDataBackend: \n${it.data}")
+                        //convert the data into class readable
+                        val classDataProfile: DataProfile? = it.toObject(DataProfile::class.java)
+                        if (classDataProfile != null) {
+                            var email = classDataProfile.Email
+                            var fName = classDataProfile.FirstName
+                            var lName = classDataProfile.LastName
+                            var phone = classDataProfile.PhoneNumber
+                            var university = classDataProfile.University
+                            var image = classDataProfile.ImagePath
+                            var password = classDataProfile.Password
+                            var registrationDate = classDataProfile.registrationDate
+
+                            //saving the data into the shared prefs
+                            val sharedPreferences =
+                                getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
+                            sharedPreferences.edit().apply {
+                                putString("email", email)
+                                putString("firstname", fName)
+                                putString("lastname", lName)
+                                putString("phone", phone)
+                                putString("university", university)
+                                putString("image", image)
+                                putString("password", password)
+                                putString("registrationDate", registrationDate)
+                            }.apply()
+                            //
+
+                            Log.d(
+                                TAG,
+                                "funFetchProfileDataBackend: \nname:$fName $lName\nemail:$email\nphone:$phone\nuniversity:$university\nimage:$image\npasscode:$password\nregistrationDate:$registrationDate\n\n"
+                            )
+                        }
+                        //
+
+                    } else if (!it.exists()) {
+                        //toast to the user of an error occurred
+                        Toast.makeText(
+                            this@ProductsHome,
+                            "Unknown error occurred while retrieving data!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        //
+                    }
+                }
+                .addOnFailureListener {
+                    //data fetch was a failure
+                    AlertDialog.Builder(this@ProductsHome)
+                        .setTitle("Data Fetching Failed")
+                        .setIcon(R.drawable.ic_warning)
+                        .setCancelable(false)
+                        .setMessage("application encountered an error while loading the data from the server.\nReason:\n(${it.message.toString()})")
+                    //
+                    return@addOnFailureListener
+                }
+        }
+        //
+        //code ends
     }
 
 
@@ -137,8 +216,8 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             )
         )
         layoutAnimationController.order = LayoutAnimationController.ORDER_REVERSE
-        botomNav.layoutAnimation = layoutAnimationController
-        botomNav.startLayoutAnimation()
+        bottomNav.layoutAnimation = layoutAnimationController
+        bottomNav.startLayoutAnimation()
         //
         //code ends
 
@@ -146,7 +225,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun funHandleBottomNavProducts() {
         //code begins
-        botomNav.setOnNavigationItemSelectedListener {
+        bottomNav.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> {
                     //call home fragment
@@ -177,7 +256,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 R.id.logout -> {
                     //snack user will be logged out
-                    Snackbar.make(botomNav, "you are going to log out", Snackbar.LENGTH_LONG)
+                    Snackbar.make(bottomNav, "you are going to log out", Snackbar.LENGTH_LONG)
                         .setBackgroundTint(
                             resources.getColor(
                                 R.color.cardview_dark_background,
@@ -1108,6 +1187,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
+    @SuppressLint("SetTextI18n")
     private fun funInitNavHeaderContent() {
         //code begins
         //inflating the header on the navView
@@ -1129,9 +1209,37 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         headerVerificationEmail.isSelected = true
         //
 
-        //code ends
+        //load the data onto the header
 
+        //init shared preference from where we go obtain the data stored
+        val sharedPreferences = getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
+        sharedPreferences.apply {
+            var image = getString("image", "")
+            var firstName = getString("firstname", "")
+            var lastname = getString("lastname", "")
+            var phone = getString("phone", "")
+            var university = getString("university", "")
+            var email = getString("email", "")
+
+
+            //loading the image to the header using glide
+            Glide.with(this@ProductsHome).apply {
+                load(image).into(headerImage)
+            }
+            //loading data on the header textViews
+            headerEmail.text = email
+            headerTitleUsername.text = "$firstName $lastname"
+            headerPhoneNumber.text = phone
+            headerUniversity.text = university
+            //
+
+        }
+
+
+        //
+        //code ends
     }
+
 
     private fun funHandleNavViewProducts() {
         //code begins
@@ -1146,7 +1254,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toolbar = findViewById(R.id.toolbarProducts)
         drawerLayout = findViewById(R.id.drawerProducts)
         navView = findViewById(R.id.navProducts)
-        botomNav = findViewById(R.id.bottomNavProducts)
+        bottomNav = findViewById(R.id.bottomNavProducts)
 
         drawerToggle = ActionBarDrawerToggle(
             this@ProductsHome,
@@ -1335,7 +1443,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //code begins
                 //show snackBar you did not pick an image from the gallery
                 Snackbar.make(
-                    botomNav,
+                    bottomNav,
                     "yo did not pick an image from gallery!",
                     Snackbar.LENGTH_LONG
                 ).setTextColor(Color.parseColor("#EEBD09")).show()

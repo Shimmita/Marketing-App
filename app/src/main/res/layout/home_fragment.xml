@@ -11,7 +11,7 @@
         android:id="@+id/appbarHome"
         style="@style/Theme.AppCompat.DayNight.DarkActionBar"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="300dp"
         android:background="@drawable/material_one">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout

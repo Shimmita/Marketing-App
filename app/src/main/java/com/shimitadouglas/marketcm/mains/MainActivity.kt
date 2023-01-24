@@ -17,7 +17,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.shimitadouglas.marketcm.R
-import com.shimitadouglas.marketcm.modals.ModalRecoverPassword
+import com.shimitadouglas.marketcm.modal_sheets.ModalRecoverPassword
 import es.dmoral.toasty.Toasty
 
 class MainActivity : AppCompatActivity() {
@@ -329,5 +329,4 @@ class MainActivity : AppCompatActivity() {
         )
         supportActionBar?.hide()
     }
-
 }

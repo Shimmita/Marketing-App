@@ -3,10 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardAdapterProducts"
     android:layout_width="match_parent"
-    android:layout_height="392dp"
+    android:layout_height="wrap_content"
     android:layout_margin="5dp"
+    app:contentPadding="10dp"
     app:cardCornerRadius="20dp"
-    app:cardElevation="8dp">
+    app:cardBackgroundColor="#FBFBFB"
+    app:cardElevation="5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintMainDataProducts"
@@ -18,6 +20,7 @@
             android:id="@+id/imgProduct"
             android:layout_width="0dp"
             android:layout_height="180dp"
+            android:elevation="5dp"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -29,7 +32,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:fontFamily="georgia"
             android:text="@string/title"
             android:textColor="@color/accent_material_light"
             android:textSize="18sp"
@@ -49,7 +51,8 @@
             android:fontFamily="georgia"
             android:text="@string/details"
             android:textAllCaps="false"
-            android:textStyle="bold"
+            android:textStyle="italic"
+            android:textColor="#605637"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTitleProduct" />
@@ -62,8 +65,9 @@
             android:layout_marginTop="5dp"
             android:fontFamily="georgia"
             android:text="@string/category_laptops"
+            android:textColor="#605637"
             android:textAllCaps="false"
-            android:textStyle="bold"
+            android:textStyle="italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvDescriptionProduct"
@@ -73,29 +77,16 @@
             android:id="@+id/tvProductID"
             style="@style/TextAppearance.Material3.BodySmall"
             android:layout_width="0dp"
+            android:textColor="#605637"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:fontFamily="georgia"
             android:text="@string/productID"
             android:textAllCaps="false"
-            android:textStyle="bold"
+            android:textStyle="italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvCategoryProduct" />
-
-
-        <TextView
-            android:id="@+id/tvVicinityProduct"
-            style="@style/TextAppearance.Material3.BodySmall"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:fontFamily="georgia"
-            android:text="@string/vicinity"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvProductID" />
 
         <TextView
             android:id="@+id/tvDate"
@@ -104,11 +95,27 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:fontFamily="georgia"
-            android:text="Date:  2022-01-15"
-            android:textStyle="bold"
+            android:text="@string/date_2022_01_15"
+            android:textColor="#605637"
+            android:textStyle="italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvVicinityProduct" />
+            app:layout_constraintTop_toBottomOf="@+id/tvProductID" />
+
+        <TextView
+            android:id="@+id/tvVicinityProduct"
+            style="@style/TextAppearance.Material3.BodySmall"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="georgia"
+            android:textColor="@color/abc_search_url_text_normal"
+            android:text="@string/vicinity"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDate" />
+
 
         <TextView
             android:id="@+id/tvOwnerProduct"
@@ -117,12 +124,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:fontFamily="georgia"
-            android:text="Owner: Angel Michael"
+            android:text="@string/owner_angel_michael"
             android:textColor="@color/abc_search_url_text_normal"
-            android:textStyle="bold"
+            android:textStyle="italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDate" />
+            app:layout_constraintTop_toBottomOf="@+id/tvVicinityProduct" />
 
 
         <Button
@@ -132,16 +139,17 @@
             android:layout_height="wrap_content"
             android:text="@string/enquire"
             android:textAllCaps="false"
-            android:textStyle="italic|bold"
+            android:textStyle="italic"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvOwnerProduct" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/circleProductOwnerImage"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:scaleType="centerCrop"
             android:src="@drawable/dillan"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvVicinityProduct" />
 

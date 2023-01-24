@@ -24,16 +24,17 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.firestore.FirebaseFirestore
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.adapter_products_posted.MyAdapterProducts
 import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreferenceName
 import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
+import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
 import com.shimitadouglas.marketcm.notifications.BigPictureNotification
 import es.dmoral.toasty.Toasty
 import java.util.*
 
 class HomeFragment : Fragment() {
-
     //string for holding selected uni for sorting products
     private var selected: String = ""
     //
@@ -164,7 +165,7 @@ class HomeFragment : Fragment() {
         //init recyclerview ina fun on a separate thread
         val thread = Thread {
             Handler(Looper.getMainLooper()).post {
-                funRecyclerOperations()
+                funRecyclerOperationsAndPostDataLoading()
             }
         }
         thread.start()
@@ -315,50 +316,59 @@ class HomeFragment : Fragment() {
 
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun funRecyclerOperations() {
+    private fun funRecyclerOperationsAndPostDataLoading() {
         //code begins
-        val imageTempHolderOwner = R.drawable.dillan
-        //
-        //init arraylistProducts
-        arrayListProducts = arrayListOf<DataClassProductsData>()
-        //add using for loop for code easy than manual
-        var i = 0
-        while (i <= 100) {
-            arrayListProducts.add(
-                DataClassProductsData(
-                    R.drawable.phones,
-                    imageTempHolderOwner,
-                    "Oppo Reno 8",
-                    "Michael Angel",
-                    "6Gb RAM,128GB internal,Working Perfect",
-                    "Laptop RAM",
-                    "67FRIDGES",
-                    "Laikipia University",
-                    "2023-01-15"
-                )
-            )
-            i++
+        //fetch the data from the cloud on the api of the post
+        val postsApiStore = FirebaseFirestore.getInstance()
+        postsApiStore.collection(CollectionPost).get().addOnSuccessListener {
+            if (!it.isEmpty) {
+                //there is data present
+                //init products arrayList main
+                arrayListProducts = arrayListOf<DataClassProductsData>()
+                //
+                for (post in it.documents) {
+                    val dataPosts: DataClassProductsData? =
+                        post.toObject(DataClassProductsData::class.java)
+                    if (dataPosts != null) {
+                        arrayListProducts.add(dataPosts)
+                    }
+                }
+
+                //placing the changes to the recycler view with help of tempArraylist that will ease flexibility in times of searching
+                //init the tempArrayList
+                tempArrayList = arrayListOf<DataClassProductsData>()
+                //
+
+                //add all the data of arrayListProducts into tempArrayList replicate it into the tempArrayList
+                tempArrayList.addAll(arrayListProducts)
+                //
+
+                //init adapter(MyAdapter) use/pass tempArrayList for flexibility usage with searchView Operations
+                adapterRecycler = MyAdapterProducts(tempArrayList, requireActivity())
+                //
+                //setting the adapter to the recycler
+                recyclerViewProducts.adapter = adapterRecycler
+                adapterRecycler.notifyDataSetChanged()
+                //setting linearLayoutManager to the recycler
+                recyclerViewProducts.layoutManager = LinearLayoutManager(requireActivity())
+                //
+
+
+            } else if (it.isEmpty) {
+                //no data is present
+                return@addOnSuccessListener
+                //
+            }
+        }.addOnFailureListener {
+            //toast error
+            Toast.makeText(
+                requireActivity(),
+                "error was encountered while fetching data",
+                Toast.LENGTH_LONG
+            ).show()
+            //
         }
-
-        //init the tempArrayList
-        tempArrayList = arrayListOf<DataClassProductsData>()
         //
-
-        //add all the data of arrayListProducts into tempArrayList replicate it into the tempArrayList
-        tempArrayList.addAll(arrayListProducts)
-        //
-
-        //init adapter(MyAdapter) use/pass tempArrayList for flexibility usage with searchView Operations
-        adapterRecycler = MyAdapterProducts(tempArrayList, requireActivity())
-        //
-        //setting the adapter to the recycler
-        recyclerViewProducts.adapter = adapterRecycler
-        adapterRecycler.notifyDataSetChanged()
-        //setting linearLayoutManager to the recycler
-        recyclerViewProducts.layoutManager = LinearLayoutManager(requireActivity())
-        //
-        //
-
         //code ends
 
     }
@@ -524,8 +534,8 @@ class HomeFragment : Fragment() {
                 //tempArrayList which will be used for display
                 if (lowerCaseNewText.isNotEmpty()) {
                     arrayListProducts.forEach {
-                        if (it.titleProduct.lowercase(Locale.getDefault())
-                                .contains(lowerCaseNewText)
+                        if (it.title?.lowercase(Locale.getDefault())
+                                ?.contains(lowerCaseNewText) == true
                         ) {
                             //search contains data of title thus add it into the tempArrayList for display
                             //change the background color of it to show the user where search was found then add to tempArrayList
@@ -533,33 +543,33 @@ class HomeFragment : Fragment() {
                             tempArrayList.add(it)
                             //
 
-                        } else if (it.productOwner.lowercase(Locale.getDefault())
-                                .contains(lowerCaseNewText)
+                        } else if (it.Owner?.lowercase(Locale.getDefault())
+                                ?.contains(lowerCaseNewText) == true
                         ) {
                             //search contains owner of the product. add it into the tempArrayList for display
                             tempArrayList.add(it)
                             //
 
-                        } else if (it.productID.lowercase(Locale.getDefault())
-                                .contains(lowerCaseNewText)
+                        } else if (it.productID?.lowercase(Locale.getDefault())
+                                ?.contains(lowerCaseNewText) == true
                         ) {
                             //search contains product id. add it into the tempArrayList for display
                             tempArrayList.add(it)
                             //
-                        } else if (it.vicinityProduct.lowercase(Locale.getDefault())
-                                .contains(lowerCaseNewText)
+                        } else if (it.university?.lowercase(Locale.getDefault())
+                                ?.contains(lowerCaseNewText) == true
                         ) {
                             //search contains vicinity/place of the product. add it into the tempArrayList for display
                             tempArrayList.add(it)
                             //
-                        } else if (it.productDescription.lowercase(Locale.getDefault())
-                                .contains(lowerCaseNewText)
+                        } else if (it.description?.lowercase(Locale.getDefault())
+                                ?.contains(lowerCaseNewText) == true
                         ) {
                             //search contains description. add it into the temp ArrayList for display
                             tempArrayList.add(it)
                             //
-                        } else if (it.categoryProduct.lowercase(Locale.getDefault())
-                                .contains(lowerCaseNewText)
+                        } else if (it.category?.lowercase(Locale.getDefault())
+                                ?.contains(lowerCaseNewText) == true
                         ) {
                             //search contains product type add it into the tempArrayList
                             tempArrayList.add(it)
@@ -850,7 +860,7 @@ class HomeFragment : Fragment() {
         tempArrayRAMS.clear()
         //iterate through the list original temp and save the found RAMs into the tempRAMS
         arrayListProducts.forEach {
-            if (it.categoryProduct.lowercase(Locale.getDefault()).contains("ram")) {
+            if (it.category?.lowercase(Locale.getDefault())?.contains("ram") == true) {
                 tempArrayRAMS.add(it)
             }
         }
@@ -894,10 +904,8 @@ class HomeFragment : Fragment() {
         val tempArrayListHDDSSD = arrayListOf<DataClassProductsData>()
         tempArrayListHDDSSD.clear()
         tempArrayList.forEach {
-            if (it.categoryProduct.lowercase(Locale.getDefault())
-                    .contains("SSD") || it.categoryProduct.lowercase(
-                    Locale.getDefault()
-                ).contains("Hard")
+            if (it.category?.lowercase(Locale.getDefault())
+                    ?.contains("SSD") == true
             ) {
                 tempArrayListHDDSSD.add(it)
             }
@@ -937,10 +945,8 @@ class HomeFragment : Fragment() {
         val tempArrayListFlashSD = arrayListOf<DataClassProductsData>()
         tempArrayListFlashSD.clear()
         tempArrayList.forEach {
-            if (it.categoryProduct.lowercase(Locale.getDefault())
-                    .contains("flash") || it.categoryProduct.lowercase(
-                    Locale.getDefault()
-                ).contains("card")
+            if (it.category?.lowercase(Locale.getDefault())
+                    ?.contains("flash") == true
             ) {
                 tempArrayListFlashSD.add(it)
             }
@@ -982,10 +988,8 @@ class HomeFragment : Fragment() {
         tempArrayListKabambeKaduda.clear()
         tempArrayList.forEach {
 
-            if (it.categoryProduct.lowercase(Locale.getDefault())
-                    .contains("kabambe") || it.categoryProduct.lowercase(
-                    Locale.getDefault()
-                ).contains("kaduda") || it.categoryProduct.contains("mulika")
+            if (it.category?.lowercase(Locale.getDefault())
+                    ?.contains("kabambe") == true
             ) {
                 tempArrayListKabambeKaduda.add(it)
             }
@@ -1027,10 +1031,8 @@ class HomeFragment : Fragment() {
         val tempArrayListWooferSystem = arrayListOf<DataClassProductsData>()
         tempArrayListWooferSystem.clear()
         tempArrayList.forEach {
-            if (it.categoryProduct.lowercase(Locale.getDefault())
-                    .contains("woofer") || it.categoryProduct.lowercase(
-                    Locale.getDefault()
-                ).contains("system")
+            if (it.category?.lowercase(Locale.getDefault())
+                    ?.contains("woofer") == true
             ) {
                 tempArrayListWooferSystem.add(it)
             }
@@ -1067,10 +1069,8 @@ class HomeFragment : Fragment() {
         tempArrayListEarphonesHeadPhones.clear()
         tempArrayList.forEach {
 
-            if (it.categoryProduct.lowercase(Locale.getDefault())
-                    .contains("earphones") || it.categoryProduct.lowercase(
-                    Locale.getDefault()
-                ).contains("headphones")
+            if (it.category?.lowercase(Locale.getDefault())
+                    ?.contains("earphones") == true
             ) {
                 tempArrayListEarphonesHeadPhones.add(it)
             }
@@ -1110,10 +1110,8 @@ class HomeFragment : Fragment() {
         val tempArrayListShoesDripsDior = arrayListOf<DataClassProductsData>()
         tempArrayListShoesDripsDior.clear()
         tempArrayList.forEach {
-            if (it.categoryProduct.lowercase(Locale.getDefault())
-                    .contains("shoes") || it.categoryProduct.lowercase(
-                    Locale.getDefault()
-                ).contains("dior") || it.categoryProduct.contains("drip")
+            if (it.category?.lowercase(Locale.getDefault())
+                    ?.contains("shoes") == true
             ) {
                 tempArrayListShoesDripsDior.add(it)
             }
@@ -1153,10 +1151,8 @@ class HomeFragment : Fragment() {
         val tempArrayListTvsFlats = arrayListOf<DataClassProductsData>()
         tempArrayListTvsFlats.clear()
         tempArrayList.forEach {
-            if (it.categoryProduct.lowercase(Locale.getDefault())
-                    .contains("tvs") || it.categoryProduct.lowercase(
-                    Locale.getDefault()
-                ).contains("flatscreen")
+            if (it.category?.lowercase(Locale.getDefault())
+                    ?.contains("tvs") == true
             ) {
                 tempArrayListTvsFlats.add(it)
             }
@@ -1195,10 +1191,8 @@ class HomeFragment : Fragment() {
         val tempArrayListLaptopDeskTops = arrayListOf<DataClassProductsData>()
         tempArrayListLaptopDeskTops.clear()
         tempArrayList.forEach {
-            if (it.categoryProduct.lowercase(Locale.getDefault())
-                    .contains("laptop") || it.categoryProduct.lowercase(
-                    Locale.getDefault()
-                ).contains("desktop")
+            if (it.category?.lowercase(Locale.getDefault())
+                    ?.contains("laptop") == true
             ) {
                 tempArrayListLaptopDeskTops.add(it)
             }
@@ -1239,10 +1233,8 @@ class HomeFragment : Fragment() {
         tempArrayListTabletsIpads.clear()
 
         arrayListProducts.forEach {
-            if (it.categoryProduct.lowercase(Locale.getDefault())
-                    .contains("tablets") || it.categoryProduct.lowercase(
-                    Locale.getDefault()
-                ).contains("ipad")
+            if (it.category?.lowercase(Locale.getDefault())
+                    ?.contains("tablets") == true
             ) {
                 tempArrayListTabletsIpads.add(it)
             }
@@ -1287,7 +1279,7 @@ class HomeFragment : Fragment() {
         //custom temp of smartPhones
         tempArrayList.forEach {
 
-            if (it.categoryProduct.lowercase(Locale.getDefault()).contains("smartphones")) {
+            if (it.category?.lowercase(Locale.getDefault())?.contains("smartphones") == true) {
                 //smartphones data present
                 tempArrayListSmartPhones.add(it)
                 //
@@ -1341,7 +1333,7 @@ class HomeFragment : Fragment() {
         tempArrayListPowerBanks.clear()
         //use for@ loop to loop through temp arrayList orig
         tempArrayList.forEach {
-            if (it.categoryProduct.lowercase(Locale.getDefault()).contains("powerbanks")) {
+            if (it.category?.lowercase(Locale.getDefault())?.contains("powerbanks") == true) {
                 //contains pbs
                 tempArrayListPowerBanks.add(it)
                 //
@@ -1467,9 +1459,9 @@ class HomeFragment : Fragment() {
             //use for @loop on the original list and add the data of the university into the new temp array
             arrayListProducts.forEach {
 
-                if (it.vicinityProduct.lowercase(
+                if (it.university?.lowercase(
                         Locale.getDefault()
-                    ).contains(lowercaseUniSelected)
+                    )?.contains(lowercaseUniSelected) == true
                 ) {
                     //assign the it data into the arrayTemp
                     tempArrayListUniversitySelected.add(it)

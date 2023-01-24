@@ -4,22 +4,22 @@
     <item
         android:id="@+id/home"
         android:icon="@drawable/ic_home"
-        android:title="home"
-        app:showAsAction="always" />
+        android:title="@string/home"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/post"
         android:icon="@drawable/ic_add"
-        android:title="post"
-        app:showAsAction="always" />
+        android:title="@string/post"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/notification"
         android:icon="@drawable/ic_notification"
-        android:title="notification"
+        android:title="@string/notification_botom_nav"
         app:showAsAction="always" />
     <item
         android:id="@+id/logout"
-        android:icon="@drawable/ic_power"
-        android:title="logout"
+        android:icon="@drawable/ic_logout"
+        android:title="@string/logout"
         app:showAsAction="always" />
 </menu>
