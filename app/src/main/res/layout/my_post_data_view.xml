@@ -7,12 +7,6 @@
     android:orientation="vertical"
     android:padding="2dp">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/myImage"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="end"
-        android:src="@drawable/dillan" />
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -26,6 +20,14 @@
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"
             android:orientation="vertical">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/myImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:layout_marginBottom="5dp"
+                android:src="@drawable/dillan" />
 
             <ImageView
                 android:id="@+id/myProductImage"
@@ -49,10 +51,10 @@
                 style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textStyle="italic"
                 android:layout_marginTop="5dp"
                 android:text="@string/date_posted"
-                android:textColor="#605637" />
+                android:textColor="#605637"
+                android:textStyle="italic" />
 
             <TextView
                 android:id="@+id/myProductPlace"
@@ -61,8 +63,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/place_posted"
-                android:textStyle="italic"
-                android:textColor="#605637" />
+                android:textColor="#605637"
+                android:textStyle="italic" />
 
             <TextView
                 android:id="@+id/myProductUniqueID"
@@ -70,9 +72,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:textStyle="italic"
                 android:text="@string/productidstamp"
-                android:textColor="#605637" />
+                android:textColor="#605637"
+                android:textStyle="italic" />
 
 
             <TextView
@@ -80,36 +82,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:textStyle="italic"
                 android:text="@string/category_product"
-                android:textColor="#605637" />
+                android:textColor="#605637"
+                android:textStyle="italic" />
 
             <TextView
                 android:id="@+id/myProductPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:textStyle="italic"
                 android:text="@string/phone_number"
-                android:textColor="#605637" />
+                android:textColor="#605637"
+                android:textStyle="italic" />
 
             <TextView
                 android:id="@+id/myProductEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:textStyle="italic"
                 android:text="@string/product_email"
-                android:textColor="#605637" />
+                android:textColor="#605637"
+                android:textStyle="italic" />
 
             <TextView
                 android:id="@+id/myProductDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:textStyle="italic"
                 android:text="@string/product_description"
-                android:textColor="#605637" />
+                android:textColor="#605637"
+                android:textStyle="italic" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnUpdateMyProduct"

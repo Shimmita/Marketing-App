@@ -94,5 +94,8 @@
     <string name="productidstamp">productIDStamp</string>
     <string name="update_image">update image</string>
     <string name="file_size_description"></string>
+    <string name="enter_the_new_phone_number">enter the new phone number</string>
+    <string name="enter_new_place_where_the_product_is_located">enter new place where the product is located</string>
+    <string name="enter_the_new_price_i_e_5_000_1_000_500">enter the new price i.e (5,000 1,000 500)</string>
 
 </resources>
