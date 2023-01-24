@@ -11,8 +11,10 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="5dp"
+        android:layout_margin="10dp"
+        android:elevation="5dp"
         app:cardBackgroundColor="@color/material_grey_100"
+        app:cardCornerRadius="10dp"
         app:contentPadding="5dp">
 
         <LinearLayout
@@ -32,7 +34,7 @@
             <ImageView
                 android:id="@+id/myProductImage"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="180dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/laptop" />
 
@@ -53,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/date_posted"
-                android:textColor="#605637"
+                android:textColor="#453A18"
                 android:textStyle="italic" />
 
             <TextView
@@ -63,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/place_posted"
-                android:textColor="#605637"
+                android:textColor="#453A18"
                 android:textStyle="italic" />
 
             <TextView
@@ -73,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/productidstamp"
-                android:textColor="#605637"
+                android:textColor="#453A18"
                 android:textStyle="italic" />
 
 
@@ -83,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/category_product"
-                android:textColor="#605637"
+                android:textColor="#453A18"
                 android:textStyle="italic" />
 
             <TextView
@@ -92,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/phone_number"
-                android:textColor="#605637"
+                android:textColor="#453A18"
                 android:textStyle="italic" />
 
             <TextView
@@ -101,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/product_email"
-                android:textColor="#605637"
+                android:textColor="#453A18"
                 android:textStyle="italic" />
 
             <TextView
@@ -110,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/product_description"
-                android:textColor="#605637"
+                android:textColor="#453A18"
                 android:textStyle="italic" />
 
             <androidx.appcompat.widget.AppCompatButton

@@ -927,7 +927,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
 
         //creating instances for finding date of post
         val timeUsingCalendar = Calendar.getInstance().time
-        val dateFormat = SimpleDateFormat("dd-MM-yyyy")
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
         val formattedTime = dateFormat.format(timeUsingCalendar)
         //
         //obtaining the timer for uniqueness of differentiating posts and also be delete the post

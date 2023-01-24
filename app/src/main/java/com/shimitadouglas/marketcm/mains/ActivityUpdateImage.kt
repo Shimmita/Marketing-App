@@ -1,9 +1,11 @@
 package com.shimitadouglas.marketcm.mains
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
@@ -19,6 +21,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
 import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
+import es.dmoral.toasty.Toasty
 
 class ActivityUpdateImage : AppCompatActivity() {
     lateinit var timerStampControllerValue: String
@@ -26,6 +29,8 @@ class ActivityUpdateImage : AppCompatActivity() {
     lateinit var btnUpdateImage: AppCompatButton
     lateinit var imageView: ImageView
     lateinit var textViewDescription: TextView
+    lateinit var progressDialog: ProgressDialog
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +46,11 @@ class ActivityUpdateImage : AppCompatActivity() {
             //
         }
         //
+
     }
 
     private fun funUpdateOperations() {
+
         //code begins
         val intentPickImage = Intent()
         intentPickImage.apply {
@@ -62,6 +69,19 @@ class ActivityUpdateImage : AppCompatActivity() {
         btnUpdateImage = findViewById(R.id.btnUpdateImage)
         imageView = findViewById(R.id.imgUpdateProduct)
         textViewDescription = findViewById(R.id.tvFileDescription)
+
+        //init of the view resource file
+        //create a progressD
+        val viewProgressD = LayoutInflater.from(this@ActivityUpdateImage)
+            .inflate(R.layout.general_progress_dialog_view, null, false)
+        //
+        //
+        //progress Dialog init
+        progressDialog = ProgressDialog(this@ActivityUpdateImage)
+        progressDialog.setIcon(R.drawable.ic_update_green)
+        progressDialog.setCancelable(false)
+        progressDialog.setTitle("Updating")
+        progressDialog.setContentView(viewProgressD)
         //code ends
     }
 
@@ -104,10 +124,10 @@ class ActivityUpdateImage : AppCompatActivity() {
                             "size of the image of your product is larger than the recommended !" +
                                     "\n\nImage size of your product:" +
                                     "\n\n${size}KB  -> ${size / converter}MB" +
-                                    "\n\nRecommended size of image:\n\n2500KB -> ${maxSize/1000f}MB" +
+                                    "\n\nRecommended size of image:\n\n2500KB -> ${maxSize / 1000f}MB" +
                                     "\n\nImage exceeded limit by:" +
                                     "\n\n${(size - maxSize) / converter}MB" +
-                                    "\n\nConclusion:\n\nprovide an image less than ${maxSize/1000f}MB"
+                                    "\n\nConclusion:\n\nprovide an image less than ${maxSize / 1000f}MB"
                     } else {
                         //disable the button so that the user cannot interact with it
                         btnUpdateImage.isEnabled = false
@@ -127,7 +147,8 @@ class ActivityUpdateImage : AppCompatActivity() {
                         imageView.postDelayed({
                             val alertUserAcceptImage =
                                 MaterialAlertDialogBuilder(this@ActivityUpdateImage)
-                            alertUserAcceptImage.setIcon(R.drawable.ic_info)
+                            alertUserAcceptImage.setIcon(R.drawable.ic_question)
+                            alertUserAcceptImage.setTitle("Image Update")
                             alertUserAcceptImage.setMessage("update the image ?")
                             alertUserAcceptImage.setPositiveButton("yes") { dialog, _ ->
                                 funBeginUpdateImage(data)
@@ -156,6 +177,11 @@ class ActivityUpdateImage : AppCompatActivity() {
         }
 
     private fun funBeginUpdateImage(data: Uri) {
+        //show the progress dialog here
+        progressDialog.create()
+        progressDialog.show()
+        //
+
         //code begins
         if (oldImageFetched.isEmpty() or (timerStampControllerValue.isEmpty())) {
             Toast.makeText(
@@ -163,6 +189,13 @@ class ActivityUpdateImage : AppCompatActivity() {
                 "operation is not permitted",
                 Toast.LENGTH_LONG
             ).show()
+
+            //dismiss the progressD and return home
+            progressDialog.dismiss()
+            val intentHomeProducts = Intent(this@ActivityUpdateImage, ProductsHome::class.java)
+            startActivity(intentHomeProducts)
+            this@ActivityUpdateImage.finishAffinity()
+            //
         } else if (oldImageFetched.isNotEmpty() or (timerStampControllerValue.isNotEmpty())) {
             //old image uri is present and too the timerStampKe
             //updateImageStorage->update-personal-repo-image-uri->update-public-repo-image-uri
@@ -181,21 +214,45 @@ class ActivityUpdateImage : AppCompatActivity() {
                             //
 
                         } else if (!it.isSuccessful) {
+                            //toast the error and make the user returned home immediately
                             Toast.makeText(
                                 this@ActivityUpdateImage,
                                 "operation failed try again",
                                 Toast.LENGTH_LONG
                             ).show()
+                            //
+
+                            //dismiss the progressD and return home
+                            progressDialog.dismiss()
+                            val intentHomeProducts =
+                                Intent(this@ActivityUpdateImage, ProductsHome::class.java)
+                            startActivity(intentHomeProducts)
+                            this@ActivityUpdateImage.finishAffinity()
+                            //
                         }
+
                     }
                     //
                 } else if (!it.isSuccessful) {
+                    //toast the error to the user and return
                     Toast.makeText(
                         this@ActivityUpdateImage,
                         "operation failed try again",
                         Toast.LENGTH_LONG
                     ).show()
+
+                    //dismiss the progressD and return home
+                    progressDialog.dismiss()
+                    val intentHomeProducts =
+                        Intent(this@ActivityUpdateImage, ProductsHome::class.java)
+                    startActivity(intentHomeProducts)
+                    this@ActivityUpdateImage.finishAffinity()
+                    //
+
                     return@addOnCompleteListener
+                    //
+
+
                 }
             }
             //
@@ -220,11 +277,22 @@ class ActivityUpdateImage : AppCompatActivity() {
                         funUpdatePublicRepoImagePath(currentImagePath)
                         //
                     } else if (!it.isSuccessful) {
+                        //toast the error to the user
                         Toast.makeText(
                             this@ActivityUpdateImage,
                             "operation failed try again",
                             Toast.LENGTH_LONG
                         ).show()
+                        //
+
+                        //dismiss the progressD and return home
+                        progressDialog.dismiss()
+                        val intentHomeProducts =
+                            Intent(this@ActivityUpdateImage, ProductsHome::class.java)
+                        startActivity(intentHomeProducts)
+                        this@ActivityUpdateImage.finishAffinity()
+                        //
+
                     }
                 }
         }
@@ -244,20 +312,34 @@ class ActivityUpdateImage : AppCompatActivity() {
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     //toast to the user a successful update process has been made
-                    Toast.makeText(
-                        this@ActivityUpdateImage,
-                        "congratulations updated successfully",
-                        Toast.LENGTH_LONG
+                    Toasty.custom(
+                        this@ActivityUpdateImage, "congratulations image updated successfully",
+                        R.drawable.ic_nike_done,
+                        R.color.dim_foreground_material_light, Toasty.LENGTH_SHORT, true, true
                     ).show()
+                    //dismiss the progressD
+                    progressDialog.dismiss()
+                    //
+
                     //call fun with intent migration to the home products page
                     funReturnHomeProducts()
                     //
                 } else if (!it.isSuccessful) {
+                    //toast the error to the user and return
                     Toast.makeText(
                         this@ActivityUpdateImage,
                         "operation failed try again",
                         Toast.LENGTH_LONG
                     ).show()
+                    //
+                    //dismiss the progressD and return home
+                    progressDialog.dismiss()
+                    val intentHomeProducts =
+                        Intent(this@ActivityUpdateImage, ProductsHome::class.java)
+                    startActivity(intentHomeProducts)
+                    this@ActivityUpdateImage.finishAffinity()
+                    //
+
                 }
             }
         //code ends
@@ -265,6 +347,7 @@ class ActivityUpdateImage : AppCompatActivity() {
 
     private fun funReturnHomeProducts() {
         //code begins
+
         val intentToHomeProducts = Intent(this@ActivityUpdateImage, ProductsHome::class.java)
         this@ActivityUpdateImage.startActivity(intentToHomeProducts)
         this@ActivityUpdateImage.finishAffinity()

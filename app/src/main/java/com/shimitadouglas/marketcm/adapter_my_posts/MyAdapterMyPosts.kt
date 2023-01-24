@@ -2,6 +2,7 @@ package com.shimitadouglas.marketcm.adapter_my_posts
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -26,19 +27,34 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.mains.ActivityUpdateImage
+import com.shimitadouglas.marketcm.mains.ProductsHome
 import com.shimitadouglas.marketcm.modal_data_myposts.DataClassMyPosts
 import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
 
 class MyAdapterMyPosts(
-    var context: Context,
-    var arrayList: ArrayList<DataClassMyPosts>,
-    var section: String
-) :
-    RecyclerView.Adapter<MyAdapterMyPosts.MyViewHolder>() {
+    var context: Context, var arrayList: ArrayList<DataClassMyPosts>, var section: String
+) : RecyclerView.Adapter<MyAdapterMyPosts.MyViewHolder>() {
     //get the UID
     val uniqueUID = FirebaseAuth.getInstance().uid
+
+    //
+    //init general view containing ProgD
+    val viewGeneralProgress: View
+
+    //progressDialog Object
+    val progressDialog: ProgressDialog
+
+    init {
+        progressDialog = ProgressDialog(context)
+        viewGeneralProgress =
+            LayoutInflater.from(context).inflate(R.layout.general_progress_dialog_view, null, false)
+        progressDialog.setContentView(viewGeneralProgress)
+        progressDialog.setTitle("Deleting")
+        progressDialog.setIcon(R.drawable.ic_delete) //default icon that is changed as per the context
+        progressDialog.setCancelable(false)
+    }
     //
 
     @SuppressLint("SetTextI18n", "CheckResult")
@@ -61,10 +77,8 @@ class MyAdapterMyPosts(
             textViewMyProductDescription.text = "info: " + arrayList[position].description
             textViewMyProductDate.text = "date: " + arrayList[position].date
             //loading the images images using the glide library
-            Glide.with(context).load(arrayList[position].imageOwner)
-                .into(circleImageViewOwner)
-            Glide.with(context).load(arrayList[position].imageProduct)
-                .into(imageViewMyProduct)
+            Glide.with(context).load(arrayList[position].imageOwner).into(circleImageViewOwner)
+            Glide.with(context).load(arrayList[position].imageProduct).into(imageViewMyProduct)
             //
             if (section.contains("delete")) {
                 //make the button delete visible since section is delete
@@ -78,7 +92,7 @@ class MyAdapterMyPosts(
                 btnDeleteMyPost.setOnClickListener {
                     //call fun delete operations
                     holder.funDeletePostOperations(timerControllerID, productImageUri)
-                    //
+
                 }
                 //
 
@@ -116,6 +130,11 @@ class MyAdapterMyPosts(
     @SuppressLint("SetTextI18n")
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun funDeletePostOperations(timerControllerID: String?, productImageUri: String?) {
+            //show the progress dialog hear
+            progressDialog.create()
+            progressDialog.show()
+            //
+
             //two delete must happen
             //1.delete from my post collection(UID/timerStampID)
             //2.delete from public posts (collectionPost/uid)
@@ -133,6 +152,7 @@ class MyAdapterMyPosts(
                                 funDeleteMyPostFromPublicRepo(timerControllerID, productImageUri)
                                 //
                             } else if (!it.isSuccessful) {
+                                //show toast of failure
                                 Toasty.custom(
                                     context,
                                     "encountered an error while deleting",
@@ -142,6 +162,23 @@ class MyAdapterMyPosts(
                                     true,
                                     true
                                 ).show()
+                                //
+
+                                //dismiss the progress Dialog and then return to the homeProducts due to the failure
+                                //no more operations can be performed
+                                progressDialog.apply {
+                                    //
+                                    dismiss()
+                                    //
+                                    val intentToHome = Intent(context, ProductsHome::class.java)
+                                    intentToHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    intentToHome.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                    context.startActivity(intentToHome)
+
+
+                                }
+                                //
+
                             }
                         }
                 }
@@ -150,10 +187,9 @@ class MyAdapterMyPosts(
         }
 
         fun funUpdatePostOperations(
-            timerControllerID: String?,
-            productImageUri: String?,
-            productPrice: String?
+            timerControllerID: String?, productImageUri: String?, productPrice: String?
         ) {
+
             //code begins
             //updating the image in the store will involve
             //1.update of the image in the storage with a new image
@@ -184,10 +220,7 @@ class MyAdapterMyPosts(
                 } else if (selected.isNotEmpty()) {
                     //call function to perform the selected function
                     funPerformOperationSelected(
-                        selected,
-                        productImageUri,
-                        timerControllerID,
-                        productPrice
+                        selected, productImageUri, timerControllerID, productPrice
                     )
                     //
                 }
@@ -285,7 +318,7 @@ class MyAdapterMyPosts(
         //create an alert that will display the phone
         MaterialAlertDialogBuilder(context).setTitle("Price Entry\n(currently @KES $productPrice)")
             .setCancelable(false)
-            .setBackground(context.resources.getDrawable(R.drawable.material_seven,context.theme))
+            .setBackground(context.resources.getDrawable(R.drawable.material_seven, context.theme))
             .setIcon(R.drawable.ic_info).setView(view).setPositiveButton("update") { dialog, _ ->
 
                 //extract the price entered
@@ -330,6 +363,14 @@ class MyAdapterMyPosts(
     }
 
     private fun funContinuePriceUpdate(priceEntered: String, timerControllerID: String?) {
+
+        //display the progressD
+        progressDialog.create()
+        progressDialog.show()
+        progressDialog.setIcon(R.drawable.ic_update_green)
+        progressDialog.setTitle("Updating")
+        //
+
         //code begins
         val uniqueUID = FirebaseAuth.getInstance().uid
         val keyPrice = "price"
@@ -351,28 +392,79 @@ class MyAdapterMyPosts(
                             ).addOnCompleteListener {
                                 if (it.isSuccessful) {
                                     //overall price update process was successful
-                                    Toast.makeText(
+                                    Toasty.custom(
                                         context,
                                         "congratulations price updated successfully",
-                                        Toast.LENGTH_LONG
+                                        R.drawable.ic_nike_done,
+                                        R.color.dim_foreground_material_light,
+                                        Toasty.LENGTH_SHORT,
+                                        true,
+                                        true
                                     ).show()
                                     //
+                                    //dismiss the progressD and return homeProducts
+                                    progressDialog.apply {
+                                        //
+                                        dismiss()
+                                        //
+                                        //dismiss the progress and return to home
+                                        val intentToHome = Intent(context, ProductsHome::class.java)
+                                        intentToHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                        intentToHome.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                        context.startActivity(intentToHome)
+                                        //
+                                    }
                                 } else if (!it.isSuccessful) {
                                     //price update failed to update in the public-repo
-                                    Toast.makeText(
+                                    Toasty.custom(
                                         context,
                                         "price update failed!",
-                                        Toast.LENGTH_LONG
-                                    )
-                                        .show()
+                                        R.drawable.ic_warning,
+                                        R.color.dim_foreground_material_light,
+                                        Toasty.LENGTH_SHORT,
+                                        true,
+                                        true
+                                    ).show()
                                     //
+
+                                    //dismiss the progressD and return homeProducts
+                                    progressDialog.apply {
+                                        //
+                                        dismiss()
+                                        //
+                                        //dismiss the progress and return to home
+                                        val intentToHome = Intent(context, ProductsHome::class.java)
+                                        intentToHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                        intentToHome.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                        context.startActivity(intentToHome)
+                                        //
+                                    }
                                 }
                             }
                         //
                     } else if (!it.isSuccessful) {
                         //price update in the private-repo failed
-                        Toast.makeText(context, "price update failed!", Toast.LENGTH_LONG).show()
-                        //
+                        Toasty.custom(
+                            context,
+                            "price update failed!",
+                            R.drawable.ic_warning,
+                            R.color.dim_foreground_material_light,
+                            Toasty.LENGTH_SHORT,
+                            true,
+                            true
+                        ).show()                        //
+                        //dismiss the progressD and return homeProducts
+                        progressDialog.apply {
+                            //
+                            dismiss()
+                            //
+                            //dismiss the progress and return to home
+                            val intentToHome = Intent(context, ProductsHome::class.java)
+                            intentToHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            intentToHome.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            context.startActivity(intentToHome)
+                            //
+                        }
                     }
                 }
             }
@@ -384,8 +476,7 @@ class MyAdapterMyPosts(
         //code begins
         //check if storage permissions are enabled using the dexter
         Dexter.withContext(context).withPermissions(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
         ).withListener(object : MultiplePermissionsListener {
             override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                 //show modal for updating the image
@@ -408,8 +499,7 @@ class MyAdapterMyPosts(
 
 
             override fun onPermissionRationaleShouldBeShown(
-                p0: MutableList<PermissionRequest>?,
-                p1: PermissionToken?
+                p0: MutableList<PermissionRequest>?, p1: PermissionToken?
             ) {
                 //
                 Toasty.custom(
@@ -451,7 +541,7 @@ class MyAdapterMyPosts(
 
         //create an alert that will display the phone
         MaterialAlertDialogBuilder(context).setTitle("Phone Number Entry")
-            .setBackground(context.resources.getDrawable(R.drawable.material_seven,context.theme))
+            .setBackground(context.resources.getDrawable(R.drawable.material_seven, context.theme))
 
             .setIcon(R.drawable.ic_info).setView(view).setPositiveButton("update") { dialog, _ ->
 
@@ -487,6 +577,14 @@ class MyAdapterMyPosts(
             } else if (numberEntered.length < 10) {
                 Toast.makeText(context, "number too short", Toast.LENGTH_SHORT).show()
             } else {
+
+                //show the progress dialog here with update icon
+                progressDialog.create()
+                progressDialog.show()
+                progressDialog.setTitle("Updating")
+                progressDialog.setIcon(R.drawable.ic_update_green)
+                //
+
                 //number input is okay continue with update process
                 //path to the private repo(UID/timerID/data)
                 //path to the public repo(CollectionProduct/timerStampID/data)
@@ -510,31 +608,89 @@ class MyAdapterMyPosts(
                                         ).addOnCompleteListener {
                                             if (it.isSuccessful) {
                                                 //congrats process ended successfully
-                                                Toast.makeText(
+                                                Toasty.custom(
                                                     context,
                                                     "congratulations number updated successfully",
-                                                    Toast.LENGTH_LONG
+                                                    R.drawable.ic_nike_done,
+                                                    R.color.dim_foreground_material_light,
+                                                    Toasty.LENGTH_SHORT,
+                                                    true,
+                                                    true
                                                 ).show()
+
+                                                //dismiss the progressD and return homeProducts
+                                                progressDialog.apply {
+                                                    //
+                                                    dismiss()
+                                                    //
+                                                    //dismiss the progress and return to home
+                                                    val intentToHome =
+                                                        Intent(context, ProductsHome::class.java)
+                                                    intentToHome.flags =
+                                                        Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                                    intentToHome.flags =
+                                                        Intent.FLAG_ACTIVITY_NEW_TASK
+                                                    context.startActivity(intentToHome)
+                                                    //
+                                                }
+
                                                 //
                                             } else if (!it.isSuccessful) {
                                                 //failed to update the number in the public repo
-                                                Toast.makeText(
+                                                Toasty.custom(
                                                     context,
-                                                    "phone number update failed",
-                                                    Toast.LENGTH_LONG
+                                                    "phone number update failed!",
+                                                    R.drawable.ic_warning,
+                                                    R.color.dim_foreground_material_light,
+                                                    Toasty.LENGTH_SHORT,
+                                                    true,
+                                                    true
                                                 ).show()
                                                 //
+
+
+                                                //dismiss the progressD and return homeProducts
+                                                progressDialog.apply {
+                                                    //
+                                                    dismiss()
+                                                    //
+                                                    //dismiss the progress and return to home
+                                                    val intentToHome =
+                                                        Intent(context, ProductsHome::class.java)
+                                                    intentToHome.flags =
+                                                        Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                                    intentToHome.flags =
+                                                        Intent.FLAG_ACTIVITY_NEW_TASK
+                                                    context.startActivity(intentToHome)
+                                                    //
+                                                }
                                             }
                                         }
                                     //
                                 } else if (!it.isSuccessful) {
                                     //update private repo is a failure
-                                    Toast.makeText(
+                                    Toasty.custom(
                                         context,
                                         "phone number update failed!",
-                                        Toast.LENGTH_LONG
-                                    )
-                                        .show()
+                                        R.drawable.ic_warning,
+                                        R.color.dim_foreground_material_light,
+                                        Toasty.LENGTH_SHORT,
+                                        true,
+                                        true
+                                    ).show()
+
+                                    //dismiss the progressD and return homeProducts
+                                    progressDialog.apply {
+                                        //
+                                        dismiss()
+                                        //
+                                        //dismiss the progress and return to home
+                                        val intentToHome = Intent(context, ProductsHome::class.java)
+                                        intentToHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                        intentToHome.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                        context.startActivity(intentToHome)
+                                        //
+                                    }
                                     //
                                 }
                             }
@@ -569,7 +725,7 @@ class MyAdapterMyPosts(
 
         //create an alert that will display the phone
         MaterialAlertDialogBuilder(context).setTitle("Place Entry")
-            .setBackground(context.resources.getDrawable(R.drawable.material_seven,context.theme))
+            .setBackground(context.resources.getDrawable(R.drawable.material_seven, context.theme))
 
             .setIcon(R.drawable.ic_info).setView(view).setPositiveButton("update") { dialog, _ ->
 
@@ -593,11 +749,20 @@ class MyAdapterMyPosts(
     }
 
     private fun funBeginUpdatingPlace(placeEntered: String, timerControllerID: String?) {
+
         //code begins
         //check legitimacy of the place entered
         if (placeEntered.isEmpty()) {
             Toast.makeText(context, "null values not allowed!", Toast.LENGTH_SHORT).show()
         } else if (placeEntered.isNotEmpty()) {
+
+            //show the progressD with icon
+            progressDialog.create()
+            progressDialog.show()
+            progressDialog.setTitle("Updating")
+            progressDialog.setIcon(R.drawable.ic_update_green)
+            //
+
             //continue
             val uniqueUID = FirebaseAuth.getInstance().uid
             val keyPlace = "university"
@@ -613,29 +778,62 @@ class MyAdapterMyPosts(
                             if (it.isSuccessful) {
 
                                 //begin updating the place in the public-repo(collection/timerStampID)
-                                val storePublicRepoPlaceUpdate =
-                                    FirebaseFirestore.getInstance()
+                                val storePublicRepoPlaceUpdate = FirebaseFirestore.getInstance()
                                 storePublicRepoPlaceUpdate.collection(
                                     CollectionPost
-                                ).document(timerControllerID)
-                                    .update(mapData as Map<String, Any>).addOnCompleteListener {
+                                ).document(timerControllerID).update(mapData as Map<String, Any>)
+                                    .addOnCompleteListener {
                                         //
                                         if (it.isSuccessful) {
                                             //place update was successful
-                                            Toast.makeText(
+                                            Toasty.custom(
                                                 context,
                                                 "congratulations place updated successfully",
-                                                Toast.LENGTH_LONG
+                                                R.drawable.ic_nike_done,
+                                                R.color.dim_foreground_material_light,
+                                                Toasty.LENGTH_SHORT,
+                                                true,
+                                                true
                                             ).show()
                                             //
+                                            //dismiss the progressD and return homeProducts
+                                            progressDialog.apply {
+                                                //
+                                                dismiss()
+                                                //
+                                                //dismiss the progress and return to home
+                                                val intentToHome =
+                                                    Intent(context, ProductsHome::class.java)
+                                                intentToHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                                intentToHome.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                                context.startActivity(intentToHome)
+                                                //
+                                            }
                                         } else if (!it.isSuccessful) {
                                             //failed to update the place in the public repository
-                                            Toast.makeText(
+                                            Toasty.custom(
                                                 context,
                                                 "place update failed!",
-                                                Toast.LENGTH_SHORT
+                                                R.drawable.ic_warning,
+                                                R.color.dim_foreground_material_light,
+                                                Toasty.LENGTH_SHORT,
+                                                true,
+                                                true
                                             ).show()
                                             //
+                                            //dismiss the progressD and return homeProducts
+                                            progressDialog.apply {
+                                                //
+                                                dismiss()
+                                                //
+                                                //dismiss the progress and return to home
+                                                val intentToHome =
+                                                    Intent(context, ProductsHome::class.java)
+                                                intentToHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                                intentToHome.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                                context.startActivity(intentToHome)
+                                                //
+                                            }
                                         }
                                         //
                                     }
@@ -643,9 +841,29 @@ class MyAdapterMyPosts(
 
                             } else if (!it.isSuccessful) {
                                 //failed to update private repo-place
-                                Toast.makeText(context, "place update failed!", Toast.LENGTH_SHORT)
-                                    .show()
+                                Toasty.custom(
+                                    context,
+                                    "place update failed!",
+                                    R.drawable.ic_warning,
+                                    R.color.dim_foreground_material_light,
+                                    Toasty.LENGTH_SHORT,
+                                    true,
+                                    true
+                                ).show()
                                 //
+
+                                //dismiss the progressD and return homeProducts
+                                progressDialog.apply {
+                                    //
+                                    dismiss()
+                                    //
+                                    //dismiss the progress and return to home
+                                    val intentToHome = Intent(context, ProductsHome::class.java)
+                                    intentToHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    intentToHome.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                    context.startActivity(intentToHome)
+                                    //
+                                }
                             }
                         }
                 }
@@ -670,10 +888,28 @@ class MyAdapterMyPosts(
                     //
 
                 } else {
+                    //toast an error to the user
                     Toasty.custom(
-                        context, "encountered an error while deleting", R.drawable.ic_warning,
-                        R.color.dim_foreground_material_light, Toasty.LENGTH_SHORT, true, true
+                        context,
+                        "encountered an error while deleting",
+                        R.drawable.ic_warning,
+                        R.color.dim_foreground_material_light,
+                        Toasty.LENGTH_SHORT,
+                        true,
+                        true
                     ).show()
+                    //
+                    progressDialog.apply {
+                        //
+                        dismiss()
+                        //
+                        //dismiss the progress and return to home
+                        val intentToHome = Intent(context, ProductsHome::class.java)
+                        intentToHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        intentToHome.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        context.startActivity(intentToHome)
+                        //
+                    }
                 }
             }
         //
@@ -686,15 +922,51 @@ class MyAdapterMyPosts(
         if (productImageUri != null) {
             storage.getReferenceFromUrl(productImageUri).delete().addOnCompleteListener {
                 if (it.isSuccessful) {
+                    //toast successfully deleted and the make the user return home
                     Toasty.custom(
-                        context, "deleted successfully", R.drawable.ic_nike_done,
-                        R.color.dim_foreground_material_light, Toasty.LENGTH_SHORT, true, true
+                        context,
+                        "deleted successfully",
+                        R.drawable.ic_nike_done,
+                        R.color.dim_foreground_material_light,
+                        Toasty.LENGTH_SHORT,
+                        true,
+                        true
                     ).show()
+                    //
+                    progressDialog.apply {
+                        //dismiss the progress dialog
+                        dismiss()
+                        //
+
+                        //back home by the user
+                        val intentToHome = Intent(context, ProductsHome::class.java)
+                        intentToHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        intentToHome.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        context.startActivity(intentToHome)
+
+                        //
+                    }
+
                 } else if (!it.isSuccessful) {
+                    //show the error to the user of fail to delete the file from the public repository
                     Toasty.custom(
-                        context, "encountered an error while deleting", R.drawable.ic_warning,
-                        R.color.dim_foreground_material_light, Toasty.LENGTH_SHORT, true, true
+                        context,
+                        "encountered an error while deleting",
+                        R.drawable.ic_warning,
+                        R.color.dim_foreground_material_light,
+                        Toasty.LENGTH_SHORT,
+                        true,
+                        true
                     ).show()
+                    //
+
+                    //migrate home products since the user cannot continue anywhere
+                    val intentToHome = Intent(context, ProductsHome::class.java)
+                    intentToHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    intentToHome.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    context.startActivity(intentToHome)
+
+                    //
                 }
             }
         }

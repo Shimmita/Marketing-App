@@ -47,7 +47,7 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
             textViewCategoryType.text = "Type:  " + products[position].category
             textViewProductID.text = "Code:  " + products[position].productID
             textViewVicinity.text = "Place:  " + products[position].university
-            textViewDate.text = "Date:   " + products[position].date
+            textViewDate.text = "Date:   " + products[position].date+" +12hrs"
             buttonEnquire.text = "Enquire @KES " + products[position].price
 
             //using the glide library to set the images

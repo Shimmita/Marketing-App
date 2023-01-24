@@ -25,6 +25,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.adapter_products_posted.MyAdapterProducts
 import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreferenceName
@@ -319,8 +320,9 @@ class HomeFragment : Fragment() {
     private fun funRecyclerOperationsAndPostDataLoading() {
         //code begins
         //fetch the data from the cloud on the api of the post
+        //sort the products in relation to date posted
         val postsApiStore = FirebaseFirestore.getInstance()
-        postsApiStore.collection(CollectionPost).get().addOnSuccessListener {
+        postsApiStore.collection(CollectionPost).orderBy("date",Query.Direction.ASCENDING).get().addOnSuccessListener {
             if (!it.isEmpty) {
                 //there is data present
                 //init products arrayList main

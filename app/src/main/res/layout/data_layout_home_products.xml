@@ -5,21 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    app:contentPadding="10dp"
-    app:cardCornerRadius="20dp"
     app:cardBackgroundColor="#FBFBFB"
-    app:cardElevation="5dp">
+    app:cardCornerRadius="20dp"
+    app:cardElevation="5dp"
+    app:contentPadding="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintMainDataProducts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp">
+        android:padding="10dp">
 
         <ImageView
             android:id="@+id/imgProduct"
             android:layout_width="0dp"
-            android:layout_height="180dp"
+            android:layout_height="200dp"
             android:elevation="5dp"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
@@ -51,8 +51,8 @@
             android:fontFamily="georgia"
             android:text="@string/details"
             android:textAllCaps="false"
-            android:textStyle="italic"
             android:textColor="#605637"
+            android:textStyle="italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTitleProduct" />
@@ -65,8 +65,8 @@
             android:layout_marginTop="5dp"
             android:fontFamily="georgia"
             android:text="@string/category_laptops"
-            android:textColor="#605637"
             android:textAllCaps="false"
+            android:textColor="#605637"
             android:textStyle="italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -77,12 +77,12 @@
             android:id="@+id/tvProductID"
             style="@style/TextAppearance.Material3.BodySmall"
             android:layout_width="0dp"
-            android:textColor="#605637"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:fontFamily="georgia"
             android:text="@string/productID"
             android:textAllCaps="false"
+            android:textColor="#605637"
             android:textStyle="italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -109,8 +109,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:fontFamily="georgia"
-            android:textColor="@color/abc_search_url_text_normal"
             android:text="@string/vicinity"
+            android:textColor="@color/abc_search_url_text_normal"
             android:textStyle="italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -145,13 +145,12 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/circleProductOwnerImage"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:scaleType="centerCrop"
             android:src="@drawable/dillan"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvVicinityProduct" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
