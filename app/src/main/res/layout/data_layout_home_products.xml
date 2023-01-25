@@ -8,7 +8,7 @@
     app:cardBackgroundColor="#FBFBFB"
     app:cardCornerRadius="20dp"
     app:cardElevation="5dp"
-    app:contentPadding="10dp">
+    app:contentPadding="5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintMainDataProducts"
@@ -116,7 +116,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvDate" />
 
-
         <TextView
             android:id="@+id/tvOwnerProduct"
             style="@style/TextAppearance.Material3.BodySmall"
@@ -151,8 +150,6 @@
             android:src="@drawable/dillan"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.*
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
@@ -25,11 +26,11 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.adapter_products_posted.MyAdapterProducts
 import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreferenceName
 import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
+import com.shimitadouglas.marketcm.modal_data_slide_model.DataClassSlideModal
 import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
 import com.shimitadouglas.marketcm.notifications.BigPictureNotification
 import es.dmoral.toasty.Toasty
@@ -38,7 +39,9 @@ import java.util.*
 class HomeFragment : Fragment() {
     //string for holding selected uni for sorting products
     private var selected: String = ""
+
     //
+    private val TAG = "HomeFragment"
 
     //init of the global
     private lateinit var viewHome: View
@@ -322,7 +325,7 @@ class HomeFragment : Fragment() {
         //fetch the data from the cloud on the api of the post
         //sort the products in relation to date posted
         val postsApiStore = FirebaseFirestore.getInstance()
-        postsApiStore.collection(CollectionPost).orderBy("date",Query.Direction.ASCENDING).get().addOnSuccessListener {
+        postsApiStore.collection(CollectionPost).get().addOnSuccessListener {
             if (!it.isEmpty) {
                 //there is data present
                 //init products arrayList main
@@ -336,13 +339,24 @@ class HomeFragment : Fragment() {
                     }
                 }
 
+                //creating another another tempArraylist say arrayListProductsSortedLatestFirst that will contain latest items first while old items
+                //last by help of the while looping strategy
+                //
+                var arrayListProductsSortedLatestFirst= arrayListOf<DataClassProductsData>()
+                var maxSizeArrayListProductsFetched=arrayListProducts.size-1
+                while (maxSizeArrayListProductsFetched>=0)
+                {
+                    arrayListProductsSortedLatestFirst.add(arrayListProducts[maxSizeArrayListProductsFetched])
+                    maxSizeArrayListProductsFetched--
+                }
+                //
                 //placing the changes to the recycler view with help of tempArraylist that will ease flexibility in times of searching
                 //init the tempArrayList
                 tempArrayList = arrayListOf<DataClassProductsData>()
                 //
 
-                //add all the data of arrayListProducts into tempArrayList replicate it into the tempArrayList
-                tempArrayList.addAll(arrayListProducts)
+                //add all the data of arrayListSortedFirst into tempArrayList /replicate it into the tempArrayList
+                tempArrayList.addAll(arrayListProductsSortedLatestFirst)
                 //
 
                 //init adapter(MyAdapter) use/pass tempArrayList for flexibility usage with searchView Operations
@@ -376,28 +390,80 @@ class HomeFragment : Fragment() {
     }
 
     private fun funArrayListSlideModels() {
+        val arraylistHoldSlideModelImagePath = arrayListOf<String>()
+        val arrayListHoldSlideModelTitles = arrayListOf<String>()
+        val arraylistHoldSlideModels = arrayListOf<SlideModel>()
         //code begins
-        val arrayListSlideModels = arrayListOf<SlideModel>()
-        arrayListSlideModels.add(SlideModel(R.drawable.lapsz, "Laptops"))
-        arrayListSlideModels.add(SlideModel(R.drawable.lap))
-        arrayListSlideModels.add(SlideModel(R.drawable.tabs, "Tablets"))
-        arrayListSlideModels.add(SlideModel(R.drawable.tablet))
-        arrayListSlideModels.add(SlideModel(R.drawable.phones, "Smartphones"))
-        arrayListSlideModels.add(SlideModel(R.drawable.phonee))
-        arrayListSlideModels.add(SlideModel(R.drawable.kaduda, "Kabambe"))
-        arrayListSlideModels.add(SlideModel(R.drawable.kabambe))
-        arrayListSlideModels.add(SlideModel(R.drawable.power, "Powerbanks"))
-        arrayListSlideModels.add(SlideModel(R.drawable.powez))
-        arrayListSlideModels.add(SlideModel(R.drawable.hadd, "HDDs/SSDs"))
-        arrayListSlideModels.add(SlideModel(R.drawable.ssd))
-        arrayListSlideModels.add(SlideModel(R.drawable.shoesz, "Drips"))
-        arrayListSlideModels.add(SlideModel(R.drawable.shoes))
-        arrayListSlideModels.add(SlideModel(R.drawable.subwoofer, "Woofer"))
-        arrayListSlideModels.add(SlideModel(R.drawable.woofer))
-        imageSlider.setImageList(arrayListSlideModels, ScaleTypes.CENTER_CROP)
+        //fetch the data from store(public-Repo) and deal wit only imageUri and tittle
+        val storePublicRepo = FirebaseFirestore.getInstance()
+        storePublicRepo.collection(CollectionPost).get().addOnCompleteListener {
+            if (it.isSuccessful) {
+                for (data in it.result.documents) {
+                    //filter the data
+                    val classData: DataClassSlideModal? =
+                        data.toObject(DataClassSlideModal::class.java)
+                    //add top max 10 only else return
+                    //add images in the arrayListImages
+                    val imagePath = classData?.imageProduct
+                    if (imagePath != null) {
+                        if (arraylistHoldSlideModelImagePath.size <= 10) {
+                            arraylistHoldSlideModelImagePath.add(imagePath)
+                        } else {
+                            //size of the images is exceeding 10
+                            return@addOnCompleteListener
+                        }
+                    }
+                    //
+                    //lets hold a max of only ten images in the array
+                    //lets display the latest top 10 posts of the day
+                    //add title into the arrayListTitle
+                    val title = classData?.title
+                    if (title != null) {
+                        if (arrayListHoldSlideModelTitles.size <= 10) {
+                            arrayListHoldSlideModelTitles.add(title)
+                        } else {
+                            //the size of the array is greater than ten hence no need to add more only top 10 are enough
+                            return@addOnCompleteListener
+                        }
+                    }
+                    //
+
+                    //log data to see
+                    Log.d(TAG, "funArrayListSlideModels: image:$imagePath\ntitle:$title")
+                    //
+                }
+
+                //here add the data onto the arrayListSlideModal
+                if (arrayListHoldSlideModelTitles.isNotEmpty() and (arraylistHoldSlideModelImagePath.isNotEmpty())) {
+                    Log.d(
+                        TAG,
+                        "funArrayListSlideModels: size array images:${arraylistHoldSlideModelImagePath.size}" +
+                                "\nsize array title:${arrayListHoldSlideModelTitles.size}"
+                    )
+
+                    //display the images in reversed order==latest at the top while old at the bottom
+                    //define the strategy decremental from the max array to the least @ -1 none is having an item
+
+                    //can use array images or arrayTitles for the array max size since are equal both
+                    var arrayMaxSize=arrayListHoldSlideModelTitles.size-1
+                    while (arrayMaxSize>=0) {
+                        arraylistHoldSlideModels.add(
+                            SlideModel(
+                                arraylistHoldSlideModelImagePath[arrayMaxSize],
+                                arrayListHoldSlideModelTitles[arrayMaxSize]
+                            )
+                        )
+                        arrayMaxSize--
+                    }
+                    //add the slide models into its corresponding arraylist
+                    imageSlider.setImageList(arraylistHoldSlideModels, ScaleTypes.CENTER_CROP)
+                    //
+                }
+                //
+            }
+        }
 
         //code ends
-
     }
 
     private fun funFabListener() {

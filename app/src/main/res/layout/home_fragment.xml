@@ -25,7 +25,6 @@
             app:scrimAnimationDuration="800"
             app:title="hot products"
             app:toolbarId="@id/toolbarHome">
-
             <com.denzcoskun.imageslider.ImageSlider
                 android:id="@+id/imageSlider"
                 android:layout_width="match_parent"
@@ -33,6 +32,7 @@
                 app:iss_auto_cycle="true"
                 app:iss_delay="0"
                 app:iss_period="2000"
+                app:iss_placeholder="@drawable/ic_insert_photo"
                 app:iss_selected_dot="@drawable/default_selected_dot"
                 app:iss_title_background="@drawable/backg_slider"
                 app:iss_unselected_dot="@drawable/default_unselected_dot"
