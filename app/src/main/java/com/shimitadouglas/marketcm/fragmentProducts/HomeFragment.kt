@@ -3,6 +3,7 @@ package com.shimitadouglas.marketcm.fragmentProducts
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
@@ -26,14 +27,20 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.adapter_products_posted.MyAdapterProducts
+import com.shimitadouglas.marketcm.mains.ProductsHome
 import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreferenceName
 import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
 import com.shimitadouglas.marketcm.modal_data_slide_model.DataClassSlideModal
 import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
 import com.shimitadouglas.marketcm.notifications.BigPictureNotification
 import es.dmoral.toasty.Toasty
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -150,6 +157,7 @@ class HomeFragment : Fragment() {
     //
 
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -163,17 +171,17 @@ class HomeFragment : Fragment() {
         //setting listener on the fab
         funFabListener()
         //
-        //init the array list slide models in fun
-        funArrayListSlideModels()
-        //
-        //init recyclerview ina fun on a separate thread
-        val thread = Thread {
-            Handler(Looper.getMainLooper()).post {
-                funRecyclerOperationsAndPostDataLoading()
-            }
+        //init the array list slide models in fun run in a thread /coroutine
+        GlobalScope.launch(Dispatchers.Default) {
+            //slide models run to run in the background
+            funArrayListSlideModels()
+            //
         }
-        thread.start()
+        //init recyclerview ina fun on a separate thread
+        GlobalScope.launch(Dispatchers.Default) {
+            funRecyclerOperationsAndPostDataLoading()
 
+        }
         //
         //fun toolbarOperations
         funToolbarOperations()
@@ -214,7 +222,7 @@ class HomeFragment : Fragment() {
             when (it.itemId) {
                 R.id.searchProduct -> {
                     //call function search products
-                    //alert the user, sho searching hint then on press ok initiate the actual search
+                    //alert the user, show searching hint then on press ok initiate the actual search
                     //basing o the value returned from the shared pref
                     val sharedPref = requireActivity().getSharedPreferences(
                         sharedPreferenceName,
@@ -339,13 +347,12 @@ class HomeFragment : Fragment() {
                     }
                 }
 
-                //creating another another tempArraylist say arrayListProductsSortedLatestFirst that will contain latest items first while old items
+                //creating another tempArraylist say arrayListProductsSortedLatestFirst that will contain latest items first while old items
                 //last by help of the while looping strategy
                 //
-                var arrayListProductsSortedLatestFirst= arrayListOf<DataClassProductsData>()
-                var maxSizeArrayListProductsFetched=arrayListProducts.size-1
-                while (maxSizeArrayListProductsFetched>=0)
-                {
+                var arrayListProductsSortedLatestFirst = arrayListOf<DataClassProductsData>()
+                var maxSizeArrayListProductsFetched = arrayListProducts.size - 1
+                while (maxSizeArrayListProductsFetched >= 0) {
                     arrayListProductsSortedLatestFirst.add(arrayListProducts[maxSizeArrayListProductsFetched])
                     maxSizeArrayListProductsFetched--
                 }
@@ -377,11 +384,7 @@ class HomeFragment : Fragment() {
             }
         }.addOnFailureListener {
             //toast error
-            Toast.makeText(
-                requireActivity(),
-                "error was encountered while fetching data",
-                Toast.LENGTH_LONG
-            ).show()
+            funToastyFail("error was encountered while fetching data")
             //
         }
         //
@@ -445,8 +448,8 @@ class HomeFragment : Fragment() {
                     //define the strategy decremental from the max array to the least @ -1 none is having an item
 
                     //can use array images or arrayTitles for the array max size since are equal both
-                    var arrayMaxSize=arrayListHoldSlideModelTitles.size-1
-                    while (arrayMaxSize>=0) {
+                    var arrayMaxSize = arrayListHoldSlideModelTitles.size - 1
+                    while (arrayMaxSize >= 0) {
                         arraylistHoldSlideModels.add(
                             SlideModel(
                                 arraylistHoldSlideModelImagePath[arrayMaxSize],
@@ -494,7 +497,11 @@ class HomeFragment : Fragment() {
             floatingActionButtonHome.postDelayed({
                 //code functionality herein
                 //toasty that the refresh successfully done
-                Toasty.normal(requireActivity(), "refreshed").show()
+                funToastyCustomTwo(
+                    "refreshed",
+                    R.drawable.ic_refresh,
+                    R.color.androidx_core_secondary_text_default_material_light
+                )
                 //code ends
 
             }, 450)
@@ -566,23 +573,20 @@ class HomeFragment : Fragment() {
     }
 
     private fun funSearchProducts() {
-
         //code begins
-        Toasty.custom(
-            requireActivity(),
+        //
+        funToastyCustomTwo(
             "search",
             R.drawable.ic_search,
-            R.color.androidx_core_secondary_text_default_material_light,
-            Toasty.LENGTH_LONG,
-            true,
-            true
-        ).show()
+            R.color.androidx_core_secondary_text_default_material_light
+        )
+        //
         //creating a menu item by id from toolbar
         val menu = this.toolbarHome.menu
         val menuItem: MenuItem = menu.findItem(R.id.searchProduct)
         //creating a searchView
         val searchView: SearchView = menuItem.actionView as SearchView
-        searchView.queryHint = "type here to search products"
+        searchView.queryHint = getString(R.string.type_here_to_search)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 //called when user type and submits/ hit search
@@ -670,31 +674,27 @@ class HomeFragment : Fragment() {
         //alert dg showing the university selection
         //create a list that will display the options
         val listSortOptions = arrayOf(
-            "Sort By University",
-            "Sort By Product Category",
+            getString(R.string.university),
+            getString(R.string.category),
+            getString(R.string.time_latest),
+            getString(R.string.time_old),
+            getString(R.string.owner_name_asc),
+            getString(R.string.owner_name_desc),
+            getString(R.string.product_name_asc),
+            getString(R.string.product_name_desc)
         )
         //
         val alertSortMethod = MaterialAlertDialogBuilder(requireActivity())
-        alertSortMethod.setTitle("Select A Sorting Method")
+        alertSortMethod.setTitle("select sort method")
         alertSortMethod.setCancelable(false)
         alertSortMethod.setIcon(R.drawable.ic_cart)
         alertSortMethod.background =
-            resources.getDrawable(R.drawable.material_ten, requireActivity().theme)
-        alertSortMethod.setSingleChoiceItems(listSortOptions, 2) { _, which ->
+            resources.getDrawable(R.drawable.material_congratulations, requireActivity().theme)
+        alertSortMethod.setSingleChoiceItems(listSortOptions, 7) { _, which ->
             //save the sorting option in a variable selected,be used for other evaluations
             selected = listSortOptions[which]
             //toast which sort method is selected
-            //toast university sort method selected
-            Toasty.custom(
-                requireActivity(),
-                selected,
-                R.drawable.ic_nike_done,
-                R.color.colorWhite,
-                Toasty.LENGTH_SHORT,
-                true,
-                false
-            ).show()
-            //
+            funToastyShow(selected)
             //
         }
         alertSortMethod.setPositiveButton("sort") { _, _ ->
@@ -703,36 +703,52 @@ class HomeFragment : Fragment() {
             //check if empty is no selection before sorting
             if (selected.isNotEmpty()) {
                 //check if university is the selection
-                if (selected.contains("University")) {
+                if (selected.contains("university")) {
                     //call function display University Names
+                    //toast fun
+                    funToastyShow("university sort")
+                    //
                     functionSortByUniversity()
                     //
-                } else if (selected.contains("Category")) {
-                    Toasty.custom(
-                        requireActivity(),
-                        "Category Sort",
-                        R.drawable.ic_nike_done,
-                        R.color.colorWhite,
-                        Toasty.LENGTH_SHORT,
-                        true,
-                        false
-                    ).show()
-
+                } else if (selected.contains("category", true)) {
+                    //fun toast
+                    funToastyShow("category sort")
                     //call alert show sort option by category
                     funSortByCategory()
                     //
+                } else if (selected.contains("latest first", true)) {
+
+                    //revert back to home since it's the default to latest first
+                    funSortByTimeLatestDefault()
+                    //
+                } else if (selected.contains("old first", true)) {
+                    //call function to load the original array list which on launch only contains
+                    funSortOldFirstUsingOriginalArrayList()
+                    //
+                } else if (selected.contains("owner names (ascending)", true)) {
+                    //call fun to sort names in asc order
+                    val field = "Owner"
+                    val orderStyle = Query.Direction.ASCENDING
+                    funSortDetailsFetchedAsRequired(field, orderStyle)
+                    //
+                } else if (selected.contains("owner names (descending)", true)) {
+                    val field = "Owner"
+                    val orderStyle = Query.Direction.DESCENDING
+                    funSortDetailsFetchedAsRequired(field, orderStyle)
+
+                } else if (selected.contains("names of the products (ascending)", true)) {
+                    val field = "title"
+                    val orderStyle = Query.Direction.ASCENDING
+                    funSortDetailsFetchedAsRequired(field, orderStyle)
+
+                } else if (selected.contains("names of the products (descending)", true)) {
+                    val field = "title"
+                    val orderStyle = Query.Direction.DESCENDING
+                    funSortDetailsFetchedAsRequired(field, orderStyle)
                 }
             } else if (selected.isEmpty()) {
                 //show user must select a university
-                Toasty.custom(
-                    requireActivity(),
-                    "hey, select a sorting method",
-                    R.drawable.ic_smile,
-                    R.color.colorWhite,
-                    Toasty.LENGTH_SHORT,
-                    true,
-                    false
-                ).show()
+                funToastyShow("hey, select a sorting method")
                 //
             }
             //code ends
@@ -741,6 +757,134 @@ class HomeFragment : Fragment() {
         alertSortMethod.show()
         //
 
+        //code ends
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun funSortDetailsFetchedAsRequired(s: String, orderStyle: Query.Direction) {
+        //use order by function in store fetching data to filter the results as per the parameter
+        //pass the parameter of field and direction and let the magic happens
+        val store = FirebaseFirestore.getInstance().collection(CollectionPost)
+        store.orderBy(s, orderStyle).get().addOnCompleteListener {
+            if (it.isSuccessful) {
+                val arrayListSortData = arrayListOf<DataClassProductsData>()
+                //data loaded successfully
+                for (data in it.result.documents) {
+                    val classDataFilter: DataClassProductsData? =
+                        data.toObject(DataClassProductsData::class.java)
+                    if (classDataFilter != null) {
+                        arrayListSortData.add(classDataFilter)
+                    } else {
+                        funToastyFail("something went wrong!")
+                    }
+                }
+                //check if the new array is empty or not
+                if (arrayListSortData.isEmpty()) {
+                    funToastyFail("error encountered")
+                } else if (arrayListSortData.isNotEmpty()) {
+                    val adapterSortedNamesAsc =
+                        MyAdapterProducts(arrayListSortData, requireActivity())
+                    recyclerViewProducts.adapter = null
+                    recyclerViewProducts.apply {
+                        adapter = adapterSortedNamesAsc
+                        layoutManager = LinearLayoutManager(requireActivity())
+                        funToastyShow("sorted successfully")
+                    }
+                }
+                //
+            } else if (!it.isSuccessful) {
+                //data fetching from the store was no successful
+                funToastyFail("sorting failed!")
+                //
+            }
+        }
+        //
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun funSortOldFirstUsingOriginalArrayList() {
+        //code begins
+        //check if the old arrayList is empty or not. if empty fail the process
+        if (arrayListProducts.isEmpty()) {
+            funToastyFail("sort failed!")
+        } else if (arrayListProducts.isNotEmpty()) {
+            //there is data in the array lets initiate the process of loading this data onto the recycler viee
+            val adapterLoadOldArrayList = MyAdapterProducts(arrayListProducts, requireActivity())
+            //assign the adapter on to the rv
+            recyclerViewProducts.apply {
+                adapter = null
+                adapter = adapterLoadOldArrayList
+                layoutManager = LinearLayoutManager(requireActivity())
+                adapterLoadOldArrayList.notifyDataSetChanged()
+                funToastyShow("sort successful")
+            }
+        } else {
+            //sth else is wrong
+            funToastyFail("something went wrong")
+            //
+        }
+        //code ends
+    }
+
+    //funCustomToastMore
+    private fun funToastyCustomTwo(message: String, icon: Int, color: Int) {
+        Toasty.custom(
+            requireActivity(),
+            message,
+            icon,
+            color,
+            Toasty.LENGTH_SHORT,
+            true,
+            false
+        ).show()
+    }
+
+    //fun customToast
+    private fun funToastyCustom(message: String, icon: Int) {
+        Toasty.custom(
+            requireActivity(),
+            message,
+            icon,
+            R.color.colorWhite,
+            Toasty.LENGTH_SHORT,
+            true,
+            false
+        ).show()
+    }
+
+    //function Toasty Fail
+    private fun funToastyFail(message: String) {
+        Toasty.custom(
+            requireActivity(),
+            message,
+            R.drawable.ic_warning,
+            R.color.androidx_core_secondary_text_default_material_light,
+            Toasty.LENGTH_SHORT,
+            true,
+            false
+        ).show()
+    }
+
+    //function Toasty Successful
+    private fun funToastyShow(s: String) {
+        Toasty.custom(
+            requireActivity(),
+            s,
+            R.drawable.ic_nike_done,
+            R.color.colorWhite,
+            Toasty.LENGTH_SHORT,
+            true,
+            false
+        ).show()
+    }
+
+    private fun funSortByTimeLatestDefault() {
+        //code begins
+        //recreate the activity since it is sorted by time
+        val intent = Intent(requireActivity(), ProductsHome::class.java)
+        startActivity(intent)
+        //
+        funToastyShow("sorted successfully")
         //code ends
     }
 
@@ -774,15 +918,7 @@ class HomeFragment : Fragment() {
             //
 
             //toast to the user which sort category he/she opted for
-            Toasty.custom(
-                requireActivity(),
-                selectedCategoryType,
-                R.drawable.ic_nike_done,
-                R.color.colorWhite,
-                Toasty.LENGTH_SHORT,
-                true,
-                false
-            ).show()
+            funToastyShow(selectedCategoryType)
             //
         }
         alertSortByCategory.setNeutralButton("sortNow") { dialog, _ ->
@@ -790,15 +926,7 @@ class HomeFragment : Fragment() {
             //code here the impact of the selected category Type
             if (selectedCategoryType.isEmpty()) {
                 //code begins
-                Toasty.custom(
-                    requireActivity(),
-                    "hey,select a category",
-                    R.drawable.ic_smile,
-                    R.color.colorWhite,
-                    Toasty.LENGTH_SHORT,
-                    true,
-                    false
-                ).show()
+                funToastyShow("hey,select a category")
                 //code ends
 
             } else if (selectedCategoryType.isNotEmpty()) {
@@ -1462,15 +1590,7 @@ class HomeFragment : Fragment() {
             universitySelected = universitiesForSort[which]
 
             //toast which university has been selected
-            Toasty.custom(
-                requireActivity(),
-                universitySelected,
-                R.drawable.ic_nike_done,
-                R.color.colorWhite,
-                Toasty.LENGTH_SHORT,
-                true,
-                false
-            ).show()
+            funToastyShow(universitySelected)
             //
         }
         universitySortAlert.setIcon(R.drawable.ic_cart)
@@ -1485,15 +1605,11 @@ class HomeFragment : Fragment() {
             } else if (universitySelected.isEmpty()) {
 
                 //toast select a university and dismiss dg to avoid RT Exceptions
-                Toasty.custom(
-                    requireActivity(),
-                    "hey, select a university",
+                funToastyCustomTwo(
+                    "hey select a university",
                     R.drawable.ic_smile,
-                    R.color.colorWhite,
-                    Toasty.LENGTH_SHORT,
-                    true,
-                    false
-                ).show()
+                    R.color.androidx_core_secondary_text_default_material_light
+                )
                 //
             }
 
@@ -1518,7 +1634,7 @@ class HomeFragment : Fragment() {
         //be used in the adapter of the recyclerView to populated the data. if no data of the selected uni is
         //the case, revert back by copying the data of the original list into the temp list used by the adapter
         var tempArrayListUniversitySelected = arrayListOf<DataClassProductsData>()
-        //first clear the arraylist the copy the data/replicate from original arraylist
+        //first clear the arraylist then copy the data/replicate from original arraylist
         //
         //lowercase selected uni and also the unis of the original array for comparison ignore case sensitivity
         var lowercaseUniSelected = universitySelected.lowercase(Locale.getDefault())

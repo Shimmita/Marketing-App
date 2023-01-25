@@ -332,6 +332,7 @@ class ActivityUpdateImage : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                     //
+
                     //dismiss the progressD and return home
                     progressDialog.dismiss()
                     val intentHomeProducts =
@@ -339,7 +340,6 @@ class ActivityUpdateImage : AppCompatActivity() {
                     startActivity(intentHomeProducts)
                     this@ActivityUpdateImage.finishAffinity()
                     //
-
                 }
             }
         //code ends

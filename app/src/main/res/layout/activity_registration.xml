@@ -245,7 +245,7 @@
             android:background="@drawable/text_bg"
             android:fontFamily="sans-serif-condensed-light"
             android:padding="11dp"
-            android:text="@string/comrade_market_your_products_easily_powered_by_shimitadouglas_gmail_com"
+            android:text="@string/comrade_market_your_products_easily_powered_by_shimita_douglas_gmail_com"
             android:textColor="@color/abc_search_url_text_selected"
             android:textColorLink="@color/purple_500"
             android:textSize="9.7sp"

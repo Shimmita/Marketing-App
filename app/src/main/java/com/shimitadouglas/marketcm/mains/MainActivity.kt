@@ -281,9 +281,9 @@ class MainActivity : AppCompatActivity() {
     private fun funDisplayAlertDialogPassword() {
         //code start
         val alert_dialog = MaterialAlertDialogBuilder(this@MainActivity)
-        alert_dialog.setTitle(getString(R.string.passwarn))
+        alert_dialog.setTitle(getString(R.string.pass_warn))
         alert_dialog.setIcon(R.drawable.ic_warning)
-        alert_dialog.setMessage(getString(R.string.messge_pass_warn))
+        alert_dialog.setMessage(getString(R.string.message_pass_warn))
         alert_dialog.background = resources.getDrawable(R.drawable.general_alert_dg, theme)
         alert_dialog.show()
         //code end

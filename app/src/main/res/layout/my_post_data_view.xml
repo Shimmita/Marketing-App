@@ -74,7 +74,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="@string/productidstamp"
+                android:text="@string/product_id_stamp"
                 android:textColor="#453A18"
                 android:textStyle="italic" />
 

@@ -22,9 +22,10 @@
             app:contentScrim="@color/white"
             app:expandedTitleTextColor="@color/abc_search_url_text_selected"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlwaysCollapsed|snapMargins"
-            app:scrimAnimationDuration="800"
+            app:scrimAnimationDuration="2000"
             app:title="hot products"
             app:toolbarId="@id/toolbarHome">
+
             <com.denzcoskun.imageslider.ImageSlider
                 android:id="@+id/imageSlider"
                 android:layout_width="match_parent"
