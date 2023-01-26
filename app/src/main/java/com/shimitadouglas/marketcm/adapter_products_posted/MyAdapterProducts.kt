@@ -5,20 +5,25 @@ import android.content.Context
 import android.icu.text.SimpleDateFormat
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.Button
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.shimitadouglas.marketcm.Networking.NetworkMonitor
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreferenceName
 import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
@@ -28,6 +33,9 @@ import java.util.*
 
 class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var context: Context) :
     RecyclerView.Adapter<MyAdapterProducts.MyViewHolder>() {
+    companion object {
+        private const val TAG = "MyAdapterProducts"
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         //create a view that will be returned
@@ -47,7 +55,7 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
             textViewCategoryType.text = "Type:  " + products[position].category
             textViewProductID.text = "Code:  " + products[position].productID
             textViewVicinity.text = "Place:  " + products[position].university
-            textViewDate.text = "Date:   " + products[position].date+" +12hrs"
+            textViewDate.text = "Date:   " + products[position].date + " +12hrs"
             buttonEnquire.text = "Enquire @KES " + products[position].price
 
             //using the glide library to set the images
@@ -58,48 +66,75 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
 
             //setting onclick on the btn enquire
             buttonEnquire.setOnClickListener {
+                //check internet connectivity
+                val classInternetCheck = NetworkMonitor(context)
+                val result = classInternetCheck.checkInternet()
+                if (result) //there is connection to the internet
+                {
+                    val uniqueUID = FirebaseAuth.getInstance().uid
+                    val productOwnerID = products[position].userID
+                    //check if the ownerID is == uniqueID
+                    //if are equal toast cannot enquire for the product that belongs to you
+                    if (uniqueUID != null) {
+                        if (uniqueUID == productOwnerID) {
+                            //cannot happen since the product belongs to the currently logged in user
+                            funToastyCustom(
+                                "cannot enquire your own products!",
+                                R.drawable.ic_smile,
+                                R.color.androidx_core_secondary_text_default_material_light
+                            )
+                        }
+                    } else {
+                        //user can make an enquiry since the product is not of his/her
+                        //animate the card
+                        cardView.apply {
+                            startAnimation(AnimationUtils.loadAnimation(context, R.anim.rotate_avg))
+                        }
 
+                        //
+                        //creating the date instance from the Calendar
+                        val timeUsingCalendar = Calendar.getInstance().time
+                        val dateFormat = SimpleDateFormat("dd-MM-yyyy")
+                        val formattedTime = dateFormat.format(timeUsingCalendar)
 
-                //animate the card
-                cardView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.rotate_avg))
-                //
-                Handler(Looper.myLooper()!!).postDelayed({
-                    //creating the date instance from the Calendar
-                    val timeUsingCalendar = Calendar.getInstance().time
-                    val dateFormat = SimpleDateFormat("dd-MM-yyyy")
-                    val formattedTime = dateFormat.format(timeUsingCalendar)
-                    //
-                    //obtain owner uniqueUID
-                    val uniqueIDOwnerProduct = products[position].userID
-                    //
-                    //obtaining enquirer name from the sharedPreference
-                    val sharedPreferences =
-                        context.getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
-                    val fName = sharedPreferences.getString("firstname", "")
-                    val lName = sharedPreferences.getString("lastname", "")
-                    val uni = sharedPreferences.getString("university", "")
-                    val email = sharedPreferences.getString("email", "")
-                    val phone = sharedPreferences.getString("phone", "")
-                    //
-                    //call function to perform enquiries
-                    val titleEnquiredProduct = textViewTitleProduct.text.toString()
-                    val imageEnquiredProduct = products[position].imageProduct
-                    val enquirerName = "$fName $lName"
-                    val placeEnquirer = uni
-                    val emailEnquirer = email
-                    val phoneEnquirer = phone
-                    holder.funEnquiriesOperations(
-                        titleEnquiredProduct,
-                        imageEnquiredProduct,
-                        enquirerName,
-                        placeEnquirer,
-                        emailEnquirer,
-                        phoneEnquirer,
-                        formattedTime,
-                        uniqueIDOwnerProduct
-                    )
-                    //
-                }, 1200)
+                        //obtain owner uniqueUID
+                        val uniqueIDOwnerProduct = products[position].userID
+
+                        //obtaining enquirer name from the sharedPreference
+                        val sharedPreferences =
+                            context.getSharedPreferences(
+                                sharedPreferenceName,
+                                Context.MODE_PRIVATE
+                            )
+                        val fName = sharedPreferences.getString("firstname", "")
+                        val lName = sharedPreferences.getString("lastname", "")
+                        val uni = sharedPreferences.getString("university", "")
+                        val email = sharedPreferences.getString("email", "")
+                        val phone = sharedPreferences.getString("phone", "")
+                        //
+                        //call function to perform enquiries
+                        val titleEnquiredProduct = textViewTitleProduct.text.toString()
+                        val imageEnquiredProduct = products[position].imageProduct
+                        val enquirerName = "$fName $lName"
+                        //
+
+                        //creating a handler that will delay 1.2m and then call fun that performs posting of the enquiry requests
+                        Handler(Looper.myLooper()!!).postDelayed({
+                            holder.funEnquiriesOperations(
+                                titleEnquiredProduct,
+                                imageEnquiredProduct,
+                                enquirerName,
+                                uni,
+                                email,
+                                phone,
+                                formattedTime,
+                                uniqueIDOwnerProduct
+                            )
+                            //
+                        }, 1200)
+                        //
+                    }
+                }
 
             }
 
@@ -128,6 +163,41 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
                 alert.show()
             }
             //
+
+            //get the date of the product from the products array and then define if the product date is equivalent to today's date through
+            //string splitting and obtaining the date/month/year only
+            val dateProductPosted = products[position].date
+            val dateSpliced = dateProductPosted?.split(" ")
+            val datesObtained = dateSpliced?.get(0)
+
+            val arrayOfDatesObtained = arrayListOf<String?>()
+            arrayOfDatesObtained.clear()
+            arrayOfDatesObtained.add(datesObtained)
+            //get today's date by calling the fun returned date
+            val todayDate = returnedToday()
+            //
+            if (arrayOfDatesObtained.isNotEmpty()) {
+
+                for (date in arrayOfDatesObtained) {
+
+                    if (date.equals(todayDate, true)) {
+
+                        funBlinkRelativeBanner(relativeLayoutBlink)
+
+                    } else if (!(date.equals(todayDate, true))) {
+                        //dates are no matching thus display the relative without blinking
+                        //disable the overall relativeLayout
+                        relativeLayoutBlink.visibility = View.GONE
+                        //
+
+                    }
+
+                }
+
+            } else if (arrayOfDatesObtained.isEmpty()) {
+                funToastyFail("unknown error has occurred!")
+            }
+
 
         }
         //
@@ -203,8 +273,9 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
         var textViewProductID: TextView
         var textViewVicinity: TextView
         var textViewDate: TextView
-        var buttonEnquire: Button
+        var buttonEnquire: AppCompatButton
         var cardView: CardView
+        var relativeLayoutBlink: RelativeLayout
 
         //init of the views
         init {
@@ -219,6 +290,9 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
             textViewDate = item.findViewById(R.id.tvDate)
             buttonEnquire = item.findViewById(R.id.btnEnquire)
             cardView = item.findViewById(R.id.cardAdapterProducts)
+            relativeLayoutBlink = item.findViewById(R.id.relativeBlinkProductNew)
+
+
         }
 
         //
@@ -247,7 +321,7 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
         val keyEnquirerEmail = "enquirerEmail"
         val keyEnquirerPhone = "enquirerPhone"
         val keyEnquiredDate = "enquiredDate"
-        val keyTimeController="uniqueTimer"
+        val keyTimeController = "uniqueTimer"
         //creating a hashmap to store data key value pairs
         val hashMapEnquiries = hashMapOf(
             keyTitleProduct to titleEnquiredProduct,
@@ -283,5 +357,64 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
         }
         //code ends
     }
+
+    //normal success Toasty
+    private fun funToasty(message: String) {
+        Toasty.custom(
+            context,
+            message,
+            R.drawable.ic_nike_done,
+            R.color.androidx_core_secondary_text_default_material_light,
+            Toasty.LENGTH_SHORT,
+            true,
+            true
+        ).show()
+    }
+
+    //normal failed toasty
+    private fun funToastyFail(message: String) {
+        Toasty.custom(
+            context,
+            message,
+            R.drawable.ic_warning,
+            R.color.androidx_core_secondary_text_default_material_light,
+            Toasty.LENGTH_SHORT,
+            true,
+            true
+        ).show()
+    }
+
+    //custom toasty
+    private fun funToastyCustom(message: String, icon: Int, color: Int) {
+        Toasty.custom(context, message, icon, color, Toasty.LENGTH_SHORT, true, true).show()
+    }
+
+    //function return the date today
+    @SuppressLint("SimpleDateFormat")
+    private fun returnedToday(): String {
+        val currentDateFromTheCalendar = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy")
+        val today = dateFormat.format(currentDateFromTheCalendar)
+        //log today date
+        Log.d(TAG, "onBindViewHolder: today:$today\n")
+        //
+        return today
+    }
+
+    //fun init anim relative today/new banner
+    private fun funBlinkRelativeBanner(viewRelativeBlink: View) {
+        //visible the relative layout
+        viewRelativeBlink.visibility = View.VISIBLE
+        //init the alpha anim and make it work on the relativeLayout
+        val alphaAnimation = AlphaAnimation(1.0f, 0.0f)
+        alphaAnimation.apply {
+            repeatMode = Animation.REVERSE
+            repeatCount = Animation.INFINITE
+            duration = 600
+            viewRelativeBlink.startAnimation(alphaAnimation)
+        }
+        //
+    }
+    //
 
 }

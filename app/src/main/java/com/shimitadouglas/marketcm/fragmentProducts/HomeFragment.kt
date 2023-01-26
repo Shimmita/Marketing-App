@@ -2,6 +2,7 @@ package com.shimitadouglas.marketcm.fragmentProducts
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -60,8 +61,10 @@ class HomeFragment : Fragment() {
     private lateinit var floatingActionButtonHome: FloatingActionButton
     private lateinit var coordinatorLayout: CoordinatorLayout
     private lateinit var imageSlider: ImageSlider
-
+    private lateinit var viewProgression: View
+    private lateinit var progressDialogMain: ProgressDialog
     //
+
     //recycler for Products hold
     lateinit var recyclerViewProducts: RecyclerView
     //
@@ -73,87 +76,10 @@ class HomeFragment : Fragment() {
     //
     //declaration of tempArrayList that will be used in searchView of type ProductData
     lateinit var tempArrayList: ArrayList<DataClassProductsData>
-
-    //
     //arrayList Universities
-    //init of globals
-    private var universitiesForSort = arrayOf(
-        "Maseno University",
-        "Nairobi University",
-        "Jomo Kenyatta University",
-        "Kenyatta University",
-        "Laikipia University",
-        "Meru University",
-        "Gretsa University",
-        "DayStar University",
-        "Garissa University",
-        "Technical University Of Mombasa",
-        "Taita Taveta University",
-        "Pwani University",
-        "Moi University",
-        "Chuka University",
-        "Kibabii University",
-        "Saint Paul's University",
-        "Maasai Mara University",
-        "Alupe University",
-        "Kisii University",
-        "Adventist University Of Africa",
-        "Africa International University",
-        "Africa Nazarene University",
-        "Amref International University",
-        "Dedan Kimathi University",
-        "Egerton University",
-        "Great Lakes University",
-        "International Leadership University",
-        "Jaramogi Oginga Odinga University",
-        "Kabarak University",
-        "KAG University",
-        "Karatina Universty",
-        "KCA University",
-        "Kenya Highlands University",
-        "Kenya Methodist University",
-        "Kirinyaga University",
-        "Kirir Women's University",
-        "Lukenya University",
-        "Machakos University",
-        "Management University Of Africa",
-        "Masinde Muliro University",
-        "Mount Kenya University",
-        "Multimedia University ",
-        "Murang'a University",
-        "Pan Africa Christian University",
-        "Pioneer International University",
-        "RAF International University",
-        "Riara University",
-        "Rongo University",
-        "Scott Christian University",
-        "South Eastern Kenya University",
-        "Strathmore University",
-        "Technical university Of Kenya",
-        "Catholic University Of Eastern Africa",
-        "East African University",
-        "Presbyterian University",
-        "Umma University",
-        "United States International university",
-        "Baraton University",
-        "Embu University",
-        "Kabianga University",
-        "Zetech University",
-        "Uzima University",
-        "University Of Eldoret",
-        "Turkana University",
-        "Tom Mboya University",
-        "Tharaka University",
-        "Tangaza University",
-        "Koitaleel Samoei University",
-        "Kaimosi Univesity",
-        "SEKU University",
-        "Bomet University",
-        "Co-operative University Of Kenya",
-        "Marist International University",
-        "Management University of Africa"
-    )
 
+    //init of globals
+    private var universitiesForSort = arrayOf<String>()
     //
 
 
@@ -177,12 +103,14 @@ class HomeFragment : Fragment() {
             funArrayListSlideModels()
             //
         }
+
         //init recyclerview ina fun on a separate thread
         GlobalScope.launch(Dispatchers.Default) {
             funRecyclerOperationsAndPostDataLoading()
 
         }
         //
+
         //fun toolbarOperations
         funToolbarOperations()
         //
@@ -335,7 +263,11 @@ class HomeFragment : Fragment() {
         val postsApiStore = FirebaseFirestore.getInstance()
         postsApiStore.collection(CollectionPost).get().addOnSuccessListener {
             if (!it.isEmpty) {
-                //there is data present
+                //disable pgD
+                progressDialogMain.dismiss()
+                //
+
+                // data present
                 //init products arrayList main
                 arrayListProducts = arrayListOf<DataClassProductsData>()
                 //
@@ -348,7 +280,7 @@ class HomeFragment : Fragment() {
                 }
 
                 //creating another tempArraylist say arrayListProductsSortedLatestFirst that will contain latest items first while old items
-                //last by help of the while looping strategy
+                //last by help of the while looping strategy with decrement system where the latest element becomes first in the new array
                 //
                 var arrayListProductsSortedLatestFirst = arrayListOf<DataClassProductsData>()
                 var maxSizeArrayListProductsFetched = arrayListProducts.size - 1
@@ -376,6 +308,19 @@ class HomeFragment : Fragment() {
                 recyclerViewProducts.layoutManager = LinearLayoutManager(requireActivity())
                 //
 
+                //variable holding the max size of items contained in the array
+                var totalProducts = arrayListProducts.size
+                //show a snack-bar/Toasty of total number of items
+                Toasty.custom(
+                    requireActivity(),
+                    "total products:$totalProducts",
+                    R.drawable.ic_cart,
+                    R.color.androidx_core_secondary_text_default_material_light,
+                    Toasty.LENGTH_LONG,
+                    true,
+                    true
+                ).show()
+                //
 
             } else if (it.isEmpty) {
                 //no data is present
@@ -540,7 +485,7 @@ class HomeFragment : Fragment() {
         //code ends
     }
 
-    @SuppressLint("PrivateResource")
+    @SuppressLint("PrivateResource", "InflateParams")
     private fun functionInit() {
         //code  begins
         //call function to update the title accordingly
@@ -555,6 +500,29 @@ class HomeFragment : Fragment() {
         coordinatorLayout = viewHome.findViewById(R.id.coordinatorHome)
         imageSlider = viewHome.findViewById(R.id.imageSlider)
         recyclerViewProducts = viewHome.findViewById(R.id.recyclerViewProducts)
+
+        //init the arrayUniversity from the resource arrayStrings and sort em
+        universitiesForSort = resources.getStringArray(R.array.universities_ke)
+        universitiesForSort.sort()
+        //
+
+        //initialise the view progression w/c is used in place of progressD will be shown in an alertD when data is no fetched from
+        //the store public repo
+        viewProgression = LayoutInflater.from(requireActivity())
+            .inflate(R.layout.general_progress_dialog_view, null, false)
+        //
+
+        //init the material alert dialog
+        progressDialogMain = ProgressDialog(requireActivity())
+        progressDialogMain.apply {
+            setTitle("Products Data")
+            setView(viewProgression)
+            setCancelable(false)
+            setMessage("Loading")
+            setIcon(R.drawable.ic_download)
+            create()
+            show()
+        }
         //
 
         //parent animate
@@ -574,6 +542,7 @@ class HomeFragment : Fragment() {
 
     private fun funSearchProducts() {
         //code begins
+
         //
         funToastyCustomTwo(
             "search",
@@ -581,6 +550,7 @@ class HomeFragment : Fragment() {
             R.color.androidx_core_secondary_text_default_material_light
         )
         //
+
         //creating a menu item by id from toolbar
         val menu = this.toolbarHome.menu
         val menuItem: MenuItem = menu.findItem(R.id.searchProduct)
@@ -672,17 +642,10 @@ class HomeFragment : Fragment() {
     private fun funSortProducts() {
         //code begins
         //alert dg showing the university selection
-        //create a list that will display the options
-        val listSortOptions = arrayOf(
-            getString(R.string.university),
-            getString(R.string.category),
-            getString(R.string.time_latest),
-            getString(R.string.time_old),
-            getString(R.string.owner_name_asc),
-            getString(R.string.owner_name_desc),
-            getString(R.string.product_name_asc),
-            getString(R.string.product_name_desc)
-        )
+        //create list that loads data from stringArray Resource
+        var listSortOptions = arrayOf<String>()
+        listSortOptions = resources.getStringArray(R.array.listSortOptions)
+        listSortOptions.sort()
         //
         val alertSortMethod = MaterialAlertDialogBuilder(requireActivity())
         alertSortMethod.setTitle("select sort method")
@@ -725,23 +688,23 @@ class HomeFragment : Fragment() {
                     //call function to load the original array list which on launch only contains
                     funSortOldFirstUsingOriginalArrayList()
                     //
-                } else if (selected.contains("owner names (ascending)", true)) {
+                } else if (selected.contains("owners names(a-z)", true)) {
                     //call fun to sort names in asc order
                     val field = "Owner"
                     val orderStyle = Query.Direction.ASCENDING
                     funSortDetailsFetchedAsRequired(field, orderStyle)
                     //
-                } else if (selected.contains("owner names (descending)", true)) {
+                } else if (selected.contains("owners names (z-a)", true)) {
                     val field = "Owner"
                     val orderStyle = Query.Direction.DESCENDING
                     funSortDetailsFetchedAsRequired(field, orderStyle)
 
-                } else if (selected.contains("names of the products (ascending)", true)) {
+                } else if (selected.contains("names of the products(a-z)", true)) {
                     val field = "title"
                     val orderStyle = Query.Direction.ASCENDING
                     funSortDetailsFetchedAsRequired(field, orderStyle)
 
-                } else if (selected.contains("names of the products (descending)", true)) {
+                } else if (selected.contains("names of the products(z-a)", true)) {
                     val field = "title"
                     val orderStyle = Query.Direction.DESCENDING
                     funSortDetailsFetchedAsRequired(field, orderStyle)
@@ -767,8 +730,13 @@ class HomeFragment : Fragment() {
         val store = FirebaseFirestore.getInstance().collection(CollectionPost)
         store.orderBy(s, orderStyle).get().addOnCompleteListener {
             if (it.isSuccessful) {
-                val arrayListSortData = arrayListOf<DataClassProductsData>()
                 //data loaded successfully
+                //create an array that will always temporarily store the data filtered by the class
+                val arrayListSortData = arrayListOf<DataClassProductsData>()
+                //clear the list
+                arrayListSortData.clear()
+                //
+
                 for (data in it.result.documents) {
                     val classDataFilter: DataClassProductsData? =
                         data.toObject(DataClassProductsData::class.java)
@@ -808,7 +776,9 @@ class HomeFragment : Fragment() {
         if (arrayListProducts.isEmpty()) {
             funToastyFail("sort failed!")
         } else if (arrayListProducts.isNotEmpty()) {
-            //there is data in the array lets initiate the process of loading this data onto the recycler viee
+            //there is data in the array lets initiate the process of loading this data onto the recycler view
+            //no intensive logic is required since the original array list loads data in response to old first latest below
+            //old
             val adapterLoadOldArrayList = MyAdapterProducts(arrayListProducts, requireActivity())
             //assign the adapter on to the rv
             recyclerViewProducts.apply {
@@ -892,27 +862,19 @@ class HomeFragment : Fragment() {
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun funSortByCategory() {
         //code begins
-        val listCategorySort = arrayOf(
-            "Sort By PowerBanks",
-            "Sort By Laptop RAM",
-            "Sort By SmartPhones",
-            "Sort By Tablets/Ipads",
-            "Sort By Hard Disks/SSDs",
-            "Sort By Laptops/Desktops",
-            "Sort By TVs/FlatScreens",
-            "Sort By Shoes/Drips/Dior",
-            "Sort By Earphones/Headphones",
-            "Sort By Woofer/System/robot BT",
-            "Sort By Kaduda/Kabambe/Mulika Mwizi",
-            "Sort By Flash Drives/SD Cards/Memory Cards",
-        )
+        //list that contains the methods od category sort
+        var listCategorySort = arrayOf<String>()
+        listCategorySort = resources.getStringArray(R.array.list_category_sort)
+        //sort the list
+        listCategorySort.sort()
+        //
         var selectedCategoryType = ""
 
         val alertSortByCategory = MaterialAlertDialogBuilder(requireActivity())
-        alertSortByCategory.setTitle("Select Category")
+        alertSortByCategory.setTitle("select category")
         alertSortByCategory.setIcon(R.drawable.ic_sort)
         alertSortByCategory.background =
-            resources.getDrawable(R.drawable.material_eight, requireActivity().theme)
+            resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
         alertSortByCategory.setSingleChoiceItems(listCategorySort, 0) { _, which ->
             selectedCategoryType = listCategorySort[which]
             //
@@ -927,8 +889,11 @@ class HomeFragment : Fragment() {
             if (selectedCategoryType.isEmpty()) {
                 //code begins
                 funToastyShow("hey,select a category")
-                //code ends
+                //dismiss
+                dialog.dismiss()
+                //
 
+                //code ends
             } else if (selectedCategoryType.isNotEmpty()) {
                 //basing on the category evaluate to e the correct response
                 if (selectedCategoryType.lowercase(
@@ -938,12 +903,20 @@ class HomeFragment : Fragment() {
                     //call function to search powerbanks*
                     funSortByPowerBanks(selectedCategoryType)
                     //
+                    //dismiss
+                    dialog.dismiss()
+                    //
+
                 } else if (selectedCategoryType.lowercase(
                         Locale.getDefault()
                     ).contains("smartphones")
                 ) {
                     //call function sort by smartphones
                     funSortBySmartPhones(selectedCategoryType)
+                    //
+
+                    //dismiss
+                    dialog.dismiss()
                     //
 
                 } else if (selectedCategoryType.lowercase(Locale.getDefault()).contains(
@@ -953,12 +926,19 @@ class HomeFragment : Fragment() {
                     //call function sort by tablets/ipads
                     funSortByTabletsIpads(selectedCategoryType)
                     //
+                    //dismiss
+                    dialog.dismiss()
+                    //
                 } else if (selectedCategoryType.lowercase(Locale.getDefault())
                         .contains("laptops") || selectedCategoryType.lowercase(Locale.getDefault())
                         .contains("desktops")
                 ) {
                     //call fun sort by laptops
                     funSortByLaptopDesktops(selectedCategoryType)
+                    //
+
+                    //dismiss
+                    dialog.dismiss()
                     //
 
                 } else if (selectedCategoryType.lowercase(Locale.getDefault())
@@ -968,6 +948,10 @@ class HomeFragment : Fragment() {
                 ) {
                     //fun sort by tvs.flatscreens
                     funSortByTvFlatScreen(selectedCategoryType)
+                    //
+
+                    //dismiss
+                    dialog.dismiss()
                     //
 
                 } else if (selectedCategoryType.lowercase(Locale.getDefault())
@@ -981,6 +965,10 @@ class HomeFragment : Fragment() {
                     funSortByShoesDiorDrip(selectedCategoryType)
                     //
 
+                    //dismiss
+                    dialog.dismiss()
+                    //
+
                 } else if (selectedCategoryType.lowercase(Locale.getDefault())
                         .contains("earphones") || selectedCategoryType.lowercase(
                         Locale.getDefault()
@@ -988,6 +976,10 @@ class HomeFragment : Fragment() {
                 ) {
                     //fun sort by earphones headphones
                     funSortByEarphoneHeadPhones(selectedCategoryType)
+                    //
+
+                    //dismiss
+                    dialog.dismiss()
                     //
 
                 } else if (selectedCategoryType.lowercase(Locale.getDefault())
@@ -998,6 +990,10 @@ class HomeFragment : Fragment() {
 
                     //fun sort by woofer system robot BT
                     funSortByWooferSystemRobotBT(selectedCategoryType)
+                    //
+
+                    //dismiss
+                    dialog.dismiss()
                     //
 
                 } else if (selectedCategoryType.lowercase(Locale.getDefault())
@@ -1012,6 +1008,10 @@ class HomeFragment : Fragment() {
                     funSortByKabambeKaduda(selectedCategoryType)
                     //
 
+                    //dismiss
+                    dialog.dismiss()
+                    //
+
                 } else if (selectedCategoryType.lowercase(Locale.getDefault())
                         .contains("flash") || selectedCategoryType.lowercase(
                         Locale.getDefault()
@@ -1022,6 +1022,9 @@ class HomeFragment : Fragment() {
                     //sort By flash drives SD cards
                     funSortByFlashSD(selectedCategoryType)
                     //
+                    //dismiss
+                    dialog.dismiss()
+                    //
 
                 } else if (selectedCategoryType.lowercase(Locale.getDefault())
                         .contains("hard") || selectedCategoryType.contains("ssd")
@@ -1031,12 +1034,19 @@ class HomeFragment : Fragment() {
                     //fun sort by HDD or SSDs
                     funSortByHDDSSD(selectedCategoryType)
                     //
+
+                    //dismiss
+                    dialog.dismiss()
+                    //
                 } else if (selectedCategoryType.lowercase(Locale.getDefault()).contains("ram")) {
                     Toast.makeText(requireActivity(), "Laptop RAMS", Toast.LENGTH_SHORT).show()
                     //call function sort items by RAMS
                     funSortBYRAM(selectedCategoryType)
                     //
 
+                    //dismiss
+                    dialog.dismiss()
+                    //
                 }
 
                 //
@@ -1062,23 +1072,9 @@ class HomeFragment : Fragment() {
         }
 
         if (tempArrayRAMS.isEmpty()) {
-            val alertNoData = MaterialAlertDialogBuilder(requireActivity())
-            alertNoData.setIcon(R.drawable.ic_sort)
-            alertNoData.setTitle("$selectedCategoryType Results")
-            alertNoData.setCancelable(false)
-            alertNoData.background =
-                resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-            alertNoData.setMessage(
-                "laptop RAM(s) have not yet been posted.you might become the first one to post if you do posting on Laptop RAMS" + "\nan opportunity huh? grab that opportunity!\n" + "try using the search for better results!"
-            )
-            alertNoData.setNeutralButton("ok") { dialog, _ ->
-
-                //dismiss the dialog
-                dialog.dismiss()
-                //
-            }
-            alertNoData.create()
-            alertNoData.show()
+            //call fun no results
+            funNoResultsCategorySort(selectedCategoryType)
+            //
         } else if (tempArrayRAMS.isNotEmpty()) {
             //code begins
             val adapterRAMS = MyAdapterProducts(tempArrayRAMS, requireActivity())
@@ -1107,23 +1103,9 @@ class HomeFragment : Fragment() {
             }
         }
         if (tempArrayListHDDSSD.isEmpty()) {
-            val alertNoData = MaterialAlertDialogBuilder(requireActivity())
-            alertNoData.setIcon(R.drawable.ic_sort)
-            alertNoData.setTitle("$selectedCategoryType Results")
-            alertNoData.setCancelable(false)
-            alertNoData.background =
-                resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-            alertNoData.setMessage(
-                "hard disks or SSDs have not yet been posted.you might become the first one to post if you do posting on hard disks or SSDs" + "\nan opportunity huh? grab that opportunity!\n" + "try using the search for better results!"
-            )
-            alertNoData.setNeutralButton("ok") { dialog, _ ->
-
-                //dismiss the dialog
-                dialog.dismiss()
-                //
-            }
-            alertNoData.create()
-            alertNoData.show()
+            //call fun no results on the sort by category
+            funNoResultsCategorySort(selectedCategoryType)
+            //
         } else if (tempArrayListHDDSSD.isNotEmpty()) {
             recyclerViewProducts.adapter = null
             val adapterHDDSSD = MyAdapterProducts(tempArrayListHDDSSD, requireActivity())
@@ -1149,23 +1131,9 @@ class HomeFragment : Fragment() {
         }
 
         if (tempArrayListFlashSD.isEmpty()) {
-            val alertNoData = MaterialAlertDialogBuilder(requireActivity())
-            alertNoData.setIcon(R.drawable.ic_sort)
-            alertNoData.setTitle("$selectedCategoryType Results")
-            alertNoData.setCancelable(false)
-            alertNoData.background =
-                resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-            alertNoData.setMessage(
-                "flash drives,Pen Drives,SD Cards or Memory Cards have not yet been posted.you might become the first one to post if you do posting on Flash Drives,SD Cards" + "\nan opportunity huh? grab that opportunity!\n" + "try using the search for better results!"
-            )
-            alertNoData.setNeutralButton("ok") { dialog, _ ->
-
-                //dismiss the dialog
-                dialog.dismiss()
-                //
-            }
-            alertNoData.create()
-            alertNoData.show()
+            //call fun no results
+            funNoResultsCategorySort(selectedCategoryType)
+            //
         } else if (tempArrayListFlashSD.isNotEmpty()) {
             recyclerViewProducts.adapter = null
             val adapterFlashDrives = MyAdapterProducts(tempArrayListFlashSD, requireActivity())
@@ -1191,23 +1159,9 @@ class HomeFragment : Fragment() {
             }
         }
         if (tempArrayListKabambeKaduda.isEmpty()) {
-            val alertNoData = MaterialAlertDialogBuilder(requireActivity())
-            alertNoData.setIcon(R.drawable.ic_sort)
-            alertNoData.setTitle("$selectedCategoryType Results")
-            alertNoData.background =
-                resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-            alertNoData.setCancelable(false)
-            alertNoData.setMessage(
-                "kabambe or kaduda have not yet been posted.you might become the first one to post if you do posting on kabambe or kaduda" + "\nan opportunity huh? grab that opportunity!\n" + "try using the search for better results!"
-            )
-            alertNoData.setNeutralButton("ok") { dialog, _ ->
-
-                //dismiss the dialog
-                dialog.dismiss()
-                //
-            }
-            alertNoData.create()
-            alertNoData.show()
+            //call fun no results
+            funNoResultsCategorySort(selectedCategoryType)
+            //
         } else if (tempArrayListKabambeKaduda.isNotEmpty()) {
             recyclerViewProducts.adapter = null
             val adapterKabambeKaduda =
@@ -1235,23 +1189,9 @@ class HomeFragment : Fragment() {
 
         }
         if (tempArrayListWooferSystem.isEmpty()) {
-            val alertNoData = MaterialAlertDialogBuilder(requireActivity())
-            alertNoData.setIcon(R.drawable.ic_sort)
-            alertNoData.setTitle("$selectedCategoryType Results")
-            alertNoData.setCancelable(false)
-            alertNoData.background =
-                resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-            alertNoData.setMessage(
-                "woofer,subwoofer or robot speakers have not yet been posted.you might become the first one to post if you do posting on woofer,subwoofer or robot BT" + "\nan opportunity huh? grab that opportunity!\n" + "try using the search for better results!"
-            )
-            alertNoData.setNeutralButton("ok") { dialog, _ ->
-
-                //dismiss the dialog
-                dialog.dismiss()
-                //
-            }
-            alertNoData.create()
-            alertNoData.show()
+            //call fun no results
+            funNoResultsCategorySort(selectedCategoryType)
+            //
         }
 
         //code ends
@@ -1272,23 +1212,9 @@ class HomeFragment : Fragment() {
             }
         }
         if (tempArrayListEarphonesHeadPhones.isEmpty()) {
-            val alertNoData = MaterialAlertDialogBuilder(requireActivity())
-            alertNoData.setIcon(R.drawable.ic_search)
-            alertNoData.setTitle("$selectedCategoryType Results")
-            alertNoData.setCancelable(false)
-            alertNoData.background =
-                resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-            alertNoData.setMessage(
-                "earphones or headphones have not yet been posted.you might become the first one to post if you do posting on earphones or headphones" + "\nan opportunity huh? grab that opportunity!\n" + "try using the search for better results!"
-            )
-            alertNoData.setNeutralButton("ok") { dialog, _ ->
-
-                //dismiss the dialog
-                dialog.dismiss()
-                //
-            }
-            alertNoData.create()
-            alertNoData.show()
+            //call fun no results
+            funNoResultsCategorySort(selectedCategoryType)
+            //
         } else if (tempArrayListEarphonesHeadPhones.isNotEmpty()) {
             recyclerViewProducts.adapter = null
             val adapterEarphonesHeadPhones =
@@ -1313,23 +1239,9 @@ class HomeFragment : Fragment() {
             }
         }
         if (tempArrayListShoesDripsDior.isEmpty()) {
-            val alertNoData = MaterialAlertDialogBuilder(requireActivity())
-            alertNoData.setIcon(R.drawable.ic_search)
-            alertNoData.setTitle("$selectedCategoryType Results")
-            alertNoData.setCancelable(false)
-            alertNoData.background =
-                resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-            alertNoData.setMessage(
-                "shoes,drips or dior have not yet been posted.you might become the first one to post if you do posting on shoes,drips or dior" + "\nan opportunity huh? grab that opportunity!\n" + "try using the search for better results!"
-            )
-            alertNoData.setNeutralButton("ok") { dialog, _ ->
-
-                //dismiss the dialog
-                dialog.dismiss()
-                //
-            }
-            alertNoData.create()
-            alertNoData.show()
+            //call fun no results
+            funNoResultsCategorySort(selectedCategoryType)
+            //
         } else if (tempArrayListShoesDripsDior.isNotEmpty()) {
             recyclerViewProducts.adapter = null
             val adapterShoesDripsDior =
@@ -1354,23 +1266,9 @@ class HomeFragment : Fragment() {
             }
         }
         if (tempArrayListTvsFlats.isEmpty()) {
-            val alertNoData = MaterialAlertDialogBuilder(requireActivity())
-            alertNoData.setIcon(R.drawable.ic_search)
-            alertNoData.setTitle("$selectedCategoryType Results")
-            alertNoData.background =
-                resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-            alertNoData.setCancelable(false)
-            alertNoData.setMessage(
-                "tvs or flatscreens have not yet been posted.you might become the first one to post if you do posting on tvs or flatscreens" + "\nan opportunity huh? grab that opportunity!\n" + "try using the search for better results!"
-            )
-            alertNoData.setNeutralButton("ok") { dialog, _ ->
-
-                //dismiss the dialog
-                dialog.dismiss()
-                //
-            }
-            alertNoData.create()
-            alertNoData.show()
+            //call fun no results
+            funNoResultsCategorySort(selectedCategoryType)
+            //
         } else if (tempArrayListTvsFlats.isNotEmpty()) {
             recyclerViewProducts.adapter = null
             val adapterTvsFlats = MyAdapterProducts(tempArrayListTvsFlats, requireActivity())
@@ -1394,23 +1292,9 @@ class HomeFragment : Fragment() {
             }
         }
         if (tempArrayListLaptopDeskTops.isEmpty()) {
-            val alertNoData = MaterialAlertDialogBuilder(requireActivity())
-            alertNoData.setIcon(R.drawable.ic_search)
-            alertNoData.setTitle("$selectedCategoryType Results")
-            alertNoData.setCancelable(false)
-            alertNoData.background =
-                resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-            alertNoData.setMessage(
-                "laptops and Desktops have not yet been posted.you might become the first one to post if you do posting on laptops and desktops" + "\nan opportunity huh? grab that opportunity!\n" + "try using the search for better results!"
-            )
-            alertNoData.setNeutralButton("ok") { dialog, _ ->
-
-                //dismiss the dialog
-                dialog.dismiss()
-                //
-            }
-            alertNoData.create()
-            alertNoData.show()
+            //call fun no results
+            funNoResultsCategorySort(selectedCategoryType)
+            //
         } else if (tempArrayListLaptopDeskTops.isNotEmpty()) {
             recyclerViewProducts.adapter = null
             val adapterLaptopDesktop =
@@ -1436,23 +1320,9 @@ class HomeFragment : Fragment() {
             }
         }
         if (tempArrayListTabletsIpads.isEmpty()) {
-            val alertNoData = MaterialAlertDialogBuilder(requireActivity())
-            alertNoData.setIcon(R.drawable.ic_search)
-            alertNoData.setTitle("$selectedCategoryType Results")
-            alertNoData.background =
-                resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-            alertNoData.setCancelable(false)
-            alertNoData.setMessage(
-                "tablets and ipads have not yet been posted.you might become the first one to post if you do posting on tablets and ipads" + "\nan opportunity huh? grab that opportunity!\n" + "try using the search for better results!"
-            )
-            alertNoData.setNeutralButton("ok") { dialog, _ ->
-
-                //dismiss the dialog
-                dialog.dismiss()
-                //
-            }
-            alertNoData.create()
-            alertNoData.show()
+            //call fun no results
+            funNoResultsCategorySort(selectedCategoryType)
+            //
         } else if (tempArrayListTabletsIpads.isNotEmpty()) {
             recyclerViewProducts.adapter = null
             val adapterTabIpad = MyAdapterProducts(tempArrayListTabletsIpads, requireActivity())
@@ -1484,24 +1354,8 @@ class HomeFragment : Fragment() {
 
         //check if empty tempArrayList Products and react accordingly
         if (tempArrayListSmartPhones.isEmpty()) {
-            //alert empty results about smartphones
-            val alertNoData = MaterialAlertDialogBuilder(requireActivity())
-            alertNoData.setIcon(R.drawable.ic_search)
-            alertNoData.setTitle("$selectedCategoryType Results")
-            alertNoData.background =
-                resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-            alertNoData.setCancelable(false)
-            alertNoData.setMessage(
-                "smartphones have not yet been posted.you might become the first one to post if you do posting on smartphones" + "\nan opportunity huh? grab that opportunity!\ntry using the search for better results!"
-            )
-            alertNoData.setNeutralButton("ok") { dialog, _ ->
-
-                //dismiss the dialog
-                dialog.dismiss()
-                //
-            }
-            alertNoData.create()
-            alertNoData.show()
+            //call fun no results
+            funNoResultsCategorySort(selectedCategoryType)
             //
 
         } else if (tempArrayListSmartPhones.isNotEmpty()) {
@@ -1537,25 +1391,8 @@ class HomeFragment : Fragment() {
         }
         //check if is no empty pbs list and evaluate accordingly
         if (tempArrayListPowerBanks.isEmpty()) {
-            //alert empty
-            //code begins
-            val alertNoData = MaterialAlertDialogBuilder(requireActivity())
-            alertNoData.setIcon(R.drawable.ic_search)
-            alertNoData.background =
-                resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-            alertNoData.setTitle("$selectedCategoryType Results")
-            alertNoData.setMessage(
-                "powerbanks have not yet been posted.you might become the first one to post if you do posting on powerbanks" + "\nan opportunity huh? grab that opportunity!\n" + "try using the search for better results!"
-            )
-            alertNoData.create()
-            alertNoData.setCancelable(false)
-            alertNoData.setNeutralButton("wow") { dialog, _ ->
-                //dismiss dg to avoid RT exceptions
-                dialog.dismiss()
-                //
-            }
-            alertNoData.show()
-            //code end
+            //call fun no results
+            funNoResultsCategorySort(selectedCategoryType)
             //
         } else if (tempArrayListPowerBanks.isNotEmpty()) {
             //contains pbs items update the recycler with a new adapter that is of pbs
@@ -1684,13 +1521,16 @@ class HomeFragment : Fragment() {
         //code begins
         val alertNoData = MaterialAlertDialogBuilder(requireActivity())
         alertNoData.setIcon(R.drawable.ic_search)
-        alertNoData.setTitle("No Product Results")
+        alertNoData.setTitle("no records")
         alertNoData.setCancelable(false)
         alertNoData.background =
-            resources.getDrawable(R.drawable.material_ten, requireActivity().theme)
+            resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
 
         alertNoData.setMessage(
-            "comrades at $universitySelected have not yet posted any product.\nthey might be unaware of this free online marketing application.\nenlighten them  by sharing the application to a friend thence.\ntry using the search for better results!"
+            "comrades at $universitySelected have not yet posted any product\n\n" +
+                    "they might be unaware of this free online marketing application\n\n" +
+                    "enlighten them  by sharing the application to a friend thence\n\n" +
+                    "try using the search for better results!"
         )
         alertNoData.setNeutralButton("ok") { dialog, _ ->
 
@@ -1703,6 +1543,29 @@ class HomeFragment : Fragment() {
         //code end
     }
 
+
+    //fun that creates an alert for showing the results no found for products category
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun funNoResultsCategorySort(selectedCategoryString: String): Unit {
+        val alertNoData = MaterialAlertDialogBuilder(requireActivity())
+        alertNoData.setIcon(R.drawable.ic_sort)
+        alertNoData.setTitle(selectedCategoryString)
+        alertNoData.setCancelable(false)
+        alertNoData.background =
+            resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
+        alertNoData.setMessage(
+            "$selectedCategoryString have not yet been posted \n" +
+                    "\ntry using the search for better results!"
+        )
+        alertNoData.setNeutralButton("ok") { dialog, _ ->
+
+            //dismiss the dialog
+            dialog.dismiss()
+            //
+        }
+        alertNoData.create()
+        alertNoData.show()
+    }
 
     private fun updateTitle(title: String) {
         requireActivity().title = title

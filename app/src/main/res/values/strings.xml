@@ -70,14 +70,107 @@
     <string name="enter_new_place_where_the_product_is_located">enter new place where the product is located</string>
     <string name="enter_the_new_price_i_e_5_000_1_000_500">enter the new price i.e (5,000 1,000 500)</string>
     <string name="type_here_to_search">type here to search products</string>
-    <string name="university">university name</string>
-    <string name="category">product category</string>
-    <string name="time_latest">time (latest first)</string>
-    <string name="time_old">time (old first)</string>
-    <string name="owner_name_asc">owner names(a-z)</string>
-    <string name="owner_name_desc">owner names(z-a)</string>
-    <string name="product_name_asc">names of the products(a-z)</string>
-    <string name="product_name_desc">names of the products(z-a)</string>
-    <string name="file_size_description">fileSizeDescription</string>
+    <string name="file_size_description"></string>
+    <string name="today">today</string>
+    <string-array name="list_category_sort">
+        <item>powerbanks</item>
+        <item>laptop RAM</item>
+        <item>smartPhones</item>
+        <item>tablets and ipads</item>
+        <item>hard disks and SSDs</item>
+        <item>laptops and desktops</item>
+        <item>tvs and flatscreens</item>
+        <item>shoes,drips and dior</item>
+        <item>earphones and headphones</item>
+        <item>woofer,system and robot BT</item>
+        <item>kaduda,kabambe and mulika mwizi</item>
+        <item>flash drives,SD cards and memory cards</item>
+    </string-array>
+    <string-array name="listSortOptions">
+        <item>university name</item>
+        <item>product category</item>
+        <item>time (latest first)</item>
+        <item>time (old first)</item>
+        <item>owners names(a-z)</item>
+        <item>owners names (z-a)</item>
+        <item>names of the products(a-z)</item>
+        <item>names of the products(z-a)</item>
+
+    </string-array>
+    <string-array name="universities_ke">
+        <item>Maseno University</item>
+        <item>Nairobi University</item>
+        <item>Jomo Kenyatta University</item>
+        <item>Kenyatta University</item>
+        <item>Laikipia University</item>
+        <item>Meru University</item>
+        <item>Gretsa University</item>
+        <item>ayStar University</item>
+        <item>Garissa University</item>
+        <item>Technical University Of Mombasa</item>
+        <item>Taita Taveta University</item>
+        <item>Pwani University</item>
+        <item>Moi University</item>
+        <item>Chuka University</item>
+        <item>Kibabii University</item>
+        <item>Saint Paul\'s University</item>
+        <item>Maasai Mara University</item>
+        <item>Alupe University</item>
+        <item>Kisii University</item>
+        <item>Adventist University Of Africa</item>
+        <item>Africa International University</item>
+        <item>Africa Nazarene University</item>
+        <item>Amref International University</item>
+        <item>Dedan Kimathi University</item>
+        <item>Egerton University</item>
+        <item>Great Lakes University</item>
+        <item>International Leadership University</item>
+        <item>Jaramogi Oginga Odinga University</item>
+        <item>Kabarak University</item>
+        <item>KAG University</item>
+        <item>Karatina Universty</item>
+        <item>KCA University</item>
+        <item>Kenya Highlands University</item>
+        <item>Kenya Methodist University</item>
+        <item>Kirinyaga University</item>
+        <item>Kirir Women\'s University</item>
+        <item>Lukenya University</item>
+        <item>Machakos University</item>
+        <item>Management University Of Africa</item>
+        <item>Masinde Muliro University</item>
+        <item>Mount Kenya University</item>
+        <item>Multimedia University</item>
+        <item>Murang\'a University</item>
+        <item>Pan Africa Christian University</item>
+        <item>Pioneer International University</item>
+        <item>RAF International University</item>
+        <item>Riara University</item>
+        <item>Rongo University</item>
+        <item>Scott Christian University</item>
+        <item>South Eastern Kenya University</item>
+        <item>Strathmore University</item>
+        <item>Technical university Of Kenya</item>
+        <item>Catholic University Of Eastern Africa</item>
+        <item>East African University</item>
+        <item>Presbyterian University</item>
+        <item>Umma University</item>
+        <item>United States International university</item>
+        <item>Baraton University</item>
+        <item>Embu University</item>
+        <item>Kabianga University</item>
+        <item>Zetech University</item>
+        <item>Uzima University</item>
+        <item>University Of Eldoret</item>
+        <item>Turkana University</item>
+        <item>Tom Mboya University</item>
+        <item>Tharaka University</item>
+        <item>Tangaza University</item>
+        <item>Koitaleel Samoei University</item>
+        <item>Kaimosi University</item>
+        <item>SEKU University</item>
+        <item>Co-operative University Of Kenya</item>
+        <item>Marist International University</item>
+        <item>Management University of Africa</item>
+    </string-array>
 
 </resources>

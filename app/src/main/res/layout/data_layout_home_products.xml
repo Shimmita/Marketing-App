@@ -10,147 +10,182 @@
     app:cardElevation="5dp"
     app:contentPadding="5dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintMainDataProducts"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="10dp">
+        android:orientation="vertical"
+        android:padding="5dp">
 
-        <ImageView
-            android:id="@+id/imgProduct"
-            android:layout_width="0dp"
-            android:layout_height="200dp"
-            android:elevation="5dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/laptop" />
-
-        <TextView
-            android:id="@+id/tvTitleProduct"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="@string/title"
-            android:textColor="@color/accent_material_light"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imgProduct" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:id="@+id/relativeBlinkProductNew"
+            android:visibility="gone"
+            android:layout_height="wrap_content">
 
 
-        <TextView
-            android:id="@+id/tvDescriptionProduct"
-            style="@style/TextAppearance.Material3.BodySmall"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:fontFamily="georgia"
-            android:text="@string/details"
-            android:textAllCaps="false"
-            android:textColor="#605637"
-            android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitleProduct" />
+            <TextView
+                android:id="@+id/dateProductsTopLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="@string/today"
+                android:typeface="monospace"
+                style="@style/TextAppearance.Material3.BodySmall"
+                android:textColor="@color/accent_material_light"
+                android:textStyle="italic|bold" />
 
-        <TextView
-            android:id="@+id/tvCategoryProduct"
-            style="@style/TextAppearance.Material3.BodySmall"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:fontFamily="georgia"
-            android:text="@string/category_laptops"
-            android:textAllCaps="false"
-            android:textColor="#605637"
-            android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDescriptionProduct"
-            app:layout_goneMarginTop="5dp" />
+            <ImageView
+                android:id="@+id/imgNewIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/new_2" />
+        </RelativeLayout>
 
-        <TextView
-            android:id="@+id/tvProductID"
-            style="@style/TextAppearance.Material3.BodySmall"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:fontFamily="georgia"
-            android:text="@string/productID"
-            android:textAllCaps="false"
-            android:textColor="#605637"
-            android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvCategoryProduct" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintMainDataProducts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="2dp">
 
-        <TextView
-            android:id="@+id/tvDate"
-            style="@style/TextAppearance.Material3.BodySmall"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:fontFamily="georgia"
-            android:text="@string/date_2022_01_15"
-            android:textColor="#605637"
-            android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvProductID" />
+            <ImageView
+                android:id="@+id/imgProduct"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                android:elevation="5dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/laptop" />
 
-        <TextView
-            android:id="@+id/tvVicinityProduct"
-            style="@style/TextAppearance.Material3.BodySmall"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:fontFamily="georgia"
-            android:text="@string/vicinity"
-            android:textColor="@color/abc_search_url_text_normal"
-            android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDate" />
-
-        <TextView
-            android:id="@+id/tvOwnerProduct"
-            style="@style/TextAppearance.Material3.BodySmall"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:fontFamily="georgia"
-            android:text="@string/owner_angel_michael"
-            android:textColor="@color/abc_search_url_text_normal"
-            android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvVicinityProduct" />
+            <TextView
+                android:id="@+id/tvTitleProduct"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/title"
+                android:textColor="@color/accent_material_light"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imgProduct" />
 
 
-        <Button
-            android:id="@+id/btnEnquire"
-            style="@style/Widget.AppCompat.Button.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/enquire"
-            android:textAllCaps="false"
-            android:textStyle="italic"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvOwnerProduct" />
+            <TextView
+                android:id="@+id/tvDescriptionProduct"
+                style="@style/TextAppearance.Material3.BodySmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="georgia"
+                android:text="@string/details"
+                android:textAllCaps="false"
+                android:textColor="#605637"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTitleProduct" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/circleProductOwnerImage"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/dillan"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/tvCategoryProduct"
+                style="@style/TextAppearance.Material3.BodySmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="georgia"
+                android:text="@string/category_laptops"
+                android:textAllCaps="false"
+                android:textColor="#605637"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvDescriptionProduct"
+                app:layout_goneMarginTop="5dp" />
 
+            <TextView
+                android:id="@+id/tvProductID"
+                style="@style/TextAppearance.Material3.BodySmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="georgia"
+                android:text="@string/productID"
+                android:textAllCaps="false"
+                android:textColor="#605637"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvCategoryProduct" />
+
+            <TextView
+                android:id="@+id/tvDate"
+                style="@style/TextAppearance.Material3.BodySmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="georgia"
+                android:text="@string/date_2022_01_15"
+                android:textColor="#605637"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvProductID" />
+
+            <TextView
+                android:id="@+id/tvVicinityProduct"
+                style="@style/TextAppearance.Material3.BodySmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="georgia"
+                android:text="@string/vicinity"
+                android:textColor="@color/abc_search_url_text_normal"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvDate" />
+
+            <TextView
+                android:id="@+id/tvOwnerProduct"
+                style="@style/TextAppearance.Material3.BodySmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="georgia"
+                android:text="@string/owner_angel_michael"
+                android:textColor="@color/abc_search_url_text_normal"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvVicinityProduct" />
+
+
+            <Button
+                android:id="@+id/btnEnquire"
+                style="@style/Widget.AppCompat.Button.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/enquire"
+                android:textAllCaps="false"
+                android:textStyle="italic"
+                android:backgroundTint="#F9F0FA"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvOwnerProduct" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/circleProductOwnerImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/dillan"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>

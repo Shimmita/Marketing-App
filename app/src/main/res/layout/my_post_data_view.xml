@@ -45,7 +45,7 @@
                 android:layout_marginTop="5dp"
                 android:gravity="center"
                 android:text="@string/my_product_title"
-                android:textColor="#4A401E"
+                android:textColor="#1B1502"
                 android:textStyle="bold" />
 
             <TextView
@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/date_posted"
-                android:textColor="#453A18"
+                android:textColor="#322809"
                 android:textStyle="italic" />
 
             <TextView
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/place_posted"
-                android:textColor="#453A18"
+                android:textColor="#322809"
                 android:textStyle="italic" />
 
             <TextView
@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/product_id_stamp"
-                android:textColor="#453A18"
+                android:textColor="#322809"
                 android:textStyle="italic" />
 
 
@@ -85,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/category_product"
-                android:textColor="#453A18"
+                android:textColor="#322809"
                 android:textStyle="italic" />
 
             <TextView
@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/phone_number"
-                android:textColor="#453A18"
+                android:textColor="#322809"
                 android:textStyle="italic" />
 
             <TextView
@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/product_email"
-                android:textColor="#453A18"
+                android:textColor="#322809"
                 android:textStyle="italic" />
 
             <TextView
@@ -112,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/product_description"
-                android:textColor="#453A18"
+                android:textColor="#322809"
                 android:textStyle="italic" />
 
             <androidx.appcompat.widget.AppCompatButton

@@ -69,7 +69,7 @@
                     android:layout_height="80dp"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_basket" />
+                    android:src="@drawable/recent_one" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -107,7 +107,7 @@
                     android:layout_height="80dp"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_update" />
+                    android:src="@drawable/update_b" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -145,7 +145,7 @@
                     android:layout_height="80dp"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_delete" />
+                    android:src="@drawable/delete" />
 
                 <TextView
                     android:layout_width="wrap_content"

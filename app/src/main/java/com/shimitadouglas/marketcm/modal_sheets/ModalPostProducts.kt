@@ -322,7 +322,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                 val randomPrice = Random.nextInt(6)
 
                 val randomIcons = Random.nextInt(2)
-                val icon = listOf(R.drawable.lapsz, R.drawable.laptop, R.drawable.lap)
+                val icon = listOf(R.drawable.lapsz, R.drawable.laptop)
                 val title = "$spinnerData Suggestion"
                 val name = nameList[random]
                 val state = detailList[random2]
