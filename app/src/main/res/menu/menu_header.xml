@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:title="Developer">
+    <item android:title="@string/developer">
         <menu>
             <item
                 android:id="@+id/smsDev"
                 android:icon="@drawable/ic_message"
-                android:title="message developer"
-                app:showAsAction="always" />
+                android:title="@string/message_developer"
+                app:showAsAction="ifRoom" />
 
             <item
                 android:id="@+id/callDev"
                 android:icon="@drawable/ic_call"
-                android:title="call Developer" />
+                android:title="@string/call_developer"
+                app:showAsAction="ifRoom" />
 
             <item
                 android:id="@+id/emailDev"
                 android:icon="@drawable/ic_message"
-                android:title="Email Developer" />
+                android:title="@string/email_developer"
+                app:showAsAction="ifRoom" />
 
 
         </menu>
@@ -25,22 +27,55 @@
     </item>
 
 
-    <item android:title="About">
+    <item android:title="@string/report">
+
+        <menu>
+            <item
+                android:id="@+id/reportScammer"
+                android:icon="@drawable/ic_report"
+                android:title="@string/report_a_scammer"
+                app:showAsAction="ifRoom" />
+            />
+        </menu>
+
+
+    </item>
+
+
+    <item android:title="@string/about">
         <menu>
             <item
                 android:id="@+id/aboutMarketCM"
                 android:icon="@drawable/ic_question"
-                android:title="Market CM"
+                android:title="@string/market_cm"
                 app:showAsAction="always" />
 
             <item
                 android:id="@+id/aboutPrivacy"
                 android:icon="@drawable/ic_privacy"
-                android:title="Privacy And Policy"
+                android:title="@string/privacy_and_policy"
                 app:showAsAction="always" />
 
         </menu>
 
+
+    </item>
+
+    <item android:title="@string/tools">
+        <menu>
+            <item
+                android:id="@+id/checkUpdate"
+                android:icon="@drawable/ic_update"
+                android:title="@string/check_for_updates"
+                app:showAsAction="ifRoom" />
+
+            <item
+                android:id="@+id/shareApplication"
+                android:icon="@drawable/ic_share"
+                android:title="@string/share_app"
+                app:showAsAction="ifRoom" />
+
+        </menu>
 
     </item>
 

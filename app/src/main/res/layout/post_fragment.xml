@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/material_eight"
     android:orientation="vertical"
-    android:padding="5dp">
+    android:padding="1dp">
 
     <LinearLayout
         android:id="@+id/linearPostParent"

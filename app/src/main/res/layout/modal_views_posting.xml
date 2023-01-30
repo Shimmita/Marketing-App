@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
-                android:background="@drawable/material_congratulations"
+                android:background="@drawable/material_seven"
                 android:fontFamily="georgia"
                 android:text="PRODUCT POSTING WINDOW"
                 android:textColor="#03675D"
@@ -171,16 +171,17 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnPost"
-
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/material_congratulations"
-                android:drawableTop="@drawable/ic_cart"
+                android:drawableStart="@drawable/ic_cart"
+                android:drawablePadding="10dp"
                 android:fontFamily="georgia"
-                android:text="post now"
+                android:backgroundTint="@color/design_dark_default_color_primary"
+                android:text="@string/post_to_the_market"
+                android:layout_gravity="center_horizontal"
                 android:textAllCaps="true"
-                android:textColor="@color/cardview_light_background"
+                android:textColor="@color/abc_decor_view_status_guard_light"
                 android:textStyle="bold"
                 android:visibility="gone" />
         </LinearLayout>

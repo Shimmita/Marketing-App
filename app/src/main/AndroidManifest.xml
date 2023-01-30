@@ -29,7 +29,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".control.Administration"
+            android:name=".controlPanel.Administration"
             android:exported="true">
 
             <!--

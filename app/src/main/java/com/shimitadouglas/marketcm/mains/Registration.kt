@@ -36,7 +36,6 @@ import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
 import java.util.*
-import kotlin.Comparator
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
@@ -52,82 +51,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     //
 
     //init of globals
-    private var university = arrayOf(
-        "Maseno University",
-        "Nairobi University",
-        "Laikipia University",
-        "Meru University",
-        "Gretsa University",
-        "DayStar University",
-        "Garissa University",
-        "Technical University Of Mombasa",
-        "Pwani University",
-        "Jomo Kenyatta University",
-        "Kenyatta University",
-        "Moi University",
-        "Chuka University",
-        "Kibabii University",
-        "Saint Paul's University",
-        "Maasai Mara University",
-        "Alupe University",
-        "Kisii University",
-        "Adventist University Of Africa",
-        "Africa International University",
-        "Africa Nazarene University",
-        "Amref International University",
-        "Dedan Kimathi University",
-        "Egerton University",
-        "Great Lakes University",
-        "International Leadership University",
-        "Jaramogi Oginga Odinga University",
-        "Kabarak University",
-        "KAG University",
-        "Karatina Universty",
-        "KCA University",
-        "Kenya Highlands University",
-        "Kenya Methodist University",
-        "Kirinyaga University",
-        "Kirir Women's University",
-        "Lukenya University",
-        "Machakos University",
-        "Management University Of Africa",
-        "Masinde Muliro University",
-        "Mount Kenya University",
-        "Multimedia University ",
-        "Murang'a University",
-        "Pan Africa Christian University",
-        "Pioneer International University",
-        "RAF International University",
-        "Riara University",
-        "Rongo University",
-        "Scott Christian University",
-        "South Eastern Kenya University",
-        "Taita Taveta Universty",
-        "Strathmore University",
-        "Technical university Of Kenya",
-        "Catholic University Of Eastern Africa",
-        "East African University",
-        "Presbyterian University",
-        "Umma University",
-        "United States International university",
-        "Baraton University",
-        "Embu University",
-        "Kabianga University",
-        "Zetech University",
-        "Uzima University",
-        "University Of Eldoret",
-        "Turkana University",
-        "Tom Mboya University",
-        "Tharaka University",
-        "Tangaza University",
-        "Koitaleel Samoei University",
-        "Kaimosi Univesity",
-        "SEKU University",
-        "Bomet University",
-        "Co-operative University Of Kenya",
-        "Marist International University",
-        "Management University of Africa"
-    )
+    private var universityRegistrationList = arrayOf<String>()
 
 
     //init globals
@@ -410,7 +334,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val keyUniversity = "University"
         val keyPhone = "PhoneNumber"
         val keyImageUri = "ImagePath"
-        val keyRegistrationDate="registrationDate"
+        val keyRegistrationDate = "registrationDate"
         //
 
         //creating the hashmap for the data be stored in fireStore
@@ -802,8 +726,17 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         circleProfileImage = findViewById(R.id.circleProfileImage)
         editPassword = findViewById(R.id.registrationPassword)
         //
+
+        //inflating the university list from the string resources
+        universityRegistrationList = resources.getStringArray(R.array.universities_ke)
+        //sort the universities naturally
+        universityRegistrationList.sort()
+        //
+
         stringArrayAdapter = ArrayAdapter(
-            this@Registration, android.R.layout.simple_selectable_list_item, university
+            this@Registration,
+            android.R.layout.simple_selectable_list_item,
+            universityRegistrationList
         )
         //sorting the elements in the spinner
         stringArrayAdapter.setNotifyOnChange(true)
@@ -829,7 +762,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
         if (p0 != null) {
-            spinnerReturned = university[p2]
+            spinnerReturned = universityRegistrationList[p2]
 
         }
         Log.d(TAG, "onItemSelected: university:$spinnerReturned")

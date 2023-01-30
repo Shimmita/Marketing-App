@@ -28,7 +28,7 @@ class ModalRecoverPassword : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         //init the view as the first element and other globals
-        viewAttach = inflater.inflate(R.layout.layout_passcode_rec, container, false)
+        viewAttach = inflater.inflate(R.layout.layout_passcode_rec, container, false) as View
         btnRec = viewAttach.findViewById(R.id.btnRecover)
         linearRecModal = viewAttach.findViewById(R.id.linearBottomSheetRecovery)
         emailInputRec = viewAttach.findViewById(R.id.emailRecovery)

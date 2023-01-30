@@ -113,12 +113,9 @@ class HomeFragment : Fragment() {
 
         //fun toolbarOperations
         funToolbarOperations()
-        //
         //testing notification
-
         //funCheckNotification()
 
-        //
         //code ends
         return viewHome
     }
@@ -324,6 +321,9 @@ class HomeFragment : Fragment() {
 
             } else if (it.isEmpty) {
                 //no data is present
+                progressDialogMain.dismiss()
+                //
+                funToastyFail("server not responding")
                 return@addOnSuccessListener
                 //
             }
@@ -643,8 +643,7 @@ class HomeFragment : Fragment() {
         //code begins
         //alert dg showing the university selection
         //create list that loads data from stringArray Resource
-        var listSortOptions = arrayOf<String>()
-        listSortOptions = resources.getStringArray(R.array.listSortOptions)
+        var listSortOptions: Array<String> = resources.getStringArray(R.array.listSortOptions)
         listSortOptions.sort()
         //
         val alertSortMethod = MaterialAlertDialogBuilder(requireActivity())

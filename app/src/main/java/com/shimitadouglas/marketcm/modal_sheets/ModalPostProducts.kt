@@ -41,6 +41,7 @@ import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreference
 import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
 import com.shimitadouglas.marketcm.utilities.ProductIDGenerator
 import de.hdodenhof.circleimageview.CircleImageView
+import es.dmoral.toasty.Toasty
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 import kotlin.random.Random
@@ -49,6 +50,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
     companion object {
         private const val TAG = "ModalPostProducts"
         const val CollectionPost = "Products Post"
+        const val CollectionAdminWarehouse = "AdminPost WareHouse"
 
     }
 
@@ -75,7 +77,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
     ): View? {
         //code begins
         //init of the view
-        val view = inflater.inflate(R.layout.modal_views_posting, container, false)
+        val view: View = inflater.inflate(R.layout.modal_views_posting, container, false) as View
         appCompatButtonPickImage = view.findViewById(R.id.btnProvideImagePost)
         appCompatButtonPost = view.findViewById(R.id.btnPost)
         circleImageViewShowProductImage = view.findViewById(R.id.circleProvideImagePost)
@@ -743,31 +745,53 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         val descriptionDataPost = editTextDescription.text.toString()
         val priceDataPost = editTextPrice.text.toString()
 
-        //check null presence in the data
-        if (imageUriDataPost.equals("")) {
-            Toast.makeText(requireActivity(), "image of the product is missing", Toast.LENGTH_SHORT)
-                .show()
-        } else if (uriProduct.equals("")) {
-            Toast.makeText(requireActivity(), "image of the product is missing", Toast.LENGTH_SHORT)
-                .show()
-        } else if (TextUtils.isEmpty(titleDataPost)) {
-            editTextTitle.error = "provide title of the item"
-        } else if (TextUtils.isEmpty(descriptionDataPost)) {
-            editTextDescription.error = "provide brief description of the item"
-        } else if (TextUtils.isEmpty(priceDataPost)) {
-            editTextPrice.error = "provide price of the item"
-        } else if (priceDataPost.length > 4 && !priceDataPost.contains(",")) {
-            editTextPrice.error = "separate price  with a comma (,)"
-        }
-        //everything fine
-        else {
-            //launch a coroutine to perform the network transactions
-            funBeginPostingItem(
-                imageUriDataPost, titleDataPost, descriptionDataPost, priceDataPost, spinnerData
-            )
+        //check if price is > 4 and thn if misses comma inquire for it
+        if (priceDataPost.length >= 4 && !priceDataPost.contains(",")) {
+            Toasty.custom(
+                requireActivity(),
+                "separate price with comma(,)",
+                R.drawable.ic_info,
+                R.color.androidx_core_secondary_text_default_material_light,
+                Toasty.LENGTH_SHORT,
+                true,
+                true
+            ).show()
+        } else {
+
+            //check null presence in the data
+            if (imageUriDataPost.equals("")) {
+                Toast.makeText(
+                    requireActivity(),
+                    "image of the product is missing",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+            } else if (uriProduct.equals("")) {
+                Toast.makeText(
+                    requireActivity(),
+                    "image of the product is missing",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+            } else if (TextUtils.isEmpty(titleDataPost)) {
+                editTextTitle.error = "provide title of the item"
+            } else if (TextUtils.isEmpty(descriptionDataPost)) {
+                editTextDescription.error = "provide brief description of the item"
+            } else if (TextUtils.isEmpty(priceDataPost)) {
+                editTextPrice.error = "provide price of the item"
+            } else if (priceDataPost.length > 4 && !priceDataPost.contains(",")) {
+                editTextPrice.error = "separate price  with a comma (,)"
+            }
+            //everything fine
+            else {
+                //launch a coroutine to perform the network transactions
+                funBeginPostingItem(
+                    imageUriDataPost, titleDataPost, descriptionDataPost, priceDataPost, spinnerData
+                )
+                //
+            }
             //
         }
-        //
         //code ends
     }
 
@@ -1024,33 +1048,19 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                 .set(mapItemPostDataFStore)
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
-                        //process of posting the data is completely successfully
-
-                        progD.apply {
-                            //call fun congrats user of successful upload
-                            val alertPostSuccessful = MaterialAlertDialogBuilder(requireActivity())
-                            alertPostSuccessful.setTitle("Post Successful")
-                            alertPostSuccessful.setIcon(R.drawable.ic_nike_done)
-                            alertPostSuccessful.setCancelable(false)
-                            alertPostSuccessful.background = resources.getDrawable(
-                                R.drawable.material_six, requireActivity().theme
-                            )
-                            alertPostSuccessful.setMessage(
-                                "product posted successfully to the online market interested customers will contact you about the product using your registered phone number via CALL,SMS or EMAIL\n" +
-                                        "\n(PRODUCT ID=$productUniqueID)"
-                            )
-                            alertPostSuccessful.setPositiveButton("thanks") { dialog, _ ->
-                                //dismiss the dialog and the modal
-                                dialog.dismiss()
-                                //
-                            }
-                            alertPostSuccessful.create()
-                            alertPostSuccessful.show()
-                            //dismiss pg
-                            dismiss()
-                            //
-                        }
-
+                        //process of posting the in the personal repo successful
+                        //change progress dialog to done
+                        progD.setMessage("done...")
+                        //
+                        //create another collection which will be used during calamities of scamming.
+                        //suspect might delete the details after malice activities thus having a backup store will make it easier
+                        //to hunt such down
+                        funPostAdminWareHouse(
+                            mapItemPostDataFStore,
+                            progD,
+                            productUniqueID,
+                            combinationUIDTimer
+                        )
                         //
 
                     } else if (!it.isSuccessful) {
@@ -1070,6 +1080,61 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                 }
         }
         //code ends
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun funPostAdminWareHouse(
+        mapItemPostDataFStore: HashMap<String, String?>,
+        progressDialogPost: ProgressDialog,
+        productUniqueID: String,
+        combinationUIDTimer: String
+    ) {
+        //code begins
+        val storeAdmin = FirebaseFirestore.getInstance()
+        storeAdmin.collection(CollectionAdminWarehouse).document(combinationUIDTimer)
+            .set(mapItemPostDataFStore).addOnCompleteListener {
+
+                if (it.isSuccessful) {
+                    //posted successfully all data to the (publicRepo,private(userRepo,AdminWarehouseAll+Deletes)
+                    progressDialogPost.apply {
+                        //call fun congrats user of successful upload
+                        val alertPostSuccessful = MaterialAlertDialogBuilder(requireActivity())
+                        alertPostSuccessful.setTitle("posted successfully")
+                        alertPostSuccessful.setIcon(R.drawable.ic_nike_done)
+                        alertPostSuccessful.setCancelable(false)
+                        alertPostSuccessful.background = resources.getDrawable(
+                            R.drawable.material_six, requireActivity().theme
+                        )
+                        alertPostSuccessful.setMessage(
+                            "product posted successfully to the online market interested customers will contact you about the product using your registered phone number via CALL,SMS or EMAIL\n" +
+                                    "\n(PRODUCT ID=$productUniqueID)"
+                        )
+                        alertPostSuccessful.setPositiveButton("thanks") { dialog, _ ->
+                            //dismiss the dialog and the modal
+                            dialog.dismiss()
+                            //
+                        }
+                        alertPostSuccessful.create()
+                        alertPostSuccessful.show()
+                        //dismiss pg
+                        dismiss()
+                        //
+                    }
+
+
+                } else if (!it.isSuccessful) {
+                    //dismiss the progD
+                    progressDialogPost.dismiss()
+                    //
+                    //did not post successfully
+                    Toast.makeText(requireActivity(), "something went wrong!", Toast.LENGTH_SHORT)
+                        .show()
+                    //
+                    return@addOnCompleteListener
+                    //
+                }
+            }
+        //code end
     }
 
     private fun funAlertFailureDialog(task: Task<UploadTask.TaskSnapshot>) {

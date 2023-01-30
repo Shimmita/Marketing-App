@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -14,12 +15,14 @@ import android.os.Looper
 import android.text.TextUtils
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import android.widget.CheckBox
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -45,13 +48,18 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.shimitadouglas.marketcm.Networking.NetworkMonitor
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.fragmentProducts.HomeFragment
 import com.shimitadouglas.marketcm.fragmentProducts.NotificationFragment
 import com.shimitadouglas.marketcm.fragmentProducts.PostFragment
 import com.shimitadouglas.marketcm.mains.Registration.Companion.ComRadeUser
+import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
 import com.shimitadouglas.marketcm.modal_data_profile.DataProfile
+import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
+import com.shimitadouglas.marketcm.modal_sheets.ModalPrivacyMarket
 import de.hdodenhof.circleimageview.CircleImageView
+import es.dmoral.toasty.Toasty
 import java.util.*
 import kotlin.concurrent.thread
 import kotlin.random.Random
@@ -60,9 +68,11 @@ import kotlin.system.exitProcess
 class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     companion object {
         private const val TAG = "ProductsHome"
+        const val CollectionCounterfeit = "Counterfeit Reports"
+        const val CollectionOtherReports = "Other Reports"
 
         //shared prefs for storing the states of some data to avoid constants reloads
-         var sharedPreferenceName: String = "MarketCmSharedPreference"
+        var sharedPreferenceName: String = "MarketCmSharedPreference"
         lateinit var sharedPreferenceMarketCM: SharedPreferences;
         //
     }
@@ -138,14 +148,14 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         //convert the data into class readable
                         val classDataProfile: DataProfile? = it.toObject(DataProfile::class.java)
                         if (classDataProfile != null) {
-                            var email = classDataProfile.Email
-                            var fName = classDataProfile.FirstName
-                            var lName = classDataProfile.LastName
-                            var phone = classDataProfile.PhoneNumber
-                            var university = classDataProfile.University
-                            var image = classDataProfile.ImagePath
-                            var password = classDataProfile.Password
-                            var registrationDate = classDataProfile.registrationDate
+                            val email = classDataProfile.Email
+                            val fName = classDataProfile.FirstName
+                            val lName = classDataProfile.LastName
+                            val phone = classDataProfile.PhoneNumber
+                            val university = classDataProfile.University
+                            val image = classDataProfile.ImagePath
+                            val password = classDataProfile.Password
+                            val registrationDate = classDataProfile.registrationDate
 
                             //saving the data into the shared prefs
                             val sharedPreferences =
@@ -1331,24 +1341,376 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             R.id.aboutMarketCM -> {
-                Toast.makeText(this@ProductsHome, "about market cm", Toast.LENGTH_LONG).show()
-
+                funShowModalSheetMarketCM()
             }
             R.id.aboutPrivacy -> {
-                Toast.makeText(this@ProductsHome, "about privacy", Toast.LENGTH_LONG).show()
+                funShowModalSheetPrivacy()
+            }
+            R.id.checkUpdate -> {
+                Toast.makeText(this@ProductsHome, "check update", Toast.LENGTH_LONG).show()
+            }
+            R.id.reportScammer -> {
+                funAlertReportScammer()
 
             }
+            R.id.shareApplication -> {
+                funShareApplication()
+            }
+
 
         }
 
         return true
     }
 
-    private fun funEmailDeveloper() {
+    private fun funShowModalSheetPrivacy() {
+        //coded begins
+        val which="policy"
+        val modalPolicy=ModalPrivacyMarket(which)
+        modalPolicy.show(supportFragmentManager,"modal_privacy_policy")
+        //code ends
+    }
+
+    private fun funShowModalSheetMarketCM() {
         //code begins
+        val which="about"
+        val modalAboutMarket=ModalPrivacyMarket(which)
+        modalAboutMarket.show(supportFragmentManager,"modal_about_market_cm")
+        //code ends
+    }
+
+    private fun funAlertReportScammer() {
+        //code begins
+        val listScammerOption: Array<String> =
+            resources.getStringArray(R.array.report_scammer_options)
+        var selected = ""
+        val alertReportScammer = MaterialAlertDialogBuilder(this@ProductsHome)
+        alertReportScammer.setTitle("report counterfeit")
+        alertReportScammer.setIcon(R.drawable.ic_report)
+        alertReportScammer.setCancelable(false)
+        alertReportScammer.setSingleChoiceItems(listScammerOption, 1) { _, which ->
+            selected = listScammerOption[which]
+            funToastyShow(listScammerOption[which])
+        }
+        alertReportScammer.setPositiveButton("ok") { dialog, _ ->
+            if (selected.isNotEmpty()) {
+                if (selected.contains("counterfeit", true)) {
+                    //call fun false products
+                    funReportScammerCounterfeitProducts(selected)
+                    //
+                    funToastyShow("counterfeit products")
+                    //dismiss the dg
+                    dialog.dismiss()
+                    //
+                }
+            } else if (selected.isEmpty()) {
+                //call
+                funToastyShow("select option")
+                //dismiss the dg
+                dialog.dismiss()
+                //
+            }
+        }
+        alertReportScammer.setNegativeButton("no") { dialog, _ ->
+            //dismiss the  dialog
+            dialog.dismiss()
+            //
+        }
+        alertReportScammer.create().show()
+
+        //code ends
+    }
+
+    @SuppressLint("InflateParams", "UseCompatLoadingForDrawables")
+    private fun funReportScammerCounterfeitProducts(selected: String) {
+        //code begins
+        //infiltrate the view containing the counterfeit products then show it in an alert dialog
+        val viewCounterfeit = LayoutInflater.from(this@ProductsHome)
+            .inflate(R.layout.layout_report_scammer_counterfeit_view, null, false)
+        val editTextProductCode =
+            viewCounterfeit.findViewById<EditText>(R.id.edtReportScammerOptionCounterfeitCode)
+        val editTextMessage =
+            viewCounterfeit.findViewById<EditText>(R.id.edtReportScammerOptionCounterfeitMessage)
+        val textViewOption =
+            viewCounterfeit.findViewById<TextView>(R.id.tvReportScammerOptionCounterfeit)
+        textViewOption.text = selected
+
+
+        val alertSubmitReport = MaterialAlertDialogBuilder(this@ProductsHome)
+        alertSubmitReport.setCancelable(false)
+        alertSubmitReport.background = resources.getDrawable(R.drawable.general_alert_dg, theme)
+        alertSubmitReport.setView(viewCounterfeit)
+        alertSubmitReport.setIcon(R.drawable.ic_info)
+        alertSubmitReport.setTitle("submission alert")
+        alertSubmitReport.setPositiveButton("submit") { dialog, _ ->
+            val productCode = editTextProductCode.text.toString()
+            val productMessage = editTextMessage.text.toString()
+            if (productCode.isEmpty() or (productMessage.isEmpty())) {
+                funToastyFail("cannot submit empty fields!")
+            } else {
+                //call function submit counterfeit
+                funSubmitCounterfeitProductReport(productCode, productMessage)
+                //dismiss
+                dialog.dismiss()
+                //
+            }
+        }
+        alertSubmitReport.setNegativeButton("dismiss") { dialog, _ ->
+            //dismiss the dg
+            dialog.dismiss()
+            //
+        }
+        alertSubmitReport.create().show()
+        //code ends
+    }
+
+    private fun funSubmitCounterfeitProductReport(productCode: String, productMessage: String) {
+        //code begins
+        if (productCode.isNotEmpty() and (productMessage.isNotEmpty())) {
+            //legit data. check internet
+            val internetCheck = NetworkMonitor(this@ProductsHome)
+            if (internetCheck.checkInternet()) {
+                //internet is up
+                //call fun post the report to the admin
+                funSubmitCounterfeitNow(productCode, productMessage)
+                //
+            }
+
+        }
+        //code ends
+    }
+
+    @SuppressLint("InflateParams")
+    private fun funSubmitCounterfeitNow(productCode: String, productMessage: String) {
+        val viewProgress = LayoutInflater.from(this@ProductsHome)
+            .inflate(R.layout.general_progress_dialog_view, null, false)
+        val progressCounterfeitDialog = ProgressDialog(this@ProductsHome)
+        progressCounterfeitDialog.setTitle("report counterfeit")
+        progressCounterfeitDialog.setView(viewProgress)
+        progressCounterfeitDialog.setMessage("code confirmation...")
+        progressCounterfeitDialog.setIcon(R.drawable.ic_report)
+        progressCounterfeitDialog.setCancelable(false)
+        progressCounterfeitDialog.create()
+        progressCounterfeitDialog.show()
+
+        //creating an arraylist that will contain all data that will be used to match productCodes
+        var arrayHoldData = arrayListOf<DataClassProductsData>()
+        arrayHoldData.clear()
+        //code begins
+        //fetch all data from the store to check the existence of this product code
+        val store = FirebaseFirestore.getInstance()
+        store.collection(CollectionPost).get().addOnCompleteListener { it ->
+            if (it.isSuccessful) {
+                for (data in it.result.documents) {
+                    val dataFilter: DataClassProductsData? =
+                        data.toObject(DataClassProductsData::class.java)
+                    //adding the class of data onto the array then will match the codes
+                    if (dataFilter != null) {
+                        arrayHoldData.add(dataFilter)
+                    }
+                    //
+                }
+
+                //iterate through the array to match the product codes
+                if (arrayHoldData.isNotEmpty()) {
+                    //will hold suspect details
+                    var suspectUniqueUID = ""
+                    //get product timerControl ID that will fetch all the details about the product
+                    var productTimerControllerID = ""
+                    var isCodeFound = false
+
+                    arrayHoldData.forEach {
+                        if (it.productID.equals(productCode)) {
+                            //boolean true code exits
+                            isCodeFound = true
+                            //
+                            //get the details of the suspect by grabbing the key
+                            suspectUniqueUID = it.userID.toString()
+                            //get product timerControl ID that will fetch all the details about the product
+                            //sold posted as a counterfeit one
+                            productTimerControllerID = it.timerControlID.toString()
+                            //
+                        }
+                        else
+                            return@forEach
+                    }
+
+
+                    //code exists
+                    if (isCodeFound) {
+                        //begin posting of the data
+                        if (suspectUniqueUID.isNotEmpty() && productTimerControllerID.isNotEmpty()) {
+                            //change the message of the progress dialog to confirmed
+                            progressCounterfeitDialog.setMessage("confirmed")
+                            progressCounterfeitDialog.setIcon(R.drawable.ic_nike_done)
+                            //call a new function to finalise the process of reporting the user
+                            funFinaliseReportingCounterfeit(
+                                progressCounterfeitDialog,
+                                productCode,
+                                productMessage,
+                                suspectUniqueUID,
+                                productTimerControllerID
+                            )
+                            //
+                        } else {
+                            //dismiss the progress dialog
+                            progressCounterfeitDialog.dismiss()
+                            //
+                            funToastyFail("operation failure!")
+                        }
+                        //
+
+                    } else {
+                        //dismiss the progress dialog
+                        progressCounterfeitDialog.dismiss()
+                        //
+                        //no exist is the code
+                        funToastyFail("product code does not exist")
+                    }
+
+
+                } else {
+                    //dismiss the progress dialog
+                    progressCounterfeitDialog.dismiss()
+                    //
+                    funToastyFail("unknown error has occurred!")
+                    return@addOnCompleteListener
+                }
+                //
+
+            } else if (!it.isSuccessful) {
+                //dismiss pg
+                progressCounterfeitDialog.dismiss()
+                //
+                //toast an error
+                funToastyFail("unknown error has occurred!")
+                //
+            }
+        }
+        //
+        //code ends
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun funFinaliseReportingCounterfeit(
+        progressCounterfeitDialog: ProgressDialog,
+        productCode: String,
+        productMessage: String,
+        suspectUniqueUID: String?,
+        productTimerControllerID: String?
+    ) {
+        //code begins
+        val uniqueUIDVictim = FirebaseAuth.getInstance().uid
+        //creating the keys to be used for mapping the data
+        val keyProductCode = "productCode"
+        val keyProductController = "productControlUID"
+        val keyClaimID = "ProductClaimID"
+        val keyDate = "claimDate"
+        val keyMessage = "productMessage"
+        val keyVictimUID = "productVictimID"
+        val keySuspectID = "productSuspectID"
+
+        val calendar = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
+
+        //getting current time millis
+        val timerInMillis = System.currentTimeMillis()
+        //
+        //evaluating the data
+        val dataDateSent = formatter.format(calendar)
+        val dataCombinationClaimID = uniqueUIDVictim + timerInMillis //also equals the document path
+        //
+
+        //creating a map for the data
+        val mapData = hashMapOf(
+            keyDate to dataDateSent,
+            keyProductCode to productCode,
+            keyProductController to productTimerControllerID,
+            keyMessage to productMessage,
+            keyClaimID to dataCombinationClaimID,
+            keyVictimUID to uniqueUIDVictim,
+            keySuspectID to suspectUniqueUID
+        )
+        //
+        //begin sending to the backend of the store
+        //path for counterfeitReport(CollectionCounterfeit/dataCombinationClaimID)
+        //check if UID is null else continue
+
+        if (uniqueUIDVictim != null) {
+            val store = FirebaseFirestore.getInstance()
+            store.collection(CollectionCounterfeit).document(dataCombinationClaimID).set(mapData)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        //dismiss the progress dialog
+                        progressCounterfeitDialog.dismiss()
+                        //
+
+                        //show an alert congrats
+                        MaterialAlertDialogBuilder(this@ProductsHome)
+                            .setIcon(R.drawable.ic_nike_done)
+                            .setTitle("report sent")
+                            .setCancelable(false)
+                            .setMessage(
+                                "your report has been received successfully.\n" +
+                                        "\nyou might be contacted in case of additional information " +
+                                        "is to be enquired by our policy violation team.\n" +
+                                        "\nthank you for choosing Market CM the better marketing option for a comrade."
+                            )
+                            .setPositiveButton("okay") { dialog, _ ->
+                                //dismiss the dialog
+                                dialog.dismiss()
+                                //
+                            }
+                            .create().show()
+                        //
+
+                    } else if (!it.isSuccessful) {
+                        //dismiss the progress dialog
+                        progressCounterfeitDialog.dismiss()
+                        //
+                        //show toast error
+                        funToastyFail("failed to send report try again!")
+                        //
+                        return@addOnCompleteListener
+                    }
+
+
+                }
+
+        } else {
+            funToastyFail("operation is not permitted!")
+            //dismiss the progress Dialog
+            progressCounterfeitDialog.dismiss()
+            //
+        }
+
+        //code ends
+    }
+
+
+    private fun funShareApplication() {
+        //code begins
+        var intentShareApplication = Intent(Intent.ACTION_SEND)
+        intentShareApplication.type = "text/plain"
+        intentShareApplication.putExtra(
+            Intent.EXTRA_TEXT,
+            "share market cm and help other to comrades market their products freely"
+        )
+        startActivity(Intent.createChooser(intentShareApplication, "share via"))
+        //code ends
+    }
+
+    private fun funEmailDeveloper() {
+        //code
+        //get the name of the current user from the share preferences
+        val sharedPrefs = getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
+        val firstName = sharedPrefs.getString("firstname", "")
+        val lastname = sharedPrefs.getString("lastname", "")
+        val fullName = "$firstName $lastname"
+        //
         val emailsMyEmails = arrayOf("douglasshimita3@gmail.com", "shimitadouglas@gmail.com")
-        val emailSubject = "help or question"
-        val messageBodyText = "write your message here"
+        val emailSubject = "write email subject here"
+        val messageBodyText = "Hello $fullName write your message here"
         val intentEmail = Intent()
         intentEmail.action = Intent.ACTION_SEND
         intentEmail.setDataAndType(Uri.parse("email"), "message/rfc822")
@@ -1601,4 +1963,58 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //code ends
 
     }
+
+    //funCustomToastMore
+    private fun funToastyCustomTwo(message: String, icon: Int, color: Int) {
+        Toasty.custom(
+            this@ProductsHome,
+            message,
+            icon,
+            color,
+            Toasty.LENGTH_SHORT,
+            true,
+            false
+        ).show()
+    }
+
+    //fun customToast
+    private fun funToastyCustom(message: String, icon: Int) {
+        Toasty.custom(
+            this@ProductsHome,
+            message,
+            icon,
+            R.color.colorWhite,
+            Toasty.LENGTH_SHORT,
+            true,
+            false
+        ).show()
+    }
+
+    //function Toasty Fail
+    private fun funToastyFail(message: String) {
+        Toasty.custom(
+            this@ProductsHome,
+            message,
+            R.drawable.ic_warning,
+            R.color.androidx_core_secondary_text_default_material_light,
+            Toasty.LENGTH_SHORT,
+            true,
+            false
+        ).show()
+    }
+
+    //function Toasty Successful
+    private fun funToastyShow(s: String) {
+        Toasty.custom(
+            this@ProductsHome,
+            s,
+            R.drawable.ic_nike_done,
+            R.color.colorWhite,
+            Toasty.LENGTH_SHORT,
+            true,
+            false
+        ).show()
+    }
+
+
 }

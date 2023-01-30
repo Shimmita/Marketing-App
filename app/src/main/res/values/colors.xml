@@ -8,6 +8,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <!-- mine latest-->
+    <color name="primaryColor">#9575cd</color>
+    <color name="primaryLightColor">#c7a4ff</color>
+    <color name="primaryDarkColor">#65499c</color>
+    <color name="primaryTextColor">#000000</color>
+
 
     <color name="abc_decor_view_status_guard">#ff000000</color>
     <color name="abc_decor_view_status_guard_light">#ffffffff</color>

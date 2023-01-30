@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    app:cardCornerRadius="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvReportScammerOptionCounterfeit"
+            style="@style/TextAppearance.Material3.TitleSmall"
+            android:layout_width="wrap_content"
+            android:textColor="@color/teal_700"
+            android:layout_height="match_parent"
+            android:text="@string/scammer_option"
+            android:textAllCaps="false"
+            android:textStyle="bold|italic" />
+
+
+        <EditText
+            android:id="@+id/edtReportScammerOptionCounterfeitCode"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/product_code_i_e_hxc4fyt"
+            android:textColor="@color/design_dark_default_color_primary"
+            android:textStyle="italic" />
+
+
+        <EditText
+            android:id="@+id/edtReportScammerOptionCounterfeitMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:hint="@string/write_your_message_here"
+            android:textColor="@color/design_dark_default_color_primary"
+            android:textStyle="italic" />
+
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,4 +1,4 @@
-package com.shimitadouglas.marketcm.control
+package com.shimitadouglas.marketcm.controlPanel
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

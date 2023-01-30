@@ -72,6 +72,28 @@
     <string name="type_here_to_search">type here to search products</string>
     <string name="file_size_description"></string>
     <string name="today">today</string>
+    <string name="developer">Technical Assistance</string>
+    <string name="message_developer">message developer</string>
+    <string name="call_developer">call developer</string>
+    <string name="email_developer">email developer</string>
+    <string name="report">Report</string>
+    <string name="report_a_scammer">report a scammer</string>
+    <string name="about">About</string>
+    <string name="market_cm">market cm</string>
+    <string name="privacy_and_policy">privacy and policy</string>
+    <string name="tools">Tools</string>
+    <string name="share_app">share app</string>
+    <string name="check_for_updates">check for updates</string>
+    <string name="report_scanner_option">report scanner option</string>
+    <string name="scammer_option"></string>
+    <string name="write_your_message_here">enter your message here</string>
+    <string name="product_code_i_e_hxc4fyt">enter product code here</string>
+    <string name="about_market">Market CM (Comrade Market) is a mobile trading application built to facilitate quick marketing of products for its members on a click of a button.\n\nTo use the application:\n\ni)members have to create a new account as required by the application during the registration process.\nii)members must verify their email address to own genuine accounts.\n\niii)members with genuine accounts gain the freedom of posting their products to the market for free.\n\niv)members with genuine accounts get notified whenever other user(s) enquires for their products hence can perform their business transactions in an easy-peasy way.\n\ndesigned and developed by:\n\nEmail:  shimitadouglas@gmail.com\n\nEmail:  douglasshimita3@gmail.com\n\nPhone: 0757450727\n\nStudent @Maseno University out 2024\nSchool Of Computing and Informatics
+    </string>
+    <string name="post_to_the_market">post to the market</string>
+    <string-array name="report_scammer_options">
+        <item>counterfeit products</item>
+    </string-array>
     <string-array name="list_category_sort">
         <item>powerbanks</item>
         <item>laptop RAM</item>
