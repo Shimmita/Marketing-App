@@ -328,8 +328,15 @@ class HomeFragment : Fragment() {
                 //
             }
         }.addOnFailureListener {
+            //dismisses
+            progressDialogMain.dismiss()
+            //
             //toast error
             funToastyFail("error was encountered while fetching data")
+            AlertDialog.Builder(requireActivity())
+                .setMessage(it.message)
+                .create().show()
+
             //
         }
         //

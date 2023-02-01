@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/material_six"
+    android:background="@drawable/material_11"
     android:gravity="center"
     android:padding="5dp"
     tools:context=".mains.MainActivity">
@@ -19,6 +19,7 @@
             android:id="@+id/cart"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:layout_marginStart="10dp"
             android:layout_marginBottom="10dp"
             android:scaleType="centerCrop"
             android:src="@drawable/cart"
@@ -32,7 +33,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="25dp"
             android:layout_toEndOf="@id/cart"
-            android:background="@drawable/shaping"
+            android:background="@drawable/material_11"
             android:gravity="center_horizontal"
             android:padding="15dp"
             android:text="Account Login"
@@ -66,7 +67,7 @@
                     android:id="@+id/loginEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/shaping"
+                    android:background="@drawable/material_13"
                     android:clickable="true"
                     android:hint="enter email address"
                     android:inputType="textEmailAddress" />
@@ -89,20 +90,20 @@
                     android:id="@+id/loginPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/shaping"
+                    android:background="@drawable/material_13"
                     android:hint="enter password"
                     android:inputType="textPassword" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.button.MaterialButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/buttonLogin"
                 style="@style/Base.CardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="25dp"
-                android:backgroundTint="@color/abc_search_url_text_normal"
+                android:background="@drawable/material_13"
                 android:text="Login"
                 android:textColor="@color/design_dark_default_color_on_surface"
                 app:rippleColor="@color/black" />
@@ -112,7 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:background="@drawable/material_six"
+                android:background="@drawable/material_nine"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:padding="5dp">
@@ -122,17 +123,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-condensed-light"
-                    android:text="Password Recovery/Account Creation"
-                    android:textColor="@color/primary_dark_material_light"
-                    android:textStyle="bold" />
+                    android:text="@string/password_recovery_or_register_account"
+                    android:textColor="@color/abc_decor_view_status_guard_light"
+                    android:textStyle="italic" />
 
                 <TextView
                     android:id="@+id/marqueeLogin"
+                    style="@style/TextAppearance.Material3.BodySmall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/teko_bold"
                     android:text="@string/ultimate_marketing"
                     android:textAllCaps="false"
-                    android:layout_marginStart="5dp"
                     android:textColor="@color/green"
                     android:textStyle="italic|bold" />
             </LinearLayout>
@@ -142,38 +145,40 @@
                 android:id="@+id/linearRecoverCreate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/material_six"
+                android:background="@drawable/backg_slider"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/tv_recover_password"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
-                    android:background="@drawable/material_six"
                     android:drawablePadding="5dp"
                     android:fontFamily="sans-serif-condensed-light"
                     android:padding="10dp"
-                    android:text="password recovery? click here"
-                    android:textColor="@color/design_default_color_secondary_variant"
+                    android:background="@drawable/backg_slider"
+                    android:text="@string/password_recovery_click_here"
+                    android:textColor="@color/abc_search_url_text_normal"
                     android:textStyle="italic|bold"
-                    app:drawableEndCompat="@drawable/ic_touch" />
+                    android:textAllCaps="false"
+                    app:drawableEndCompat="@drawable/ic_forward" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/tv_register_account"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/material_six"
                     android:drawablePadding="5dp"
+                    android:textAllCaps="false"
+                    android:background="@drawable/backg_slider"
                     android:fontFamily="sans-serif-condensed-light"
                     android:padding="10dp"
                     android:text="@string/not_having_an_account_yet_click_here"
-                    android:textColor="@color/design_default_color_secondary_variant"
+                    android:textColor="@color/abc_search_url_text_normal"
                     android:textStyle="italic|bold"
-                    app:drawableEndCompat="@drawable/ic_touch" />
+                    app:drawableEndCompat="@drawable/ic_forward" />
 
             </LinearLayout>
 

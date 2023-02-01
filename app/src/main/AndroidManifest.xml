@@ -30,15 +30,8 @@
         </activity>
         <activity
             android:name=".controlPanel.Administration"
-            android:exported="true">
-
-            <!--
-              <intent-filter>
-                  <action android:name="android.intent.action.MAIN" />
-
-                  <category android:name="android.intent.category.LAUNCHER" />
-              </intent-filter>
-            -->
+            android:exported="false"
+            android:parentActivityName=".mains.ProductsHome">
 
             <meta-data
                 android:name="android.app.lib_name"
@@ -53,12 +46,7 @@
         </activity>
         <activity
             android:name=".mains.ProductsHome"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:exported="false">
 
             <meta-data
                 android:name="android.app.lib_name"
@@ -68,13 +56,10 @@
             android:name=".mains.SplashScreenIndex"
             android:exported="true">
 
-            <!--
-                 <intent-filter>
-                     <action android:name="android.intent.action.MAIN" />
-
-                     <category android:name="android.intent.category.LAUNCHER" />
-                 </intent-filter>
-            -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
             <meta-data
                 android:name="android.app.lib_name"
@@ -82,7 +67,7 @@
         </activity>
         <activity
             android:name=".mains.MainActivity"
-            android:exported="true">
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

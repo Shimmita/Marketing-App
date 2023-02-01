@@ -60,7 +60,7 @@ class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
         savedInstanceState: Bundle?
     ): View? {
         //code begins
-        val viewMessages = inflater.inflate(R.layout.message_admin, container, false)
+        val viewMessages: View = inflater.inflate(R.layout.message_admin, container, false)
         //
         checkBox = viewMessages.findViewById(R.id.cbControl)
         linearLayoutMessageConsole = viewMessages.findViewById(R.id.linearController)
@@ -656,18 +656,15 @@ class MessageAdmin : Fragment(), AdapterView.OnItemSelectedListener {
 
         //control the type of the message console control items being sown
         if (messageTypeSpinner.contains("picture", true)) {
-            Toast.makeText(requireActivity(), "BigPicture", Toast.LENGTH_SHORT).show()
             //
             funBigPictureNotification()
             //
 
         } else if (messageTypeSpinner.contains("Text", true)) {
-            Toast.makeText(requireActivity(), "BigText", Toast.LENGTH_SHORT).show()
             //
             funBigTextNotification()
             //
         } else if (messageTypeSpinner.contains("normal", true)) {
-            Toast.makeText(requireActivity(), "Normal", Toast.LENGTH_SHORT).show()
             //
             funNormalNotification()
             //

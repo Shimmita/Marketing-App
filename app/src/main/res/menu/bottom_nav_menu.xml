@@ -17,6 +17,13 @@
         android:icon="@drawable/ic_notification"
         android:title="@string/notification_bottom_nav"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/adminShield"
+        android:icon="@drawable/ic_shield_admin"
+        android:title="@string/shim"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/logout"
         android:icon="@drawable/ic_logout"

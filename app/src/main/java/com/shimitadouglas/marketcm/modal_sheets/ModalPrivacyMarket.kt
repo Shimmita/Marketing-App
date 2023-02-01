@@ -33,8 +33,8 @@ class ModalPrivacyMarket(var which: String) : BottomSheetDialogFragment() {
             textView.text = resources.getText(R.string.about_market)
 
         } else if (which.contains("policy")) {
-            //policy data
-            textView.text = "not yet implemented"
+            //policy/terms data
+            textView.text =resources.getString(R.string.privacy_policy_terms)
         }
         //fun anim parent card
         funCardAnim(cardView,linearLayout)

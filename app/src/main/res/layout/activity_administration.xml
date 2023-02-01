@@ -4,25 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:layout_margin="2dp"
+    android:orientation="vertical"
     tools:context=".controlPanel.Administration">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+        app:popupTheme="@style/Theme.Design.Light.NoActionBar" />
+
     <FrameLayout
+        android:id="@+id/frameLayoutContainerAdmin"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/frameLayoutContainerAdmin"
-        android:layout_above="@id/bottomNavAdmin"/>
+        android:layout_above="@id/bottomNavAdmin" />
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavAdmin"
+        style="@style/Widget.Design.BottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/material_six"
-        style="@style/Widget.Design.BottomNavigationView"
+        android:layout_alignParentBottom="true"
         android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
-        android:id="@+id/bottomNavAdmin"
-        app:menu="@menu/bottom_nav_admin"
-        android:layout_alignParentBottom="true"/>
+        app:menu="@menu/bottom_nav_admin" />
 
 </RelativeLayout>

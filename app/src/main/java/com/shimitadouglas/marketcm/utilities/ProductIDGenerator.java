@@ -22,6 +22,7 @@ public class ProductIDGenerator {
         if (useNumbersCharacters) charSet += numberCharacters;
 
         for (int i = 0; i < passwordLength; i++) {
+            assert charSet != null;
             password[i] = charSet.toCharArray()[random.nextInt(charSet.length() - 1)];
         }
         return String.valueOf(password);

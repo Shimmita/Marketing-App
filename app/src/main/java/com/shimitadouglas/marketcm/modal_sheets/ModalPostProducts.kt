@@ -48,7 +48,6 @@ import kotlin.random.Random
 
 class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelectedListener {
     companion object {
-        private const val TAG = "ModalPostProducts"
         const val CollectionPost = "Products Post"
         const val CollectionAdminWarehouse = "AdminPost WareHouse"
 
@@ -131,9 +130,23 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             //code begins
             //animate the button
             it.startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.bottom_up))
+            //before making a post check if the user has verified his email address or not in order to continue
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            //
+            //check if the current user verified its email address. continue to post if the user verfied email
+            val isEmailVerified = currentUser?.isEmailVerified
 
-            //call fun update/post
-            funPostNow()
+            if (isEmailVerified == true) {
+                //user verified email continue to posting
+                //call fun update/post
+                funPostNow()
+                //
+            } else {
+                //deny the user until email is verified
+                funAlertPleaseVerifyEmail()
+                //
+            }
+
             //code ends
         }
 
@@ -735,6 +748,37 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         //code ends
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun funAlertPleaseVerifyEmail() {
+        //code begins
+        //get the name of the user from the shared preference
+        val sharedPreference =
+            requireActivity().getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
+        val firstName = sharedPreference.getString("firstname", "")
+        val lastName = sharedPreference.getString("lastname", "")
+        val fullName = "$firstName $lastName"
+        //
+        val emailAddress = FirebaseAuth.getInstance().currentUser?.email
+        val alertVerifyEmail = MaterialAlertDialogBuilder(requireActivity())
+        alertVerifyEmail.setIcon(R.drawable.ic_info)
+        alertVerifyEmail.setTitle("Email Validation")
+        alertVerifyEmail.background =
+            resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
+        alertVerifyEmail.setMessage(
+            "$fullName your email address ($emailAddress)\n\nhas not yet been verified.\n" +
+                    "\nverify your email address and post your products freely."
+        )
+        alertVerifyEmail.setPositiveButton("okay") { dialog, _ ->
+            //dismiss
+            dialog.dismiss()
+            //
+        }
+        alertVerifyEmail.setCancelable(false)
+        alertVerifyEmail.create()
+        alertVerifyEmail.show()
+        //code ends
+    }
+
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun funPostNow() {
@@ -838,7 +882,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                                     val uriStringItemPosted = it.result.toString()
                                     //
                                     //call function to upload data to fStore
-                                    funUploadPostFstore(
+                                    funUploadPostStore(
                                         uriStringItemPosted,
                                         titleDataPost,
                                         descriptionDataPost,
@@ -908,7 +952,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
     }
 
     @SuppressLint("UseCompatLoadingForDrawables", "SimpleDateFormat")
-    private fun funUploadPostFstore(
+    private fun funUploadPostStore(
         uriStringItemPosted: String,
         titleDataPost: String,
         descriptionDataPost: String,
@@ -918,7 +962,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
     ) {
         //code begins
         //generate a unique Product key on each item
-        val productUniqueID = ProductIDGenerator.generateProductIDNow(10, true, true, true)
+        val productUniqueID = ProductIDGenerator.generateProductIDNow(20, true, true, true)
         val uniqueUID = FirebaseAuth.getInstance().uid
         //declaring the keys for the hashMap
         val keyImagePost = "imageProduct"

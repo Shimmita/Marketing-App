@@ -32,6 +32,7 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.R
+import com.shimitadouglas.marketcm.modal_sheets.ModalPrivacyMarket
 import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
@@ -43,7 +44,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     companion object {
         private const val TAG = "Registration"
-        const val ComRadeUser = "Comrade Users"
+        const val ComradeUser = "Comrade Users"
     }
 
     //image uri path
@@ -161,6 +162,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun funRegistrationBegin() {
 
         //code begins
@@ -220,25 +222,72 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             //
 
         } else {
-            //call function proceed registration
-            //parameters passed to the function=email,password,phone,university,firstname,lastname,image url
-            funCreateUserNew(
-                emailData,
-                passwordData,
-                dataFirstName,
-                lasNameData,
-                phoneData,
-                spinnerDataUniversity,
-                uriPath!!
-            )
-            //
+
+            //ensure that the user agrees to the terms and conditions
+            var selected = ""
+            val arrayOfTerms = resources.getStringArray(R.array.terms_and_conditions)
+            val alertUSerTermsAndConditions = MaterialAlertDialogBuilder(this@Registration)
+            alertUSerTermsAndConditions.setIcon(R.drawable.cart)
+            alertUSerTermsAndConditions.background =
+                resources.getDrawable(R.drawable.material_11, theme)
+            alertUSerTermsAndConditions.setTitle("Terms And Conditions")
+            alertUSerTermsAndConditions.setSingleChoiceItems(arrayOfTerms, 2) { _, which ->
+                selected = arrayOfTerms[which]
+            }
+            alertUSerTermsAndConditions.setPositiveButton("register") { dialog, _ ->
+
+                //check if is null the value of the selected item
+                if (selected.isNotEmpty()) {
+                    if (selected.equals("i agree terms and conditions", true)) {
+                        //user agreed to the terms proceed registration
+                        //call function proceed registration
+                        //parameters passed to the function=email,password,phone,university,firstname,lastname,image url
+                        funCreateUserNew(
+                            emailData,
+                            passwordData,
+                            dataFirstName,
+                            lasNameData,
+                            phoneData,
+                            spinnerDataUniversity,
+                            uriPath!!
+                        )
+                        //
+
+                        //dismiss the dialog
+                        dialog.dismiss()
+                        //
+                    } else if (selected.equals("i disagree terms and conditions", true)) {
+                        funToastyFail("registration process cannot proceed!")
+                        //user disagreed just dismiss the dialog
+                        dialog.dismiss()
+                        //
+                    }
+
+                } else if (selected.isEmpty()) {
+                    funToastyFail("select an option!")
+                }
+                //
+            }
+            alertUSerTermsAndConditions.setNegativeButton("terms") { dialog, _ ->
+
+                //show the terms and conditions to the user
+                val modalSheetPrivacyAndTerms = ModalPrivacyMarket("policy")
+                modalSheetPrivacyAndTerms.show(
+                    supportFragmentManager,
+                    "privacy_policy_terms_registration"
+                )
+                //
+                dialog.dismiss()
+            }
+            alertUSerTermsAndConditions.create()
+            alertUSerTermsAndConditions.show()
+
         }
         //
-
-
         //code ends
 
     }
+
 
     private fun funCreateUserNew(
         emailData: String,
@@ -252,7 +301,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         //code begins
         //creating instance of firebase
-        val baseInit = FirebaseAuth.getInstance()
+        val fBaseInit = FirebaseAuth.getInstance()
         //creating a progress dialog to sho progression of registration
         val createNewUserProgressDialog = ProgressDialog(this@Registration)
         createNewUserProgressDialog.setTitle("Registering $dataFirstName")
@@ -260,16 +309,14 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         createNewUserProgressDialog.setCancelable(false)
         createNewUserProgressDialog.show()
         createNewUserProgressDialog.create()
-        //todo:find out tackling deprecation of progressDialog
-        //
+
         //creating the new user from the instance
-        baseInit.createUserWithEmailAndPassword(emailData, passwordData).addOnCompleteListener {
+        fBaseInit.createUserWithEmailAndPassword(emailData, passwordData).addOnCompleteListener {
             //if user is created successfully
             if (it.isSuccessful) {
                 //updating the details of progressDialog
                 createNewUserProgressDialog.setMessage("data uploading...")
                 //
-
                 //create function storing the data to fireStore then image cloudStore
                 funStoreDataFireStore(
                     emailData,
@@ -336,7 +383,6 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val keyImageUri = "ImagePath"
         val keyRegistrationDate = "registrationDate"
         //
-
         //creating the hashmap for the data be stored in fireStore
         val mapUserData = hashMapOf(
             keyEmail to emailData,
@@ -352,7 +398,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         //saving the user data to the server
         currentUID?.let {
-            fStoreUsers.collection(ComRadeUser).document(
+            fStoreUsers.collection(ComradeUser).document(
                 it
             )
         }?.set(mapUserData)?.addOnCompleteListener {
@@ -391,7 +437,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val fabUserEmail = FirebaseAuth.getInstance().currentUser?.email
         val fabStorageInt =
             fabUserEmail?.let {
-                FirebaseStorage.getInstance().reference.child(ComRadeUser).child(currentUID).child(
+                FirebaseStorage.getInstance().reference.child(ComradeUser).child(currentUID).child(
                     it
                 )
             }
@@ -486,7 +532,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val mapUpdate = hashMapOf(keyImageUri to uriDownLoadAble)
         //starting the process of updating the fStore part keyImageUri
         if (currentUID != null) {
-            fStoreUsers.collection(ComRadeUser).document(currentUID)
+            fStoreUsers.collection(ComradeUser).document(currentUID)
                 .update(mapUpdate as Map<String, String>).addOnCompleteListener {
                     if (it.isSuccessful) {
 
@@ -533,7 +579,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         alertSuccess.setTitle("CONGRATULATIONS")
         alertSuccess.setIcon(R.drawable.ic_nike_done)
         alertSuccess.setCancelable(false)
-        alertSuccess.background = resources.getDrawable(R.drawable.material_three, theme)
+        alertSuccess.background = resources.getDrawable(R.drawable.material_seven, theme)
         alertSuccess.setMessage(
             "You have successfully registered with Comrade Market(Market CM)." +
                     "\n\nLogin to your account using your" +
@@ -542,12 +588,17 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         alertSuccess.setPositiveButton(
             "Login"
         ) { dialogInterface, _ ->
+            //the user account is currently logged in. better log him out
+            val firebaseSignOut = FirebaseAuth.getInstance()
+            firebaseSignOut.signOut()
+            //
+
             //start activity migration to Login==Main
             val intentMainLogin = Intent(this@Registration, MainActivity::class.java)
             intentMainLogin.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             intentMainLogin.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intentMainLogin)
-            finish()
+            finishAffinity()
             //
             //dismiss the dialog
             dialogInterface.dismiss()
@@ -771,4 +822,29 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     override fun onNothingSelected(p0: AdapterView<*>?) {
     }
 
+    //function Toasty Fail
+    private fun funToastyFail(message: String) {
+        Toasty.custom(
+            this@Registration,
+            message,
+            R.drawable.ic_warning,
+            R.color.androidx_core_secondary_text_default_material_light,
+            Toasty.LENGTH_SHORT,
+            true,
+            false
+        ).show()
+    }
+
+    //function Toasty Successful
+    private fun funToastyShow(s: String) {
+        Toasty.custom(
+            this@Registration,
+            s,
+            R.drawable.ic_nike_done,
+            R.color.colorWhite,
+            Toasty.LENGTH_SHORT,
+            true,
+            false
+        ).show()
+    }
 }

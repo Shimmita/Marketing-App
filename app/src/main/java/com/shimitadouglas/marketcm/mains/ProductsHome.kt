@@ -14,7 +14,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -50,10 +49,12 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.Networking.NetworkMonitor
 import com.shimitadouglas.marketcm.R
+import com.shimitadouglas.marketcm.admin_check.AdministrationVerify
+import com.shimitadouglas.marketcm.controlPanel.Administration
 import com.shimitadouglas.marketcm.fragmentProducts.HomeFragment
 import com.shimitadouglas.marketcm.fragmentProducts.NotificationFragment
 import com.shimitadouglas.marketcm.fragmentProducts.PostFragment
-import com.shimitadouglas.marketcm.mains.Registration.Companion.ComRadeUser
+import com.shimitadouglas.marketcm.mains.Registration.Companion.ComradeUser
 import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
 import com.shimitadouglas.marketcm.modal_data_profile.DataProfile
 import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
@@ -67,9 +68,8 @@ import kotlin.system.exitProcess
 
 class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     companion object {
-        private const val TAG = "ProductsHome"
+        //Declaration Globals
         const val CollectionCounterfeit = "Counterfeit Reports"
-        const val CollectionOtherReports = "Other Reports"
 
         //shared prefs for storing the states of some data to avoid constants reloads
         var sharedPreferenceName: String = "MarketCmSharedPreference"
@@ -91,7 +91,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var bottomNav: BottomNavigationView
     lateinit var viewHeader: View
 
-    //
     //declaration of the items of the header
     lateinit var headerVerificationEmail: TextView
     lateinit var headerTitleUsername: TextView
@@ -132,6 +131,21 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         fragmentDefaultAdd()
         //
 
+        //fun check admin shield activation
+        funCheckAdminShieldActivationMenuItem()
+        //
+
+    }
+
+    private fun funCheckAdminShieldActivationMenuItem() {
+        //get the bottomNav menu and extract the shield item w/c be passed in the constructor
+        //to determine if be shown or not basing on the fact if current user is an admin
+        val bottomNavMenu = bottomNav.menu
+        val menuShield = bottomNavMenu.findItem(R.id.adminShield)
+        //init of the adminVerify class
+        val administrationVerify = AdministrationVerify(this@ProductsHome)
+        administrationVerify.verifyIsAdminShowShield(menuShield)
+        //
     }
 
     private fun funFetchProfileDataBackend() {
@@ -140,11 +154,10 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val backendStoreCloud = FirebaseFirestore.getInstance()
         //beginning the process of obtaining the data from the cloud path(comrade user/uniqueID)
         if (uniqueUID != null) {
-            backendStoreCloud.collection(ComRadeUser).document(uniqueUID).get()
+            backendStoreCloud.collection(ComradeUser).document(uniqueUID).get()
                 .addOnSuccessListener {
                     //check  if the snapshot exits
                     if (it.exists()) {
-                        Log.d(TAG, "funFetchProfileDataBackend: \n${it.data}")
                         //convert the data into class readable
                         val classDataProfile: DataProfile? = it.toObject(DataProfile::class.java)
                         if (classDataProfile != null) {
@@ -172,10 +185,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             }.apply()
                             //
 
-                            Log.d(
-                                TAG,
-                                "funFetchProfileDataBackend: \nname:$fName $lName\nemail:$email\nphone:$phone\nuniversity:$university\nimage:$image\npasscode:$password\nregistrationDate:$registrationDate\n\n"
-                            )
                         }
                         //
 
@@ -288,10 +297,24 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         .show()
                     //
                 }
+
+                R.id.adminShield -> {
+                    //migrate to the administration
+                    funAdminMigration()
+                    //
+                }
             }
             return@setOnNavigationItemSelectedListener true
         }
 
+        //code ends
+    }
+
+    private fun funAdminMigration() {
+        //code begins
+        //check email,password,isAdmin to proceed to administration
+        val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
+        startActivity(Intent(this@ProductsHome, Administration::class.java))
         //code ends
     }
 
@@ -355,8 +378,8 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     "(${userCurrent.email})" +
                             "\nneeds to be verified within 2 days in order" +
                             " to avoid your account from becoming inactive.\n" +
-                            "\nAccounts created with non verified email addresses are deemed to be corrupt accounts," +
-                            " to avoid this situation, kindly verify your email within the stipulated period of time."
+                            "\naccounts created with non verified email addresses are deemed to be corrupt accounts " +
+                            " to avoid this situation kindly verify your email within the stipulated period of time."
                 )
                 alertD.setIcon(R.drawable.ic_info)
                 alertD.setPositiveButton("verifyNow") { dialog, _ ->
@@ -406,10 +429,10 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 alertD.setNegativeButton("verifyLater") { dialog, _ ->
                     //show snack not verified is the account
-                    Snackbar.make(toolbar, "account not yet approved", Snackbar.LENGTH_LONG)
+                    Snackbar.make(toolbar, "account not yet approved!", Snackbar.LENGTH_LONG)
                         .setBackgroundTint(
                             resources.getColor(
-                                R.color.design_dark_default_color_primary,
+                                R.color.accent_material_light,
                                 theme
                             )
                         )
@@ -523,13 +546,11 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //send the email verification link
             fabAuth.currentUser?.sendEmailVerification()?.addOnCompleteListener {
                 if (it.isSuccessful) {
-                    //code begins
-                    //email verification link  has been sent successfully
                     //dismiss the pgD
                     progressD.dismiss()
-                    //
-
-                    //creating alertFor notify
+                    //sign out the current user
+                    FirebaseAuth.getInstance().signOut()
+                    //creating alertFor notify email verification sent
                     val alertShowHowToVerify = MaterialAlertDialogBuilder(this@ProductsHome)
                     alertShowHowToVerify.setCancelable(false)
                     alertShowHowToVerify.setIcon(R.drawable.ic_info)
@@ -764,7 +785,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val mapUpdatePassword = hashMapOf(keyPassword to textPasswordChange)
         //beginning the process of updating the password
         if (currentUID != null) {
-            fStoreUsers.collection(ComRadeUser).document(currentUID)
+            fStoreUsers.collection(ComradeUser).document(currentUID)
                 .update(mapUpdatePassword as Map<String, String>).addOnCompleteListener {
                     //password update successful
                     if (it.isSuccessful) {
@@ -892,7 +913,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val userIDCurrent = FirebaseAuth.getInstance().currentUser?.uid
         //
         val fStore = userIDCurrent?.let {
-            FirebaseFirestore.getInstance().collection(ComRadeUser).document(
+            FirebaseFirestore.getInstance().collection(ComradeUser).document(
                 it
             ).update(mapUpdateNumber as Map<String, Any>).addOnCompleteListener {
                 //code begins
@@ -1051,7 +1072,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val userIDLogged = FirebaseAuth.getInstance().currentUser?.uid
 
         //init of fStore and begin update of username
-        val fStore = FirebaseFirestore.getInstance().collection(ComRadeUser)
+        val fStore = FirebaseFirestore.getInstance().collection(ComradeUser)
         //
         //begin update of the user
 
@@ -1224,12 +1245,12 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //init shared preference from where we go obtain the data stored
         val sharedPreferences = getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
         sharedPreferences.apply {
-            var image = getString("image", "")
-            var firstName = getString("firstname", "")
-            var lastname = getString("lastname", "")
-            var phone = getString("phone", "")
-            var university = getString("university", "")
-            var email = getString("email", "")
+            val image = getString("image", "")
+            val firstName = getString("firstname", "")
+            val lastname = getString("lastname", "")
+            val phone = getString("phone", "")
+            val university = getString("university", "")
+            val email = getString("email", "")
 
 
             //loading the image to the header using glide
@@ -1365,17 +1386,17 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun funShowModalSheetPrivacy() {
         //coded begins
-        val which="policy"
-        val modalPolicy=ModalPrivacyMarket(which)
-        modalPolicy.show(supportFragmentManager,"modal_privacy_policy")
+        val which = "policy"
+        val modalPolicy = ModalPrivacyMarket(which)
+        modalPolicy.show(supportFragmentManager, "modal_privacy_policy")
         //code ends
     }
 
     private fun funShowModalSheetMarketCM() {
         //code begins
-        val which="about"
-        val modalAboutMarket=ModalPrivacyMarket(which)
-        modalAboutMarket.show(supportFragmentManager,"modal_about_market_cm")
+        val which = "about"
+        val modalAboutMarket = ModalPrivacyMarket(which)
+        modalAboutMarket.show(supportFragmentManager, "modal_about_market_cm")
         //code ends
     }
 
@@ -1530,8 +1551,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             //sold posted as a counterfeit one
                             productTimerControllerID = it.timerControlID.toString()
                             //
-                        }
-                        else
+                        } else
                             return@forEach
                     }
 
@@ -1836,7 +1856,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (currentUID != null) {
             if (uriDataUpdatePic != null) {
                 if (fabUserEmail != null) {
-                    fabStorageInt.child(ComRadeUser).child(currentUID).child(fabUserEmail)
+                    fabStorageInt.child(ComradeUser).child(currentUID).child(fabUserEmail)
                         .putFile(uriDataUpdatePic).addOnCompleteListener {
                             //code begins
                             //successfully obtained download uri
@@ -1918,7 +1938,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val fStoreUsers = FirebaseFirestore.getInstance();
 
         if (currentUID != null) {
-            fStoreUsers.collection(ComRadeUser).document(currentUID)
+            fStoreUsers.collection(ComradeUser).document(currentUID)
                 .update(mapData as Map<String, String>).addOnCompleteListener {
 
                     if (it.isSuccessful) {

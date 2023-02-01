@@ -12,7 +12,7 @@ import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.button.MaterialButton
+import androidx.appcompat.widget.AppCompatButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -27,11 +27,11 @@ class MainActivity : AppCompatActivity() {
 
     //globals declaration
     lateinit var relativeLoginParent: RelativeLayout
-    lateinit var tvRegistration: TextView
-    lateinit var btnLogin: MaterialButton
+    lateinit var tvRegistration: AppCompatButton
+    lateinit var btnLogin: AppCompatButton
     lateinit var editLoginEmail: TextInputEditText
     lateinit var editLoginPassword: TextInputEditText
-    lateinit var tvRecoverPasscode: TextView
+    lateinit var tvRecoverPasscode: AppCompatButton
     lateinit var linearRec: LinearLayout
     lateinit var checkBox: CheckBox
     lateinit var textViewMove: TextView
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         }
         //
         //fun check auth is null
-        funCheckCurrentUser()
+        // funCheckCurrentUser()
         //
         //code ends
     }
@@ -237,7 +237,6 @@ class MainActivity : AppCompatActivity() {
                 if (it.isSuccessful) {
                     //dismiss the progress
                     progressD.dismiss()
-                    //
                     //intent migration to the activity products
                     Toasty.custom(
                         this@MainActivity,
@@ -250,10 +249,7 @@ class MainActivity : AppCompatActivity() {
                     intentProductsHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
                     //start the activity of intent migration to products home
                     this@MainActivity.startActivity(intentProductsHome)
-                    //
-                    //finish
-                    finish()
-                    //
+                    finishAffinity()
                     //
                 }
                 //login failed

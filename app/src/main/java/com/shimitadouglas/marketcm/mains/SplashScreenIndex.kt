@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.TextView
@@ -17,10 +18,8 @@ class SplashScreenIndex : AppCompatActivity() {
         //call function full screen
         functionFullScreen()
         //
-        //call functionUpdateUi
+        //call functionUpdateUi (movement and the rotation of the tyre)
         funUpdateUi()
-        //
-
         //call function intent migration
         functionIntentMigration()
         //
@@ -28,13 +27,13 @@ class SplashScreenIndex : AppCompatActivity() {
 
     private fun functionIntentMigration() {
         //code begins
-        Handler().postDelayed(kotlinx.coroutines.Runnable {
+        Handler(Looper.getMainLooper()).postDelayed(kotlinx.coroutines.Runnable {
 
             val intentMain = Intent(this@SplashScreenIndex, MainActivity::class.java)
             intentMain.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             intentMain.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intentMain)
-            finish()
+            finishAffinity()
         }, 5000)
 
         //code end
