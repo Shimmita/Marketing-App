@@ -22,7 +22,7 @@
             app:contentScrim="@color/white"
             app:expandedTitleTextColor="@color/abc_search_url_text_selected"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlwaysCollapsed|snapMargins"
-            app:scrimAnimationDuration="2000"
+            app:scrimAnimationDuration="1000"
             app:title="hot products"
             app:toolbarId="@id/toolbarHome">
 

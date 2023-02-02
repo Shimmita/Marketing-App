@@ -252,5 +252,8 @@
     <string name="comrade_market">COMRADE MARKET</string>
     <string name="password_recovery_click_here">recover forgotten password</string>
     <string name="password_recovery_or_register_account">password recovery or register account</string>
+    <string name="sort">sort</string>
+    <string name="analytics">analytics</string>
+    <string name="search">search</string>
 
 </resources>
