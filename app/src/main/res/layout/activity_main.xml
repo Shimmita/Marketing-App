@@ -15,38 +15,45 @@
         android:layout_height="match_parent"
         android:layout_gravity="center">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/cart"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginBottom="10dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/cart"
-            app:civ_border_color="@color/abc_search_url_text_normal"
-            app:civ_border_width="1dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/linearLoginImageTitle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="25dp"
-            android:layout_toEndOf="@id/cart"
-            android:background="@drawable/material_11"
-            android:gravity="center_horizontal"
-            android:padding="15dp"
-            android:text="Account Login"
-            android:textAllCaps="true"
-            android:textColor="@color/androidx_core_secondary_text_default_material_light"
-            android:textSize="18sp"
-            android:textStyle="bold|italic" />
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imgCart"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginEnd="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/cart"
+                app:civ_border_color="@color/abc_search_url_text_normal"
+                app:civ_border_width="1dp" />
+
+            <TextView
+                android:id="@+id/tvLoginTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/material_11"
+                android:padding="15dp"
+                android:layout_marginTop="2dp"
+                android:text="@string/account_login"
+                android:textAllCaps="true"
+                android:textColor="@color/androidx_core_secondary_text_default_material_light"
+                android:textSize="18sp"
+                android:textStyle="bold|italic" />
+
+
+        </LinearLayout>
 
 
         <LinearLayout
+            android:id="@+id/linearLoginDetails"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/cart"
+            android:layout_below="@id/linearLoginImageTitle"
             android:layout_marginTop="20dp"
             android:background="@drawable/layout_backg"
             android:gravity="center"
@@ -64,12 +71,13 @@
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/loginEmail"
+                    android:id="@+id/edtLoginEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/material_13"
                     android:clickable="true"
-                    android:hint="enter email address"
+                    android:focusable="true"
+                    android:hint="@string/enter_email_address"
                     android:inputType="textEmailAddress" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -87,11 +95,11 @@
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/loginPassword"
+                    android:id="@+id/edtLoginPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/material_13"
-                    android:hint="enter password"
+                    android:hint="@string/enter_password"
                     android:inputType="textPassword" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -104,7 +112,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="25dp"
                 android:background="@drawable/material_13"
-                android:text="Login"
+                android:text="@string/login"
                 android:textColor="@color/design_dark_default_color_on_surface"
                 app:rippleColor="@color/black" />
 
@@ -132,6 +140,7 @@
                     style="@style/TextAppearance.Material3.BodySmall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="11sp"
                     android:layout_marginStart="5dp"
                     android:fontFamily="@font/teko_bold"
                     android:text="@string/ultimate_marketing"
@@ -155,14 +164,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
+                    android:background="@drawable/backg_slider"
                     android:drawablePadding="5dp"
                     android:fontFamily="sans-serif-condensed-light"
                     android:padding="10dp"
-                    android:background="@drawable/backg_slider"
                     android:text="@string/password_recovery_click_here"
+                    android:textAllCaps="false"
                     android:textColor="@color/abc_search_url_text_normal"
                     android:textStyle="italic|bold"
-                    android:textAllCaps="false"
                     app:drawableEndCompat="@drawable/ic_forward" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -170,12 +179,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:drawablePadding="5dp"
-                    android:textAllCaps="false"
                     android:background="@drawable/backg_slider"
+                    android:drawablePadding="5dp"
                     android:fontFamily="sans-serif-condensed-light"
                     android:padding="10dp"
                     android:text="@string/not_having_an_account_yet_click_here"
+                    android:textAllCaps="false"
                     android:textColor="@color/abc_search_url_text_normal"
                     android:textStyle="italic|bold"
                     app:drawableEndCompat="@drawable/ic_forward" />

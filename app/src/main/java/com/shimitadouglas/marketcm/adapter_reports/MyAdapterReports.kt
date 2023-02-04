@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
 import com.shimitadouglas.marketcm.R
-import com.shimitadouglas.marketcm.controlPanel.Administration
+import com.shimitadouglas.marketcm.control_panel_admin.Administration
 import com.shimitadouglas.marketcm.modal_data_reports.DataClassReport
 
 class MyAdapterReports(var arrayListReports: ArrayList<DataClassReport>, var context: Context) :

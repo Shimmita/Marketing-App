@@ -1052,7 +1052,6 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                         setMessage(it.exception?.message)
                         setCancelable(false)
                         setPositiveButton("retry") { dialog, _ ->
-
                             //dismiss
                             dialog.dismiss()
                             //

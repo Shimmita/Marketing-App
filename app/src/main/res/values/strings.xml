@@ -142,9 +142,9 @@
         <item>time (latest first)</item>
         <item>time (old first)</item>
         <item>owners names(a-z)</item>
-        <item>owners names (z-a)</item>
-        <item>names of the products(a-z)</item>
-        <item>names of the products(z-a)</item>
+        <item>owners names(z-a)</item>
+        <item>products names(a-z)</item>
+        <item>products names(z-a)</item>
 
     </string-array>
     <string-array name="terms_and_conditions">
@@ -251,9 +251,30 @@
     </string>
     <string name="comrade_market">COMRADE MARKET</string>
     <string name="password_recovery_click_here">recover forgotten password</string>
-    <string name="password_recovery_or_register_account">password recovery or register account</string>
+    <string name="password_recovery_or_register_account">password reset or register account</string>
     <string name="sort">sort</string>
     <string name="analytics">analytics</string>
     <string name="search">search</string>
+    <string name="share_market_cm">share market cm and help other to comrades market their products freely</string>
+    <string name="share_via">share via</string>
+    <string name="account_login">Account Login</string>
+    <string name="enter_email_address">enter email address</string>
+    <string name="enter_password">enter password</string>
+    <string name="login">Login</string>
+    <string name="account_option">Account Option</string>
+    <string name="accountOption">Account Option</string>
+    <string name="accountLogin">Account Login</string>
+    <string name="begin_recovery">begin reset</string>
+    <string name="password_reset">Password Reset</string>
+    <string name="enter_your_registered_email">enter your registered email</string>
+    <string name="pick_app">pick app</string>
+    <string name="uri_path_of_the_app_displayed_is_here">uri path of the app displayed is here</string>
+    <string name="post_the_application">post the application</string>
+    <string name="apk">apk</string>
+    <string name="market_cm_splash_title">MARKET CM</string>
+    <string name="my_recent_posts">my recent posts</string>
+    <string name="update_a_post">update a post</string>
+    <string name="delete_a_post">delete a post</string>
+    <string name="account_profile">Account Profile</string>
 
 </resources>

@@ -19,19 +19,34 @@ class BigTextNotification(
     var iconSmall: Int,
     var summary: String
 ) : Application() {
+    companion object
+    {
+        val FIlENAME = "showFile.txt"
+
+    }
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate() {
         super.onCreate()
         //call fun create big Text Notification in a thread
-        GlobalScope.launch(Dispatchers.Default) {
-            funCreateBigTextNotification()
-
-        }
+        funCreateBigTextNotification()
         //
     }
 
     fun funCreateBigTextNotification() {
+        //create a file that will store the state of the notification
+        //put the variable inside data file (yes->shows that notification approved has been already shown)
+        val text = "yes"
+        val fileOutputStream =context.openFileOutput(FIlENAME, Context.MODE_PRIVATE)
+        //write to the file output stream
+        try {
+            fileOutputStream.write(text.toByteArray())
+        } catch (e: Exception) {
+
+        } finally {
+            fileOutputStream.close()
+        }
+        //
 
         //code begins
         //creating notification channel name and ID

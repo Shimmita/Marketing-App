@@ -4,33 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    app:cardCornerRadius="20dp">
+    app:cardCornerRadius="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:padding="10dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tvReportScammerOptionCounterfeit"
-            style="@style/TextAppearance.Material3.TitleSmall"
-            android:layout_width="wrap_content"
-            android:textColor="@color/teal_700"
-            android:layout_height="match_parent"
-            android:text="@string/scammer_option"
-            android:textAllCaps="false"
-            android:textStyle="bold|italic" />
+        android:orientation="vertical"
+        android:padding="10dp">
 
 
         <EditText
             android:id="@+id/edtReportScammerOptionCounterfeitCode"
             android:layout_width="wrap_content"
-            android:layout_marginTop="5dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/material_16"
             android:hint="@string/product_code_i_e_hxc4fyt"
-            android:textColor="@color/design_dark_default_color_primary"
+            android:padding="10dp"
+            android:textColor="@color/abc_search_url_text_normal"
             android:textStyle="italic" />
 
 
@@ -38,9 +31,12 @@
             android:id="@+id/edtReportScammerOptionCounterfeitMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/material_16"
             android:hint="@string/write_your_message_here"
-            android:textColor="@color/design_dark_default_color_primary"
+            android:padding="10dp"
+            android:textColor="@color/abc_search_url_text_normal"
             android:textStyle="italic" />
 
 

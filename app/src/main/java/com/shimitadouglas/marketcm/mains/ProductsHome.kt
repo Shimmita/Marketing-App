@@ -6,6 +6,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
@@ -14,6 +15,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
 import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -50,7 +52,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.Networking.NetworkMonitor
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.admin_check.AdministrationVerify
-import com.shimitadouglas.marketcm.controlPanel.Administration
+import com.shimitadouglas.marketcm.control_panel_admin.Administration
 import com.shimitadouglas.marketcm.fragmentProducts.HomeFragment
 import com.shimitadouglas.marketcm.fragmentProducts.NotificationFragment
 import com.shimitadouglas.marketcm.fragmentProducts.PostFragment
@@ -59,8 +61,11 @@ import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
 import com.shimitadouglas.marketcm.modal_data_profile.DataProfile
 import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
 import com.shimitadouglas.marketcm.modal_sheets.ModalPrivacyMarket
+import com.shimitadouglas.marketcm.notifications.BigTextNotification
+import com.shimitadouglas.marketcm.notifications.NormalNotification
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
+import java.io.File
 import java.util.*
 import kotlin.concurrent.thread
 import kotlin.random.Random
@@ -74,7 +79,12 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //shared prefs for storing the states of some data to avoid constants reloads
         var sharedPreferenceName: String = "MarketCmSharedPreference"
         lateinit var sharedPreferenceMarketCM: SharedPreferences;
+
+        //controls the behaviour of the notification message being shown
+        var isAccountApprovedNotificationShown: Boolean = false
+
         //
+        private const val TAG = "ProductsHome"
     }
 
 
@@ -98,6 +108,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var headerEmail: TextView
     lateinit var headerPhoneNumber: TextView
     lateinit var headerImage: CircleImageView
+    lateinit var headerDateRegistration: TextView
     lateinit var headerButtonUpdate: AppCompatButton
     lateinit var headerButtonVerifyEmail: AppCompatButton
     //
@@ -110,9 +121,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         funFullScreen()
         //functionInitGlobals and drawers
         funInitGlobals()
-        //fun load the data from the fStore
-        funFetchProfileDataBackend()
-        //
         //call function to handle navView Clicking and in it we link the header of it
         funHandleNavViewProducts()
         //
@@ -130,7 +138,9 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //call function to perform default fragment addition
         fragmentDefaultAdd()
         //
-
+        //fun load the data from the fStore
+        funFetchProfileDataBackend()
+        //
         //fun check admin shield activation
         funCheckAdminShieldActivationMenuItem()
         //
@@ -148,6 +158,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //
     }
 
+    @SuppressLint("SetTextI18n")
     private fun funFetchProfileDataBackend() {
         //code begins
         val uniqueUID = FirebaseAuth.getInstance().uid
@@ -170,21 +181,81 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             val password = classDataProfile.Password
                             val registrationDate = classDataProfile.registrationDate
 
-                            //saving the data into the shared prefs
-                            val sharedPreferences =
-                                getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
-                            sharedPreferences.edit().apply {
-                                putString("email", email)
-                                putString("firstname", fName)
-                                putString("lastname", lName)
-                                putString("phone", phone)
-                                putString("university", university)
-                                putString("image", image)
-                                putString("password", password)
-                                putString("registrationDate", registrationDate)
-                            }.apply()
-                            //
+                            //init the shared pref and check if the data it contains is equal to the data
+                            //being fetched from store if no, put the data being fetched from the store as current
 
+                            //init shared preference from where we go obtain the data stored
+                            val sharedPreferencesInit =
+                                getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
+                            sharedPreferencesInit.apply {
+                                val imageInSharedPref = getString("image", "")
+                                val firstNameInSharedPref = getString("firstname", "")
+                                val lastnameInSharedPref = getString("lastname", "")
+                                val phoneInSharedPref = getString("phone", "")
+                                val universityInSharedPref = getString("university", "")
+                                val emailInSharedPref = getString("email", "")
+                                val registrationDateInSharedPref = getString("date", "")
+
+                                //compare the data present if is the same from the one being fetched
+                                if (imageInSharedPref != image ||
+                                    phoneInSharedPref != phone ||
+                                    universityInSharedPref != university
+                                    || emailInSharedPref != email
+                                    || firstNameInSharedPref != fName ||
+                                    lastnameInSharedPref != lName ||
+                                    registrationDateInSharedPref != registrationDate
+                                ) {
+                                    //something is wrong with the data present in the shared prefs thus we should load the data being fetched to be legit into
+                                    //the shared prefs
+
+                                    //saving the data into the shared prefs
+                                    val sharedPreferences =
+                                        getSharedPreferences(
+                                            sharedPreferenceName,
+                                            Context.MODE_PRIVATE
+                                        )
+                                    sharedPreferences.edit().apply {
+                                        putString("email", email)
+                                        putString("firstname", fName)
+                                        putString("lastname", lName)
+                                        putString("phone", phone)
+                                        putString("university", university)
+                                        putString("image", image)
+                                        putString("password", password)
+                                        putString("registrationDate", registrationDate)
+                                    }.apply()
+
+                                    //load the data into the  nav header of data being fetched
+                                    Glide.with(this@ProductsHome).apply {
+                                        load(image).into(headerImage)
+                                        //loading data on the header textViews
+                                        headerEmail.text = email
+                                        headerTitleUsername.text = "$fName $lName"
+                                        headerPhoneNumber.text = phone
+                                        headerUniversity.text = university
+                                        headerDateRegistration.text = "Registered: $registrationDate"
+                                        //
+                                    }
+                                    //
+
+
+                                } else {
+                                    //the data in shared pref is the same as the data being loaded, thus set the data from shared pref onto nav
+                                    //header
+                                    //load the data into the  nav header of data being fetched
+                                    Glide.with(this@ProductsHome).apply {
+                                        load(imageInSharedPref).into(headerImage)
+                                        //loading data on the header textViews
+                                        headerEmail.text = emailInSharedPref
+                                        headerTitleUsername.text =
+                                            "$firstNameInSharedPref $lastnameInSharedPref"
+                                        headerPhoneNumber.text = phoneInSharedPref
+                                        headerUniversity.text = universityInSharedPref
+                                        //
+                                    }
+                                    //
+                                }
+                            }
                         }
                         //
 
@@ -322,34 +393,30 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //code begins
         //creating array of string to make responsive is exit process
         val stringExit = arrayOf(
-            "logging out...",
-            "exiting application...",
-            "requesting exit...",
-            "performing exit..."
+            "logging out",
+            "exiting application",
+            "requesting exit",
+            "performing exit"
         )
         //
         val returnedNum = Random.nextInt(4)
 
         //creating a progress dialog to show logout
-        val progD = ProgressDialog(this@ProductsHome)
-        progD.setCancelable(false)
-        progD.setMessage(stringExit[returnedNum])
-        progD.create()
-        progD.show()
+        val progressDialogLogout = ProgressDialog(this@ProductsHome)
+        progressDialogLogout.setCancelable(false)
+        progressDialogLogout.setMessage(stringExit[returnedNum])
+        progressDialogLogout.setIcon(R.drawable.ic_logout)
+        progressDialogLogout.create()
+        progressDialogLogout.show()
 
-        //delay of 3.5 seconds using handler
-        Handler(Looper.getMainLooper()).postDelayed(Runnable {
-            //code begins
+        //delay of 2 seconds using handler
+        Handler(Looper.getMainLooper()).postDelayed({
             //sign out user
             FirebaseAuth.getInstance().signOut()
-            //
-
             //kill application
             finish()
-            exitProcess(0)
-            //
             //code ends
-        }, 3500)
+        }, 2000)
         //code ends
 
     }
@@ -448,79 +515,57 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //
 
                 //
-            }
-
-
-            if (userCurrent.isEmailVerified) {
+            } else if (userCurrent.isEmailVerified) {
                 //user verified the email address
                 //disable button verify email,textViewBannerEmailVerify
                 headerVerificationEmail.visibility = View.GONE
                 headerButtonVerifyEmail.visibility = View.GONE
-                //enabling the visibility of the update button since a user cannot update his/her a/c unless is verified
-                //the email
+                //enabling the visibility of the update button since a user cannot update his/her a/c unless is verified the email
                 headerButtonUpdate.visibility = View.VISIBLE
+                //
 
-                //basing from the data returned from shared pref define yes/no show congrats alert. default true
-                val sharedPreferences = getSharedPreferences(
-                    sharedPreferenceName, MODE_PRIVATE
-                )
-                val dataFromSharedPreferences =
-                    sharedPreferences.getString(keyShowCongratsEmailVerified, "no")
-
-                //show the alert basing on the value of the data from the shared pref yes=show else no show
-                if (dataFromSharedPreferences.equals("yes")) {
-                    //true show dg
-                    //show snack congrats email verified
-                    MaterialAlertDialogBuilder(this@ProductsHome)
-                        .setTitle("Congratulations!")
-                        .setMessage("email verification was successful.\nyour account has been approved\nsuccessfully")
-                        .setIcon(R.drawable.ic_copy_right_co)
-                        .setCancelable(false)
-                        .setBackground(
-                            resources.getDrawable(
-                                R.drawable.material_six,
-                                theme
-                            )
-                        )
-                        .setNeutralButton("Ok") { dialog, _ ->
-                            //code begins
-                            sharedPreferenceMarketCM =
-                                this.getSharedPreferences(sharedPreferenceName, MODE_PRIVATE)
-                            val sharedPreferencesEditor: SharedPreferences.Editor =
-                                sharedPreferenceMarketCM.edit()
-                            sharedPreferencesEditor.putString(
-                                keyShowCongratsEmailVerified,
-                                showCongrats
-                            )
-                            if (sharedPreferencesEditor.commit()) {
-                                //dismiss the dialog after commit is true
-                                dialog.dismiss()
-                                //
-                            }
-                            //code ends
-                        }
-                        .setNegativeButton("don't show again") { dialog, _ ->
-                            //code begins
-                            //set the value ShowCongrats dialog to no to prevent it from bring shown
-                            sharedPreferences
-                            val editor: SharedPreferences.Editor = sharedPreferences.edit()
-                            editor.putString(keyShowCongratsEmailVerified, "no")
-                            if (editor.commit()) {
-                                //dismiss
-                                dialog.dismiss()
-                                //code ends
-                            }
-                        }
-                        .show()
-                        .create()
-                    //
-                }
+                //show notification
+                funShowApprovedAccountNotification()
+                //
             }
-            //
 
             //code ends
+        }
+    }
+
+    private fun funShowApprovedAccountNotification() {
+        //show notification of congratulations email verified
+        val bigTextNotification = BigTextNotification(
+            this@ProductsHome,
+            "Congratulations",
+            "account approved",
+            "you successfully verified the account email address.\n" +
+                    "now post your products freely and get your earnings from the interested members",
+            "MarketCM approved your account\n",
+            BitmapFactory.decodeResource(resources, R.drawable.cart),
+            R.drawable.ic_cart,
+            "by:shimmitadouglas"
+        )
+
+        val directory = this@ProductsHome.filesDir
+        val file = File("$directory/showFile.txt")
+        if (!file.exists()) {
+            //show the notification as it has not been shown to create this file
+            bigTextNotification.funCreateBigTextNotification()
+            //
+            Log.d(TAG, "funShowApprovedAccountNotification: fileDoesNot Exist")
 
 
+        } else if (file.exists()) {
+            //do not show notification since it created this file firstTime it was shown
+            Log.d(TAG, "funShowApprovedAccountNotification: fileExists")
+            //
+            //
+            val files = this@ProductsHome.filesDir.listFiles()
+            for (file in files!!) {
+                Log.d(TAG, "funShowApprovedAccountNotification:files:$file")
+            }
+            //
         }
     }
 
@@ -555,7 +600,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     alertShowHowToVerify.setCancelable(false)
                     alertShowHowToVerify.setIcon(R.drawable.ic_info)
                     alertShowHowToVerify.background =
-                        resources.getDrawable(R.drawable.material_two, theme)
+                        resources.getDrawable(R.drawable.material_seven, theme)
                     alertShowHowToVerify.setTitle("Email Verification")
                     alertShowHowToVerify.setMessage(
                         "email verification link has been sent to (${fabAuth.currentUser!!.email})\n" +
@@ -563,15 +608,26 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 "\nif this is not the case check it in the spam and do the verification"
                     )
                     alertShowHowToVerify.setPositiveButton("Ok") { dialog, _ ->
-                        //dismiss the dialog and finish the application processes
-                        fabAuth.signOut()
+                        //show notification of email verification
+                        val normalNotification: NormalNotification = NormalNotification(
+                            this@ProductsHome,
+                            "Email Verification",
+                            "email verification link sent",
+                            R.drawable.cart
+                        )
+                        normalNotification.funCreateNotification()
                         //
-                        dialog.dismiss()
-                        //
-                        finish()
-                        //
-                        exitProcess(0)
-                        //
+                        //sign out the user
+                        val currentUser = FirebaseAuth.getInstance().currentUser
+                        if (currentUser != null) {
+                            FirebaseAuth.getInstance().signOut()
+                            dialog.dismiss()
+                            //
+                            exitProcess(0)
+                            //
+                        } else {
+                            exitProcess(0)
+                        }
                     }
                     alertShowHowToVerify.show()
                     alertShowHowToVerify.create()
@@ -610,10 +666,11 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     "update phone number",
                     "update account password"
                 )
-            val itemSelected = 0
+            val itemSelected = 4
             val alertOptionsUpdate = MaterialAlertDialogBuilder(this@ProductsHome)
-            alertOptionsUpdate.setTitle("Select Your Option")
-            alertOptionsUpdate.background = resources.getDrawable(R.drawable.material_two, theme)
+            alertOptionsUpdate.setTitle("select option")
+            alertOptionsUpdate.background =
+                resources.getDrawable(R.drawable.general_alert_dg, theme)
             alertOptionsUpdate.setIcon(R.drawable.ic_question)
             alertOptionsUpdate.setSingleChoiceItems(
                 arrayOptionsUpdate,
@@ -681,18 +738,22 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         alertChangePassword.setCancelable(false)
         alertChangePassword.setTitle("Account Password")
         alertChangePassword.background = resources.getDrawable(R.drawable.general_alert_dg, theme)
-        alertChangePassword.setIcon(R.drawable.cart)
         alertChangePassword.setPositiveButton("change Now") { dialog, _ ->
 
-
             val textPasswordChange = headerEditChange.text.toString()
-
-            //call function to enhance the operation of password change
-            funChangePasswordStart(textPasswordChange)
-            //
-            //dismiss the dialog to avoid RT Exceptions
-            dialog.dismiss()
-            //
+            //check if textPassword is null
+            if (textPasswordChange.isEmpty()) {
+                funToastyFail("empty fields not allowed")
+                //dismiss the dialog
+                dialog.dismiss()
+                //
+            } else if (textPasswordChange.isNotEmpty() && textPasswordChange.trim() != "") {
+                //call function to enhance the operation of password change
+                funChangePasswordStart(textPasswordChange)
+                //dismiss the dialog to avoid RT Exceptions
+                dialog.dismiss()
+                //
+            }
         }
         alertChangePassword.setNeutralButton("back") { dialog, _ ->
             //dismiss the dialog
@@ -704,7 +765,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //
 
         //setting onclick listener on cb and btn ChangePass
-        cbShowPassword.setOnCheckedChangeListener { compoundButton, b ->
+        cbShowPassword.setOnCheckedChangeListener { _, b ->
             //cb is checked
             if (b) {
                 //code begins
@@ -796,13 +857,13 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         AlertDialog.Builder(this@ProductsHome)
                             .setTitle("Congratulations!")
                             .setMessage(
-                                "password update was successful." +
-                                        "\nYour new login password is now ($textPasswordChange)"
+                                "password update was successful" +
+                                        "\nyour new login account password is ($textPasswordChange)"
                             )
                             .setIcon(R.drawable.ic_nike_done)
                             .setCancelable(false)
-                            .setPositiveButton("fine") { dialog, _ ->
-                                //dimiss the dialog
+                            .setPositiveButton("okay") { dialog, _ ->
+                                //dismiss the dialog
                                 dialog.dismiss()
                                 //
                             }
@@ -844,7 +905,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         viewUpdatePhoneNumber.startAnimation(
             AnimationUtils.loadAnimation(
                 this@ProductsHome,
-                R.anim.rotate
+                R.anim.rotate_avg
             )
         )
         val phoneNumberEntered =
@@ -857,7 +918,9 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         alertUpdatePhone.setPositiveButton("update") { dialog, _ ->
 
             val textPhoneEntered = phoneNumberEntered.text.toString()
-
+            //trim the number to remove white spaces
+            textPhoneEntered.trim()
+            //
             //call function to update the phone number on a thread
             callFunctionUpdatePhoneNumber(textPhoneEntered)
 
@@ -883,10 +946,9 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Toast.makeText(this@ProductsHome, "missing field unacceptable", Toast.LENGTH_SHORT)
                 .show()
         } else if (textPhoneEntered.length < 10) {
-            Toast.makeText(this@ProductsHome, "number incomplete !", Toast.LENGTH_SHORT).show()
+            funToastyFail("number incomplete!")
         } else if (textPhoneEntered.length > 10) {
-            Toast.makeText(this@ProductsHome, "number too long !", Toast.LENGTH_SHORT).show()
-
+            funToastyFail("this number is long!")
         } else {
             functionUpdatePhoneNow(textPhoneEntered)
         }
@@ -995,7 +1057,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         viewUpdateUsername.startAnimation(
             AnimationUtils.loadAnimation(
                 this@ProductsHome,
-                R.anim.rotate
+                R.anim.rotate_avg
             )
         )
         //init of first name $ lastname wit reference to the view
@@ -1018,14 +1080,15 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val textFirstName = firstNameEnteredView.text.toString()
             val textLastName = lastNameEnteredView.text.toString()
 
+            //trim the names to remove the white spaces
+            textFirstName.trim()
+            textLastName.trim()
+            //
+
             //checking the legitimacy of the data entered
             if (TextUtils.isEmpty(textFirstName) or TextUtils.isEmpty(textLastName)) {
                 //toast empty fields not allowed
-                Toast.makeText(
-                    this@ProductsHome,
-                    "missing field(s) unacceptable",
-                    Toast.LENGTH_SHORT
-                ).show()
+                funToastyFail("missing fields unacceptable!")
                 //
                 dialog.dismiss()
                 //
@@ -1232,6 +1295,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         headerPhoneNumber = viewHeader.findViewById(R.id.phoneNumberHeader)
         headerButtonVerifyEmail = viewHeader.findViewById(R.id.btnCompatHeaderVerify)
         headerButtonUpdate = viewHeader.findViewById(R.id.btnCompatHeaderUpdate)
+        headerDateRegistration = viewHeader.findViewById(R.id.registrationDateHeader)
         //
         //adding marque effect on the textVerify Email
         headerVerificationEmail.setSingleLine()
@@ -1240,34 +1304,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         headerVerificationEmail.isSelected = true
         //
 
-        //load the data onto the header
-
-        //init shared preference from where we go obtain the data stored
-        val sharedPreferences = getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
-        sharedPreferences.apply {
-            val image = getString("image", "")
-            val firstName = getString("firstname", "")
-            val lastname = getString("lastname", "")
-            val phone = getString("phone", "")
-            val university = getString("university", "")
-            val email = getString("email", "")
-
-
-            //loading the image to the header using glide
-            Glide.with(this@ProductsHome).apply {
-                load(image).into(headerImage)
-            }
-            //loading data on the header textViews
-            headerEmail.text = email
-            headerTitleUsername.text = "$firstName $lastname"
-            headerPhoneNumber.text = phone
-            headerUniversity.text = university
-            //
-
-        }
-
-
-        //
         //code ends
     }
 
@@ -1320,7 +1356,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             //
         }
-        //
 
 
         //code ends
@@ -1417,9 +1452,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (selected.isNotEmpty()) {
                 if (selected.contains("counterfeit", true)) {
                     //call fun false products
-                    funReportScammerCounterfeitProducts(selected)
-                    //
-                    funToastyShow("counterfeit products")
+                    funReportScammerCounterfeitProducts()
                     //dismiss the dg
                     dialog.dismiss()
                     //
@@ -1443,7 +1476,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     @SuppressLint("InflateParams", "UseCompatLoadingForDrawables")
-    private fun funReportScammerCounterfeitProducts(selected: String) {
+    private fun funReportScammerCounterfeitProducts() {
         //code begins
         //infiltrate the view containing the counterfeit products then show it in an alert dialog
         val viewCounterfeit = LayoutInflater.from(this@ProductsHome)
@@ -1452,9 +1485,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             viewCounterfeit.findViewById<EditText>(R.id.edtReportScammerOptionCounterfeitCode)
         val editTextMessage =
             viewCounterfeit.findViewById<EditText>(R.id.edtReportScammerOptionCounterfeitMessage)
-        val textViewOption =
-            viewCounterfeit.findViewById<TextView>(R.id.tvReportScammerOptionCounterfeit)
-        textViewOption.text = selected
 
 
         val alertSubmitReport = MaterialAlertDialogBuilder(this@ProductsHome)
@@ -1501,7 +1531,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //code ends
     }
 
-    @SuppressLint("InflateParams")
+    @SuppressLint("InflateParams", "UseCompatLoadingForDrawables")
     private fun funSubmitCounterfeitNow(productCode: String, productMessage: String) {
         val viewProgress = LayoutInflater.from(this@ProductsHome)
             .inflate(R.layout.general_progress_dialog_view, null, false)
@@ -1548,7 +1578,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             //get the details of the suspect by grabbing the key
                             suspectUniqueUID = it.userID.toString()
                             //get product timerControl ID that will fetch all the details about the product
-                            //sold posted as a counterfeit one
+                            //posted as a counterfeit one
                             productTimerControllerID = it.timerControlID.toString()
                             //
                         } else
@@ -1563,15 +1593,51 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             //change the message of the progress dialog to confirmed
                             progressCounterfeitDialog.setMessage("confirmed")
                             progressCounterfeitDialog.setIcon(R.drawable.ic_nike_done)
-                            //call a new function to finalise the process of reporting the user
-                            funFinaliseReportingCounterfeit(
-                                progressCounterfeitDialog,
-                                productCode,
-                                productMessage,
-                                suspectUniqueUID,
-                                productTimerControllerID
-                            )
-                            //
+                            //check if the suspectUID is ==current user in order to prevent further reporting since
+                            //the product belongs to the current user(u cannot report your own product)
+
+                            val currentUserID = FirebaseAuth.getInstance().currentUser?.uid
+                            if (currentUserID != null) {
+                                if (currentUserID == suspectUniqueUID) {
+                                    //dismiss the progress dialog
+                                    progressCounterfeitDialog.dismiss()
+                                    //
+                                    MaterialAlertDialogBuilder(this@ProductsHome)
+                                        .setTitle("attention!")
+                                        .setMessage(
+                                            "system confirmed that this product belongs to you\n" +
+                                                    "\nactually you are the one who posted it!\n" +
+                                                    "\nyou cannot report your own products as counterfeit"
+                                        )
+                                        .setIcon(R.drawable.ic_warning)
+                                        .setBackground(
+                                            resources.getDrawable(
+                                                R.drawable.general_alert_dg,
+                                                theme
+                                            )
+                                        )
+                                        .setPositiveButton("ok") { dialog, _ ->
+
+                                            //dismiss the dialog
+                                            dialog.dismiss()
+                                            //
+                                        }
+                                        .setCancelable(false)
+                                        .create()
+                                        .show()
+                                }
+                            } else {
+                                //call a new function to finalise the process of reporting the user
+                                funFinaliseReportingCounterfeit(
+                                    progressCounterfeitDialog,
+                                    productCode,
+                                    productMessage,
+                                    suspectUniqueUID,
+                                    productTimerControllerID
+                                )
+                                //
+                            }
+
                         } else {
                             //dismiss the progress dialog
                             progressCounterfeitDialog.dismiss()
@@ -1687,7 +1753,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     } else if (!it.isSuccessful) {
                         //dismiss the progress dialog
                         progressCounterfeitDialog.dismiss()
-                        //
                         //show toast error
                         funToastyFail("failed to send report try again!")
                         //
@@ -1714,9 +1779,9 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         intentShareApplication.type = "text/plain"
         intentShareApplication.putExtra(
             Intent.EXTRA_TEXT,
-            "share market cm and help other to comrades market their products freely"
+            getString(R.string.share_market_cm)
         )
-        startActivity(Intent.createChooser(intentShareApplication, "share via"))
+        startActivity(Intent.createChooser(intentShareApplication, getString(R.string.share_via)))
         //code ends
     }
 

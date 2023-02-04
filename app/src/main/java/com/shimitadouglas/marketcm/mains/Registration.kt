@@ -3,7 +3,9 @@ package com.shimitadouglas.marketcm.mains
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
@@ -32,7 +34,9 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.R
+import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreferenceName
 import com.shimitadouglas.marketcm.modal_sheets.ModalPrivacyMarket
+import com.shimitadouglas.marketcm.notifications.BigPictureNotificationMostLogin
 import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
@@ -591,17 +595,43 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             //the user account is currently logged in. better log him out
             val firebaseSignOut = FirebaseAuth.getInstance()
             firebaseSignOut.signOut()
-            //
 
-            //start activity migration to Login==Main
-            val intentMainLogin = Intent(this@Registration, MainActivity::class.java)
-            intentMainLogin.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            intentMainLogin.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intentMainLogin)
-            finishAffinity()
-            //
+            //show big notification of congratulations
+            //big pic test
+            val arrayByName = arrayOf(
+                "douglasshimmita",
+                "shimmitadouglas",
+                "douglasshimita3@gmail.com",
+                "shimitadouglas@gmail.com"
+            )
+            val arrayBy = arrayOf("developed by", "powered by", "moulded by", "made by")
+            val random = Random.nextInt(4)
+
+            val bigPictureNotificationMostLogin = BigPictureNotificationMostLogin(
+                this@Registration,
+                BitmapFactory.decodeResource(resources, R.drawable.cart),
+                "Welcome",
+                "registration process was successful",
+                R.drawable.ic_cart, "${arrayBy[random]}:${arrayByName[random]}",
+                "Congratulations"
+            )
+            bigPictureNotificationMostLogin.funCreateBigPictureNotification()
+
+
             //dismiss the dialog
             dialogInterface.dismiss()
+            //
+            if ((FirebaseAuth.getInstance().currentUser) != null) {
+                //clear all the data saved in the shared preference
+                val sharedPreferences=getSharedPreferences(sharedPreferenceName,Context.MODE_PRIVATE)
+                sharedPreferences.edit().clear().apply()
+                //sign ou the current user
+                FirebaseAuth.getInstance().signOut()
+                //
+            }
+
+            //finish the app and let the user login via the notification
+            finish()
             //
         }
         alertSuccess.show()

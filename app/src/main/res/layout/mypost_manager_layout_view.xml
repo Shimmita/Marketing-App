@@ -17,11 +17,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/material_seven"
+            android:background="@drawable/material_eight"
             android:fontFamily="georgia"
             android:gravity="center"
             android:text="@string/my_posted_products"
-            android:textColor="@color/abc_decor_view_status_guard"
+            android:textColor="@color/accent_material_light"
             android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView

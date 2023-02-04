@@ -7,13 +7,13 @@ import android.graphics.Bitmap
 import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.shimitadouglas.marketcm.mains.ProductsHome
+import com.shimitadouglas.marketcm.mains.MainActivity
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class BigPictureNotification(
+class BigPictureNotificationMostLogin(
     var context: Context,
     var iconBitmap: Bitmap,
     var title: String,
@@ -52,16 +52,18 @@ class BigPictureNotification(
             bigPictureStyle.bigPicture(iconBitmap)
             bigPictureStyle.setSummaryText(summary)
             bigPictureStyle.setBigContentTitle(titleBig)
-
-            // creating an intent when clicked an action should be triggered
-            val intent = Intent(context, ProductsHome::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or (Intent.FLAG_ACTIVITY_NEW_TASK)
+            val intent = Intent(context, MainActivity::class.java)
             //creating a pending intent
             val pendingIntent: PendingIntent =
-                PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.getActivity(
+                    context,
+                    0,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
             //creating action
             val notificationAction: Notification.Action =
-                Notification.Action(smallIcon, "view", pendingIntent)
+                Notification.Action(smallIcon, "Login Now", pendingIntent)
             //creating a notification Builder
             val notificationBuilder: Notification.Builder =
                 Notification.Builder(context, notChannelID)

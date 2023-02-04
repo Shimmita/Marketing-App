@@ -10,24 +10,26 @@
         android:id="@+id/linearPostParent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/material_15"
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardPostProducts"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            app:cardCornerRadius="20dp">
+            android:layout_margin="3dp"
+            app:cardCornerRadius="10dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/material_five"
+                android:background="@drawable/material_15"
                 android:padding="20dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/cirImagePostNow"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
                     android:src="@drawable/cart" />
@@ -39,9 +41,9 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerInParent="true"
                     android:layout_marginTop="10dp"
-                    android:fontFamily="sans-serif-thin"
-                    android:text="post to the market"
-                    android:textColor="@color/colorWhite"
+                    android:fontFamily="@font/teko_bold"
+                    android:text="@string/post_to_the_market"
+                    android:textColor="@color/abc_search_url_text_normal"
                     android:textStyle="bold" />
 
             </RelativeLayout>
@@ -53,19 +55,20 @@
             android:id="@+id/cardRecentPosts"
             android:layout_width="match_parent"
             android:layout_height="150dp"
+            android:layout_margin="3dp"
             android:layout_marginTop="5dp"
-            app:cardCornerRadius="20dp">
+            app:cardCornerRadius="10dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/material_five"
+                android:background="@drawable/material_15"
                 android:padding="20dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/cirImageRecentPost"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
                     android:src="@drawable/recent_one" />
@@ -77,9 +80,9 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerInParent="true"
                     android:layout_marginTop="10dp"
-                    android:fontFamily="sans-serif-thin"
-                    android:text="my recent posts"
-                    android:textColor="@color/colorWhite"
+                    android:fontFamily="@font/teko_bold"
+                    android:text="@string/my_recent_posts"
+                    android:textColor="@color/abc_search_url_text_normal"
                     android:textStyle="bold" />
 
             </RelativeLayout>
@@ -91,19 +94,20 @@
             android:id="@+id/cardUpdatePost"
             android:layout_width="match_parent"
             android:layout_height="150dp"
+            android:layout_margin="3dp"
             android:layout_marginTop="5dp"
-            app:cardCornerRadius="20dp">
+            app:cardCornerRadius="10dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/material_five"
+                android:background="@drawable/material_15"
                 android:padding="20dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/circleImageUpdate"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
                     android:src="@drawable/update_b" />
@@ -115,9 +119,9 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerInParent="true"
                     android:layout_marginTop="10dp"
-                    android:fontFamily="sans-serif-thin"
-                    android:text="update a post"
-                    android:textColor="@color/colorWhite"
+                    android:fontFamily="@font/teko_bold"
+                    android:text="@string/update_a_post"
+                    android:textColor="@color/abc_search_url_text_normal"
                     android:textStyle="bold" />
 
             </RelativeLayout>
@@ -129,13 +133,14 @@
             android:id="@+id/cardDeletePost"
             android:layout_width="match_parent"
             android:layout_height="150dp"
+            android:layout_margin="3dp"
             android:layout_marginTop="5dp"
-            app:cardCornerRadius="20dp">
+            app:cardCornerRadius="10dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/material_five"
+                android:background="@drawable/material_15"
                 android:padding="20dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
@@ -153,9 +158,9 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerInParent="true"
                     android:layout_marginTop="10dp"
-                    android:fontFamily="sans-serif-thin"
-                    android:text="delete a post"
-                    android:textColor="@color/colorWhite"
+                    android:fontFamily="@font/teko_bold"
+                    android:text="@string/delete_a_post"
+                    android:textColor="#FF5722"
                     android:textStyle="bold" />
 
             </RelativeLayout>

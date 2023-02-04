@@ -54,6 +54,6 @@
         app:itemRippleColor="@color/design_dark_default_color_error"
         app:itemTextColor="@color/abc_decor_view_status_guard_light"
         app:menu="@menu/menu_header"
-        app:subheaderColor="@color/design_dark_default_color_primary" />
+        app:subheaderColor="@color/abc_search_url_text_normal" />
 </androidx.drawerlayout.widget.DrawerLayout>
 

@@ -1,4 +1,4 @@
-package com.shimitadouglas.marketcm.fragment_admin
+package com.shimitadouglas.marketcm.fragment_admin_control_panel
 
 import android.annotation.SuppressLint
 import android.os.Bundle

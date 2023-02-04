@@ -36,7 +36,7 @@ import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreference
 import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
 import com.shimitadouglas.marketcm.modal_data_slide_model.DataClassSlideModal
 import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
-import com.shimitadouglas.marketcm.notifications.BigPictureNotification
+import com.shimitadouglas.marketcm.notifications.BigPictureNotificationMostLogin
 import es.dmoral.toasty.Toasty
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -95,7 +95,9 @@ class HomeFragment : Fragment() {
         //setting listener on the appbar using a function
         funListenerAppBarHome()
         //setting listener on the fab
-        funFabListener()
+        floatingActionButtonHome.setOnClickListener {
+            funFabClicked()
+        }
         //
         //init the array list slide models in fun run in a thread /coroutine
         GlobalScope.launch(Dispatchers.Default) {
@@ -120,10 +122,26 @@ class HomeFragment : Fragment() {
         return viewHome
     }
 
+    private fun funFabClicked() {
+        //code begins
+        floatingActionButtonHome.apply {
+            startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.rotate_avg))
+            postDelayed({
+                //restart the whole home products to reload
+                val intentRefreshHome = Intent(requireActivity(), ProductsHome::class.java)
+                intentRefreshHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intentRefreshHome.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                requireActivity().startActivity(intentRefreshHome)
+                //
+            }, 1000)
+        }
+        //code ends
+    }
+
     private fun funCheckNotification() {
         //code begins
         val icon = BitmapFactory.decodeResource(resources, R.drawable.ssd)
-        val bigPicture = BigPictureNotification(
+        val bigPicture = BigPictureNotificationMostLogin(
             requireActivity(),
             icon,
             "Market CM",
@@ -172,6 +190,9 @@ class HomeFragment : Fragment() {
                     funSortProducts()
                     //
                 }
+                R.id.marketAnalytics -> {
+                    funShowAnalysisGraph()
+                }
             }
             true
         }
@@ -186,6 +207,12 @@ class HomeFragment : Fragment() {
 
         //code ends
 
+    }
+
+    private fun funShowAnalysisGraph() {
+        //code begins
+        funToastyShow("analysis")
+        //code ends
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -421,48 +448,6 @@ class HomeFragment : Fragment() {
         //code ends
     }
 
-    private fun funFabListener() {
-        //code begins
-        floatingActionButtonHome.setOnClickListener {
-            //code begins
-            //fab self anim
-            floatingActionButtonHome.startAnimation(
-                AnimationUtils.loadAnimation(
-                    requireActivity(), R.anim.push_left_out
-                )
-            )
-            //
-
-            //appbar animate
-            val homeAppBarContentRefreshAnim = LayoutAnimationController(
-                AnimationUtils.loadAnimation(
-                    requireActivity(), R.anim.bottom_up
-                )
-            )
-            homeAppBarContentRefreshAnim.delay = 2.0f
-            homeAppBarContentRefreshAnim.order = LayoutAnimationController.ORDER_REVERSE
-            appBarLayoutHome.layoutAnimation = homeAppBarContentRefreshAnim
-            appBarLayoutHome.startLayoutAnimation()
-            //
-
-            //start fab functionality here after delay elapse
-            floatingActionButtonHome.postDelayed({
-                //code functionality herein
-                //toasty that the refresh successfully done
-                funToastyCustomTwo(
-                    "refreshed",
-                    R.drawable.ic_refresh,
-                    R.color.androidx_core_secondary_text_default_material_light
-                )
-                //code ends
-
-            }, 450)
-            //end of fab functionality
-
-            //code ends
-        }
-        //code ends
-    }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun funListenerAppBarHome() {
@@ -654,12 +639,12 @@ class HomeFragment : Fragment() {
         listSortOptions.sort()
         //
         val alertSortMethod = MaterialAlertDialogBuilder(requireActivity())
-        alertSortMethod.setTitle("select sort method")
+        alertSortMethod.setTitle("sort by")
         alertSortMethod.setCancelable(false)
-        alertSortMethod.setIcon(R.drawable.ic_cart)
+        alertSortMethod.setIcon(R.drawable.ic_sort)
         alertSortMethod.background =
-            resources.getDrawable(R.drawable.material_congratulations, requireActivity().theme)
-        alertSortMethod.setSingleChoiceItems(listSortOptions, 7) { _, which ->
+            resources.getDrawable(R.drawable.material_16, requireActivity().theme)
+        alertSortMethod.setSingleChoiceItems(listSortOptions, 8) { _, which ->
             //save the sorting option in a variable selected,be used for other evaluations
             selected = listSortOptions[which]
             //toast which sort method is selected
@@ -700,17 +685,17 @@ class HomeFragment : Fragment() {
                     val orderStyle = Query.Direction.ASCENDING
                     funSortDetailsFetchedAsRequired(field, orderStyle)
                     //
-                } else if (selected.contains("owners names (z-a)", true)) {
+                } else if (selected.contains("owners names(z-a)", true)) {
                     val field = "Owner"
                     val orderStyle = Query.Direction.DESCENDING
                     funSortDetailsFetchedAsRequired(field, orderStyle)
 
-                } else if (selected.contains("names of the products(a-z)", true)) {
+                } else if (selected.contains("products names(a-z)", true)) {
                     val field = "title"
                     val orderStyle = Query.Direction.ASCENDING
                     funSortDetailsFetchedAsRequired(field, orderStyle)
 
-                } else if (selected.contains("names of the products(z-a)", true)) {
+                } else if (selected.contains("products names(z-a)", true)) {
                     val field = "title"
                     val orderStyle = Query.Direction.DESCENDING
                     funSortDetailsFetchedAsRequired(field, orderStyle)
@@ -881,7 +866,7 @@ class HomeFragment : Fragment() {
         alertSortByCategory.setIcon(R.drawable.ic_sort)
         alertSortByCategory.background =
             resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
-        alertSortByCategory.setSingleChoiceItems(listCategorySort, 0) { _, which ->
+        alertSortByCategory.setSingleChoiceItems(listCategorySort, 12) { _, which ->
             selectedCategoryType = listCategorySort[which]
             //
 

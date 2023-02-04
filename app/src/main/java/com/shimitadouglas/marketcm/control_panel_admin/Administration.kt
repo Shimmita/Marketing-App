@@ -1,16 +1,12 @@
-package com.shimitadouglas.marketcm.controlPanel
+package com.shimitadouglas.marketcm.control_panel_admin
 
 import android.os.Bundle
-import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.shimitadouglas.marketcm.R
-import com.shimitadouglas.marketcm.fragment_admin.*
+import com.shimitadouglas.marketcm.fragment_admin_control_panel.*
 import es.dmoral.toasty.Toasty
 
 class Administration : AppCompatActivity() {
@@ -42,6 +38,10 @@ class Administration : AppCompatActivity() {
                 }
                 R.id.counterfeitReports -> {
                     updateFragment(ReportsAdmin(), "reportsAdmin")
+                }
+                R.id.postApk->
+                {
+                    updateFragment(PostApk(),"postLatestApk")
                 }
 
             }

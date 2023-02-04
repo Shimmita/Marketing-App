@@ -21,7 +21,7 @@
             android:padding="20dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/cart"
+                android:id="@+id/imgCart"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginStart="30dp"
@@ -38,7 +38,7 @@
                 android:background="@drawable/shaper_2"
                 android:fontFamily="sans-serif-condensed-light"
                 android:padding="10dp"
-                android:text="Password Recovery"
+                android:text="@string/password_reset"
                 android:textAllCaps="true"
                 android:textColor="@color/colorButtonQuiz"
                 android:textStyle="bold" />
@@ -76,9 +76,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:background="@drawable/general_alert_dg"
-                    android:clickable="true"
                     android:elevation="10dp"
-                    android:hint="enter your registered email"
+                    android:hint="@string/enter_your_registered_email"
                     android:inputType="textEmailAddress"
                     android:padding="20dp" />
 
@@ -90,9 +89,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:backgroundTint="#2E251B"
-                android:fontFamily="cursive"
+                android:fontFamily="@font/teko_light"
+                style="but"
                 android:padding="10dp"
-                android:text="start password recovery"
+                android:text="@string/begin_recovery"
                 android:textAllCaps="false"
                 android:textColor="#CDDC39"
                 android:textStyle="bold"

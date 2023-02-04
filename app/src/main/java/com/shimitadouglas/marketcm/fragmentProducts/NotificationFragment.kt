@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,9 +14,9 @@ import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.adapter_big_notifications.MyAdapterBigNotification
 import com.shimitadouglas.marketcm.adapter_enquiries_notification.MyAdapterEnquiriesNotification
 import com.shimitadouglas.marketcm.adapter_normal_notification.MyAdapterNormalNotification
-import com.shimitadouglas.marketcm.fragment_admin.MessageAdmin.Companion.BigPicture
-import com.shimitadouglas.marketcm.fragment_admin.MessageAdmin.Companion.BigText
-import com.shimitadouglas.marketcm.fragment_admin.MessageAdmin.Companion.Normal
+import com.shimitadouglas.marketcm.fragment_admin_control_panel.MessageAdmin.Companion.BigPicture
+import com.shimitadouglas.marketcm.fragment_admin_control_panel.MessageAdmin.Companion.BigText
+import com.shimitadouglas.marketcm.fragment_admin_control_panel.MessageAdmin.Companion.Normal
 import com.shimitadouglas.marketcm.modal_data_notifications.DataClassBigNotifications
 import com.shimitadouglas.marketcm.modal_data_notifications.DataClassEnquiryNotifications
 import com.shimitadouglas.marketcm.modal_data_notifications.DataClassNormalNotification

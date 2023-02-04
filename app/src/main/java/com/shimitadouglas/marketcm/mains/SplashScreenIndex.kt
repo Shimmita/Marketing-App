@@ -1,16 +1,21 @@
 package com.shimitadouglas.marketcm.mains
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.shimitadouglas.marketcm.R
+import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreferenceName
 import de.hdodenhof.circleimageview.CircleImageView
 
+@SuppressLint("CustomSplashScreen")
 class SplashScreenIndex : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +39,8 @@ class SplashScreenIndex : AppCompatActivity() {
             intentMain.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intentMain)
             finishAffinity()
-        }, 5000)
+
+        }, 4500)
 
         //code end
     }
@@ -64,5 +70,18 @@ class SplashScreenIndex : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
         supportActionBar?.hide()
+
+        //check if the user is not signed out, sign him out forcefully and clear the data of the session
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            //clear all the data saved in the shared preference
+            val sharedPreferences = getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
+            sharedPreferences.edit().clear().apply()
+            //clear sign out the user
+            FirebaseAuth.getInstance().signOut()
+            //
+        }
+        //
+
     }
 }

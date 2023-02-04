@@ -3,6 +3,7 @@ package com.shimitadouglas.marketcm.mains
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
@@ -18,7 +19,12 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.modal_sheets.ModalRecoverPassword
+import com.shimitadouglas.marketcm.notifications.BigPictureNotificationMostLogin
+import com.shimitadouglas.marketcm.notifications.BigTextNotification
 import es.dmoral.toasty.Toasty
+import org.checkerframework.checker.units.qual.s
+import kotlin.random.Random
+import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -38,6 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     //
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -101,100 +108,53 @@ class MainActivity : AppCompatActivity() {
         //setting onclick on tvRecover
         tvRecoverPasscode.setOnClickListener {
             //code begins
-            linearRec.startAnimation(
-                AnimationUtils.loadAnimation(
-                    this@MainActivity,
-                    R.anim.abc_slide_in_bottom
+            linearRec.apply {
+                startAnimation(
+                    AnimationUtils.loadAnimation(
+                        this@MainActivity,
+                        R.anim.abc_slide_in_bottom
+                    )
                 )
-            )
-            //
-            linearRec.postDelayed(Runnable {
-                //begin the operation of modal show password recovery
-                val holderModalPasscodeRecModal = ModalRecoverPassword()
-                holderModalPasscodeRecModal.show(supportFragmentManager, "fragment_modal_pass_rec")
-                //
-
-            }, 500)
-            //
+                postDelayed({
+                    //begin the operation of modal show password recovery
+                    val holderModalPasscodeRecModal = ModalRecoverPassword()
+                    holderModalPasscodeRecModal.show(
+                        supportFragmentManager,
+                        "fragment_modal_pass_rec"
+                    )
+                    //
+                }, 500)
+            }
             //code ends
         }
 
         //setting listener on checkbox
         checkBox.setOnCheckedChangeListener { _, b ->
 
-            val view: LinearLayout = findViewById(R.id.linearRecoverCreate)
+            val viewRecoverCreate: LinearLayout = findViewById(R.id.linearRecoverCreate)
 
             if (b) {
                 //is checked show the more account info
-                view.apply {
+                viewRecoverCreate.apply {
                     visibility = View.VISIBLE
+
                 }
                 //
             } else {
                 //hide the more account info
-                view.apply {
+                viewRecoverCreate.apply {
                     visibility = View.GONE
+
                 }
                 //
             }
 
         }
-        //
-        //fun check auth is null
-        // funCheckCurrentUser()
-        //
+
+
         //code ends
     }
 
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private fun funCheckCurrentUser() {
-        //code begins
-        if (FirebaseAuth.getInstance().currentUser != null) {
-            //inform the user didn't logout from previous session thus to directly proceed to main Products
-            val alertNoExpiredSession = MaterialAlertDialogBuilder(this@MainActivity)
-            alertNoExpiredSession.setIcon(R.drawable.cart)
-            alertNoExpiredSession.setCancelable(false)
-            alertNoExpiredSession.background =
-                resources.getDrawable(R.drawable.material_seven, theme)
-            alertNoExpiredSession.setTitle("Session")
-            alertNoExpiredSession.setMessage(
-                "seems you did not logout from your previous session.\n" +
-                        "\nproceed to the last session?"
-            )
-            alertNoExpiredSession.setPositiveButton("proceed") { dialog, _ ->
-
-                //launch the products session
-                startActivity(
-                    Intent(this@MainActivity, ProductsHome::class.java).setFlags(
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    )
-                )
-                //
-                //dismiss the dg, avoid RT exceptions
-                dialog.dismiss()
-                //
-            }
-            alertNoExpiredSession.setNegativeButton("No logout") { dialog, _ ->
-                //sign out the user
-                FirebaseAuth.getInstance().signOut()
-                //
-                Toasty.custom(
-                    this@MainActivity,
-                    "Logged Out",
-                    R.drawable.ic_info, R.color.colorWhite, Toasty.LENGTH_SHORT, true, false
-                ).show()
-                //dismiss
-                dialog.dismiss()
-                //
-
-            }
-            alertNoExpiredSession.create()
-            alertNoExpiredSession.show()
-            //
-        }
-        //code ends
-    }
 
     private fun funNowLogin(enteredEmail: Editable?, enteredPassword: Editable?) {
         if (enteredEmail != null) {
@@ -222,7 +182,7 @@ class MainActivity : AppCompatActivity() {
         val progressD = ProgressDialog(this@MainActivity)
         progressD.setCancelable(false)
         progressD.setTitle("Login")
-        progressD.setMessage("verifying...")
+        progressD.setMessage("verifying")
         progressD.create()
         progressD.show()
         //
@@ -291,8 +251,8 @@ class MainActivity : AppCompatActivity() {
         relativeLoginParent = findViewById(R.id.relativeMainLogin)
         tvRegistration = findViewById(R.id.tv_register_account)
         btnLogin = findViewById(R.id.buttonLogin)
-        editLoginEmail = findViewById(R.id.loginEmail)
-        editLoginPassword = findViewById(R.id.loginPassword)
+        editLoginEmail = findViewById(R.id.edtLoginEmail)
+        editLoginPassword = findViewById(R.id.edtLoginPassword)
         tvRecoverPasscode = findViewById(R.id.tv_recover_password)
         linearRec = findViewById(R.id.linearRecoverCreate)
         checkBox = findViewById(R.id.cbMoreAccountInfo)
@@ -301,7 +261,6 @@ class MainActivity : AppCompatActivity() {
         val layAnimControl =
             LayoutAnimationController(AnimationUtils.loadAnimation(this@MainActivity, R.anim.down))
         layAnimControl.apply {
-            delay = 0.35f
             order = LayoutAnimationController.ORDER_NORMAL
         }
 
