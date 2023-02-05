@@ -3,7 +3,6 @@ package com.shimitadouglas.marketcm.mains
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
@@ -19,12 +18,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.modal_sheets.ModalRecoverPassword
-import com.shimitadouglas.marketcm.notifications.BigPictureNotificationMostLogin
-import com.shimitadouglas.marketcm.notifications.BigTextNotification
 import es.dmoral.toasty.Toasty
-import org.checkerframework.checker.units.qual.s
-import kotlin.random.Random
-import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
     companion object {

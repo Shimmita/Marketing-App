@@ -7,7 +7,9 @@ import android.graphics.Bitmap
 import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.google.firebase.auth.FirebaseAuth
 import com.shimitadouglas.marketcm.mains.MainActivity
+import com.shimitadouglas.marketcm.mains.ProductsHome
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -38,8 +40,8 @@ class BigPictureNotificationMostLogin(
     fun funCreateBigPictureNotification() {
 
         //code begins
-        var notChannelID = "CHANNEL_ID_MARKET_CM"
-        var notChannelName = "MARKET_CM_CHANNEL"
+        val notChannelID = "CHANNEL_ID_MARKET_CM"
+        val notChannelName = "MARKET_CM_CHANNEL"
         val notImportance = NotificationManager.IMPORTANCE_HIGH
         //check if android is greater than Oreo
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -52,18 +54,18 @@ class BigPictureNotificationMostLogin(
             bigPictureStyle.bigPicture(iconBitmap)
             bigPictureStyle.setSummaryText(summary)
             bigPictureStyle.setBigContentTitle(titleBig)
-            val intent = Intent(context, MainActivity::class.java)
+
             //creating a pending intent
             val pendingIntent: PendingIntent =
                 PendingIntent.getActivity(
                     context,
                     0,
-                    intent,
+                    funIntentReturned(),
                     PendingIntent.FLAG_IMMUTABLE
                 )
             //creating action
             val notificationAction: Notification.Action =
-                Notification.Action(smallIcon, "Login Now", pendingIntent)
+                Notification.Action(smallIcon, funButtonTitle(), pendingIntent)
             //creating a notification Builder
             val notificationBuilder: Notification.Builder =
                 Notification.Builder(context, notChannelID)
@@ -98,6 +100,45 @@ class BigPictureNotificationMostLogin(
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.notify(0, notBuilder.build())
         }
+        //code ends
+    }
+
+    private fun funButtonTitle(): CharSequence? {
+        //code begins
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            //user logged in
+            return "continue"
+            //
+        }
+        //user not logged in thus text of the notification button to login
+        return "login"
+        //
+
+        //code ends
+    }
+
+    private fun funIntentReturned(): Intent? {
+        //code begins
+        //control the intent such that login activity if yes user==null else products home intent should be the one
+        //intent products home
+        val intentProductsHome = Intent(context, ProductsHome::class.java)
+        intentProductsHome.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        //intent login activity
+        val intentLogin = Intent(context, MainActivity::class.java)
+        intentLogin.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        //
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        //
+
+        if (currentUser != null) {
+            //user logged in take user to the products activity
+            return intentProductsHome
+            //
+        }
+
+        //user not logged in
+        return intentLogin
         //code ends
     }
 

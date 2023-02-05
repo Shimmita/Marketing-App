@@ -61,7 +61,7 @@ import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
 import com.shimitadouglas.marketcm.modal_data_profile.DataProfile
 import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
 import com.shimitadouglas.marketcm.modal_sheets.ModalPrivacyMarket
-import com.shimitadouglas.marketcm.notifications.BigTextNotification
+import com.shimitadouglas.marketcm.notifications.BigTextNotificationEmail
 import com.shimitadouglas.marketcm.notifications.NormalNotification
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
@@ -535,7 +535,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun funShowApprovedAccountNotification() {
         //show notification of congratulations email verified
-        val bigTextNotification = BigTextNotification(
+        val bigTextNotificationEmail = BigTextNotificationEmail(
             this@ProductsHome,
             "Congratulations",
             "account approved",
@@ -551,7 +551,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val file = File("$directory/showFile.txt")
         if (!file.exists()) {
             //show the notification as it has not been shown to create this file
-            bigTextNotification.funCreateBigTextNotification()
+            bigTextNotificationEmail.funCreateBigTextNotification()
             //
             Log.d(TAG, "funShowApprovedAccountNotification: fileDoesNot Exist")
 

@@ -276,5 +276,9 @@
     <string name="update_a_post">update a post</string>
     <string name="delete_a_post">delete a post</string>
     <string name="account_profile">Account Profile</string>
+    <string name="notif_from_admn">notification from administrator</string>
+    <string name="tittle_small">Reminder</string>
+    <string name="by_me">by:shimmitadouglas</string>
+    <string name="reminder_big">Reminder</string>
 
 </resources>

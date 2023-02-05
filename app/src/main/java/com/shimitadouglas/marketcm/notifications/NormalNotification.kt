@@ -8,9 +8,6 @@ import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class NormalNotification(
     var context: Context,
@@ -19,14 +16,9 @@ class NormalNotification(
     var icon: Int
 ) : Application() {
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate() {
         super.onCreate()
-        //call function to create notification on a coroutine
-        GlobalScope.launch(Dispatchers.Default) {
-            funCreateNotification()
-
-        }
+        funCreateNotification()
         //
     }
 

@@ -5,11 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.shimitadouglas.marketcm.mains.ProductsHome
-import kotlinx.coroutines.*
 
-class BigTextNotification(
+class BigTextNotificationEmail(
     var context: Context,
     var titleBig: String,
     var titleSmall: String,
@@ -19,13 +19,11 @@ class BigTextNotification(
     var iconSmall: Int,
     var summary: String
 ) : Application() {
-    companion object
-    {
-        val FIlENAME = "showFile.txt"
-
+    companion object {
+        const val FILENAME = "showFile.txt"
+        private const val TAG = "BigTextNotificationEmai"
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate() {
         super.onCreate()
         //call fun create big Text Notification in a thread
@@ -37,12 +35,12 @@ class BigTextNotification(
         //create a file that will store the state of the notification
         //put the variable inside data file (yes->shows that notification approved has been already shown)
         val text = "yes"
-        val fileOutputStream =context.openFileOutput(FIlENAME, Context.MODE_PRIVATE)
+        val fileOutputStream = context.openFileOutput(FILENAME, Context.MODE_PRIVATE)
         //write to the file output stream
         try {
             fileOutputStream.write(text.toByteArray())
         } catch (e: Exception) {
-
+            Log.d(TAG, "funCreateBigTextNotification:error while writing to the file:${e.message}")
         } finally {
             fileOutputStream.close()
         }
@@ -50,8 +48,8 @@ class BigTextNotification(
 
         //code begins
         //creating notification channel name and ID
-        var notChannelID = "CHANNEL_ID_MARKET_CM"
-        var notChannelName = "MARKET_CM_CHANNEL"
+        val notChannelID = "CHANNEL_ID_MARKET_CM"
+        val notChannelName = "MARKET_CM_CHANNEL"
         //creating notification importance
         val notImportance = NotificationManager.IMPORTANCE_HIGH
         //converting the iconBig into bitmap for support large icon for big Style notification
