@@ -190,9 +190,7 @@ class HomeFragment : Fragment() {
                     funSortProducts()
                     //
                 }
-                R.id.marketAnalytics -> {
-                    funShowAnalysisGraph()
-                }
+
             }
             true
         }
@@ -209,11 +207,6 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun funShowAnalysisGraph() {
-        //code begins
-        funToastyShow("analysis")
-        //code ends
-    }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun funAlertSearch() {
@@ -330,20 +323,6 @@ class HomeFragment : Fragment() {
                 adapterRecycler.notifyDataSetChanged()
                 //setting linearLayoutManager to the recycler
                 recyclerViewProducts.layoutManager = LinearLayoutManager(requireActivity())
-                //
-
-                //variable holding the max size of items contained in the array
-                var totalProducts = arrayListProducts.size
-                //show a snack-bar/Toasty of total number of items
-                Toasty.custom(
-                    requireActivity(),
-                    "total products:$totalProducts",
-                    R.drawable.ic_cart,
-                    R.color.androidx_core_secondary_text_default_material_light,
-                    Toasty.LENGTH_LONG,
-                    true,
-                    true
-                ).show()
                 //
 
             } else if (it.isEmpty) {
