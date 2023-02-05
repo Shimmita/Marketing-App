@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.icu.text.SimpleDateFormat
@@ -36,12 +35,14 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.karumi.dexter.Dexter
@@ -52,16 +53,19 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.Networking.NetworkMonitor
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.admin_check.AdministrationVerify
+import com.shimitadouglas.marketcm.app_controller.DataClassAppController
 import com.shimitadouglas.marketcm.control_panel_admin.Administration
 import com.shimitadouglas.marketcm.fragmentProducts.HomeFragment
 import com.shimitadouglas.marketcm.fragmentProducts.NotificationFragment
 import com.shimitadouglas.marketcm.fragmentProducts.PostFragment
 import com.shimitadouglas.marketcm.mains.Registration.Companion.ComradeUser
+import com.shimitadouglas.marketcm.modal_data_admin_fetch.DataAdmin
 import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
 import com.shimitadouglas.marketcm.modal_data_profile.DataProfile
 import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
 import com.shimitadouglas.marketcm.modal_sheets.ModalPrivacyMarket
 import com.shimitadouglas.marketcm.notifications.BigTextNotificationEmail
+import com.shimitadouglas.marketcm.notifications.BigTextNotificationGen
 import com.shimitadouglas.marketcm.notifications.NormalNotification
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
@@ -78,39 +82,36 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         //shared prefs for storing the states of some data to avoid constants reloads
         var sharedPreferenceName: String = "MarketCmSharedPreference"
-        lateinit var sharedPreferenceMarketCM: SharedPreferences;
-
-        //controls the behaviour of the notification message being shown
-        var isAccountApprovedNotificationShown: Boolean = false
 
         //
         private const val TAG = "ProductsHome"
+
+        //
+        const val CollectionAppController = "AppController"
+        const val documentAppController = "market_cm"
+        const val CollectionAdmin = "Admin"
+        const val documentadmin = "admin"
+        //
     }
 
-
-    //data be put shared prefs
-    var keyShowCongratsEmailVerified = "show"
-    var showCongrats = "yes"
-    //
-
     //declaration of the globals
-    lateinit var drawerToggle: ActionBarDrawerToggle
-    lateinit var drawerLayout: DrawerLayout
-    lateinit var toolbar: Toolbar
-    lateinit var navView: NavigationView
-    lateinit var bottomNav: BottomNavigationView
-    lateinit var viewHeader: View
+    private lateinit var drawerToggle: ActionBarDrawerToggle
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var toolbar: Toolbar
+    private lateinit var navView: NavigationView
+    private lateinit var bottomNav: BottomNavigationView
+    private lateinit var viewHeader: View
 
     //declaration of the items of the header
-    lateinit var headerVerificationEmail: TextView
-    lateinit var headerTitleUsername: TextView
-    lateinit var headerUniversity: TextView
-    lateinit var headerEmail: TextView
-    lateinit var headerPhoneNumber: TextView
-    lateinit var headerImage: CircleImageView
-    lateinit var headerDateRegistration: TextView
-    lateinit var headerButtonUpdate: AppCompatButton
-    lateinit var headerButtonVerifyEmail: AppCompatButton
+    private lateinit var headerVerificationEmail: TextView
+    private lateinit var headerTitleUsername: TextView
+    private lateinit var headerUniversity: TextView
+    private lateinit var headerEmail: TextView
+    private lateinit var headerPhoneNumber: TextView
+    private lateinit var headerImage: CircleImageView
+    private lateinit var headerDateRegistration: TextView
+    private lateinit var headerButtonUpdate: AppCompatButton
+    private lateinit var headerButtonVerifyEmail: AppCompatButton
     //
 
 
@@ -133,18 +134,509 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //funCheckEmailVerification
         funEmailCheck()
         //
-        //handling buttonUpdate and EmailVerify clicks
-        funHandleButtonUpdateVerify()
-        //call function to perform default fragment addition
-        fragmentDefaultAdd()
-        //
         //fun load the data from the fStore
         funFetchProfileDataBackend()
         //
+        //handling buttonUpdate and EmailVerify clicks
+        funHandleButtonUpdateVerify()
         //fun check admin shield activation
         funCheckAdminShieldActivationMenuItem()
+
+        //fun control the running of the app
+        funControlApp()
         //
 
+        //code ends
+    }
+
+    @SuppressLint("InflateParams")
+    private fun funControlApp() {
+        //log
+        Log.d(TAG, "funControlApp: begins")
+        //
+
+        //code begins
+        //progressD for the server
+        val viewServer = LayoutInflater.from(this@ProductsHome)
+            .inflate(R.layout.general_progress_dialog_view, null, false)
+        val progressServerStatus = ProgressDialog(this@ProductsHome)
+        progressServerStatus.setIcon(R.drawable.ic_download)
+        progressServerStatus.setCancelable(false)
+        progressServerStatus.setView(viewServer)
+        progressServerStatus.setTitle("server status")
+        progressServerStatus.setMessage("checking")
+        progressServerStatus.create()
+        progressServerStatus.show()
+        //
+        //fetch the control status from the server
+        val storeServerControl = FirebaseFirestore.getInstance()
+        storeServerControl.collection(CollectionAppController).document(documentAppController).get()
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    //log
+                    Log.d(TAG, "funControlApp: fetched app control data successfully")
+                    //
+
+                    //dismiss the progressDServer and continue to the home products fragment
+                    progressServerStatus.dismiss()
+                    //
+
+                    val classDataFilter: DataClassAppController? =
+                        it.result.toObject(DataClassAppController::class.java)
+                    if (classDataFilter != null) {
+                        //log data
+                        Log.d(
+                            TAG,
+                            "funControlApp: dataClassAppController its class filter not null"
+                        )
+                        //
+
+                        val runA = classDataFilter.runA
+                        val runB = classDataFilter.runB
+
+                        //if the two runs are equal then the app should proceed else fail the app instantly and show the alert dialog
+                        if (runA.equals(runB, true)) {
+
+                            //log data
+                            Log.d(TAG, "funControlApp: AppController data is yes continue app")
+                            //
+
+                            //dismiss the progressDialog
+                            progressServerStatus.dismiss()
+                            //
+                            funContinueAppNoInterruptionFromServer()
+                            //code ends
+                        } else if (runA != runB) {
+
+                            //log data
+                            Log.d(
+                                TAG,
+                                "funControlApp: AppControllerData is not yes. checking user role...."
+                            )
+                            //
+
+                            //fun check user is admin or not if not show maintenance alert else continue safely
+                            funCheckUserRole(progressServerStatus)
+                            //
+                        }
+                    } else {
+                        //log data
+                        Log.d(TAG, "funControlApp: DataClassAppController is null exiting...")
+                        //
+                        //dismiss the progressD
+                        progressServerStatus.dismiss()
+                        //
+                        funToastyFail("something went wrong!")
+                        // sign out the current user
+                        val currentUser = FirebaseAuth.getInstance().currentUser
+                        if (currentUser != null) {
+                            FirebaseAuth.getInstance().signOut()
+                            //finish the application
+                            finish()
+                            //
+                        }
+                        //finish
+                        finish()
+                        //
+
+                    }
+                    //
+                } else if (!it.isSuccessful) {
+                    //log data
+                    Log.d(TAG, "funControlApp: error fetching AppControllerData from the server")
+                    //
+
+                    //dismiss the progressD there is an exception from the server
+                    progressServerStatus.dismiss()
+                    //alert user of an error and exit
+                    funAlertFailureServer(it)
+                    //
+                }
+            }
+        //code ends
+    }
+
+    private fun funContinueAppNoInterruptionFromServer() {
+        //code begins
+        //call function to perform default fragment addition
+        fragmentDefaultAdd()
+        //
+        //code ends
+    }
+
+    private fun funCheckUserRole(progressServerStatus: ProgressDialog) {
+
+        //log data
+        Log.d(TAG, "funCheckUserRole: begins")
+        //
+
+        //fetch the data from the storeAdmin and check user role
+        val storeAdmin = FirebaseFirestore.getInstance()
+        storeAdmin.collection(CollectionAdmin).document(documentadmin).get().addOnCompleteListener {
+
+            if (it.isSuccessful) {
+                //log data
+                Log.d(TAG, "funCheckUserRole:Successfully Fetched the Admin data")
+                //
+
+                //getting the admin data
+                val classFilter: DataAdmin? = it.result.toObject(DataAdmin::class.java)
+                //
+                if (classFilter != null) {
+
+                    //log data
+                    Log.d(TAG, "funCheckUserRole: admin Clas filter data is not null")
+                    //
+
+                    val adminEmail = classFilter.email
+                    val adminEmailB = classFilter.emailB
+                    val adminPassCode = classFilter.password
+                    val adminPhone = classFilter.phone
+
+                    //call the fun to necessitate the equality current user with admin data
+                    funFetchCurrentUserDataForComparison(
+                        adminEmail,
+                        adminEmailB,
+                        adminPhone,
+                        adminPassCode,
+                        progressServerStatus
+                    )
+                    //
+
+                } else {
+
+                    //log data
+                    Log.d(TAG, "funCheckUserRole: class filter data admin is null exiting...")
+                    //
+
+                    //dismiss the progress Dialog
+                    progressServerStatus.dismiss()
+                    //toast something went wrong
+                    funToastyFail("something went wrong!")
+                    //
+
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    if (currentUser != null) {
+                        //sign out the user
+                        FirebaseAuth.getInstance().signOut()
+                        //
+                        //finish the app instantly
+                        finish()
+                        //
+                    } else {
+                        //finish
+                        finish()
+                        //
+                    }
+
+
+                }
+            } else if (!it.isSuccessful) {
+
+                //log data
+                Log.d(TAG, "funCheckUserRole: was problem fetching admin data from the server")
+                //
+
+                //dismiss the progressD
+                progressServerStatus.dismiss()
+                //show alert the failure from the server
+                funAlertFailureServer(it)
+                //
+            }
+
+        }
+        //
+    }
+
+    private fun funFetchCurrentUserDataForComparison(
+        adminEmail: String?,
+        adminEmailB: String?,
+        adminPhone: String?,
+        adminPassCode: String?,
+        progressServerStatus: ProgressDialog
+    ) {
+
+        //log data
+        Log.d(TAG, "funFetchCurrentUserDataForComparison: begin")
+        //
+
+        //code begins
+        val uniqueID = FirebaseAuth.getInstance().currentUser?.uid
+        //fetch user data from the cloud
+        val storeUsersData = FirebaseFirestore.getInstance()
+        if (uniqueID != null) {
+            storeUsersData.collection(ComradeUser).document(uniqueID).get().addOnCompleteListener {
+
+                if (it.isSuccessful) {
+                    //log data
+                    Log.d(
+                        TAG,
+                        "funFetchCurrentUserDataForComparison:fetching the user data was yes"
+                    )
+                    //
+
+                    val classFilter: DataProfile? = it.result.toObject(DataProfile::class.java)
+                    if (classFilter != null) {
+                        //log data
+                        Log.d(TAG, "funFetchCurrentUserDataForComparison: user data is not null")
+                        //
+
+                        val passcodeUser = classFilter.Password
+                        val phoneUser = classFilter.PhoneNumber
+                        val emailUser = classFilter.Email
+                        if (passcodeUser == adminPassCode && phoneUser == adminPhone && emailUser == adminEmail) {
+                            //log data
+                            Log.d(
+                                TAG,
+                                "funFetchCurrentUserDataForComparison: user is admin match A"
+                            )
+                            //
+
+                            //continue the app user is admin despite app failure admin accesses it freely
+                            //call function to perform default fragment addition
+                            fragmentDefaultAdd()
+                            //
+
+                        } else if (passcodeUser == adminPassCode && phoneUser == adminPhone && emailUser == adminEmailB) {
+                            //log data
+                            Log.d(
+                                TAG,
+                                "funFetchCurrentUserDataForComparison: user is admin  match B"
+                            )
+                            //
+
+                            //continue the app user is admin despite app failure admin accesses it freely
+                            //call function to perform default fragment addition
+                            fragmentDefaultAdd()
+                            //code ends
+                        } else {
+                            //log data
+                            Log.d(
+                                TAG,
+                                "funFetchCurrentUserDataForComparison: user no admin stop app"
+                            )
+                            //
+
+                            //dismiss progressD
+                            progressServerStatus.dismiss()
+                            //user is ordinary user show alert app maintenance normal users have less privileges
+                            funAlertAppUnderMaintenance()
+                            //
+
+                        }
+                    } else {
+                        //log data
+                        Log.d(
+                            TAG,
+                            "funFetchCurrentUserDataForComparison: user data class filter is null exiting..."
+                        )
+                        //
+
+                        //dismiss the progress dialog
+                        progressServerStatus.dismiss()
+                        //
+                        funToastyFail("something went wrong!")
+                        //sign out and exit the application
+                        val currentUser = FirebaseAuth.getInstance().currentUser
+                        if (currentUser != null) {
+                            FirebaseAuth.getInstance().signOut()
+                            finish()
+                        } else {
+                            finish()
+                        }
+                        //
+                    }
+
+                } else if (it.isSuccessful) {
+                    //log data
+                    Log.d(
+                        TAG,
+                        "funFetchCurrentUserDataForComparison:was a problem fetching user data from the server"
+                    )
+                    //
+
+                    //dismiss the progressD
+                    progressServerStatus.dismiss()
+
+                    //alert user of the error
+                    funAlertFailureServer(it)
+                    //
+                }
+            }
+        }
+        //code ends
+    }
+
+    private fun funAlertAppUnderMaintenance() {
+        //obtain the name of the user from the shared prefs
+        val sharedPref =
+            this@ProductsHome.getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
+        val firstName = sharedPref.getString("firstname", "")
+        val lastName = sharedPref.getString("lastname", "")
+
+        if (firstName != null) {
+            if (lastName != null) {
+                if (firstName.isNotEmpty() && lastName.isNotEmpty() && firstName.trim() != "" && lastName.trim() != "") {
+                    val alertAppUnderMaintenance = MaterialAlertDialogBuilder(this@ProductsHome)
+                    alertAppUnderMaintenance.setCancelable(false)
+                    alertAppUnderMaintenance.setIcon(R.drawable.ic_info)
+                    alertAppUnderMaintenance.setTitle("App Maintenance")
+                    alertAppUnderMaintenance.setMessage("dear $firstName $lastName currently the application is undergoing maintenance please try again later")
+                    alertAppUnderMaintenance.setPositiveButton("Ok") { dialog, _ ->
+                        //show the notification(BigTextNotifyGen)
+                        val bigTitle = "Attention"
+                        val bigMessage =
+                            "Sasa $firstName $lastName currently the application is undergoing maintenance.\n" +
+                                    "Services will be fully restored after maintenance is over.\n" +
+                                    "Kindly be patient as the software team resolve some issues.\n " +
+                                    "Thank you."
+                        val smallMessage = "application is under maintenance"
+                        val byMessage = getString(R.string.by_me)
+                        val bitmapImage = BitmapFactory.decodeResource(resources, R.drawable.cart)
+                        val smallTitle = "attention"
+                        //
+
+                        //showing of the message
+                        BigTextNotificationGen(
+                            this@ProductsHome,
+                            bigTitle,
+                            smallTitle,
+                            bigMessage,
+                            smallMessage,
+                            bitmapImage,
+                            R.drawable.ic_cart,
+                            byMessage
+                        )
+                            .funCreateBigTextNotification()
+                        //
+                        val currentUser = FirebaseAuth.getInstance().currentUser
+                        if (currentUser != null) {
+                            //sign out the user and then finish app
+                            FirebaseAuth.getInstance().signOut()
+                            dialog.dismiss()
+                            //
+                            //finish the app
+                            finish()
+                            //
+                            exitProcess(0)
+                        } else {
+                            //user not logged in dismiss the dialog and sign out
+                            dialog.dismiss()
+                            //finish the app
+                            finish()
+                            //
+                            exitProcess(0)
+                        }
+                    }
+                    alertAppUnderMaintenance.create()
+                    alertAppUnderMaintenance.show()
+
+                }
+            }
+        } else {
+            val alertAppUnderMaintenance = MaterialAlertDialogBuilder(this@ProductsHome)
+            alertAppUnderMaintenance.setCancelable(false)
+            alertAppUnderMaintenance.setIcon(R.drawable.ic_info)
+            alertAppUnderMaintenance.setTitle("App Maintenance")
+            alertAppUnderMaintenance.setMessage("dear user currently the application is under maintenance please try again later")
+            alertAppUnderMaintenance.setPositiveButton("Ok") { dialog, _ ->
+
+                //show the notification(BigTextNotifyGen)
+                val bigTitle = "Attention"
+                val bigMessage =
+                    "Sasa, the application is undergoing maintenance" +
+                            "services will be fully restored after maintenance is over " +
+                            "kindly be patient as the software team resolve some issues " +
+                            "thank you."
+                val smallMessage = "application is under maintenance"
+                val byMessage = getString(R.string.by_me)
+                val bitmapImage = BitmapFactory.decodeResource(resources, R.drawable.cart)
+                val smallTitle = "attention"
+                //
+
+                //showing of the message
+                BigTextNotificationGen(
+                    this@ProductsHome,
+                    bigTitle,
+                    smallTitle,
+                    bigMessage,
+                    smallMessage,
+                    bitmapImage,
+                    R.drawable.ic_cart,
+                    byMessage
+                )
+                    .funCreateBigTextNotification()
+                //
+
+
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                if (currentUser != null) {
+                    //sign out the user and then finish app
+                    FirebaseAuth.getInstance().signOut()
+                    dialog.dismiss()
+                    //
+                    //finish the app
+                    finish()
+                    //
+                    exitProcess(0)
+                } else {
+                    //user not logged in dismiss the dialog and sign out
+                    dialog.dismiss()
+                    //finish the app
+                    finish()
+                    //
+                    exitProcess(0)
+                }
+            }
+            alertAppUnderMaintenance.create()
+            alertAppUnderMaintenance.show()
+
+        }
+        //code ends
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun funAlertFailureServer(it: Task<DocumentSnapshot>) {
+        //code begins
+        //log the error to find find reason why
+        Log.d(TAG, "funAlertFailureServer: error:${it.exception?.message}\n")
+        //
+        val alertErrorFromServer = MaterialAlertDialogBuilder(this@ProductsHome)
+        alertErrorFromServer.setIcon(R.drawable.ic_info)
+        alertErrorFromServer.setCancelable(false)
+        alertErrorFromServer.setTitle("Server Failure")
+        alertErrorFromServer.background = resources.getDrawable(R.drawable.general_alert_dg, theme)
+        alertErrorFromServer.setMessage("application encountered an error while trying to communicate with the server kindly try again later")
+        alertErrorFromServer.setPositiveButton("exit") { dialog, _ ->
+            //dismiss the dialog
+            dialog.dismiss()
+            //finish the activity and end the app ->exit the user
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            if (currentUser != null) {
+                FirebaseAuth.getInstance().signOut()
+                finish()
+            } else {
+                //
+                finish()
+            }
+            //
+        }
+        alertErrorFromServer.setNegativeButton("retry") { dialog, _ ->
+            //call fun to recreate this activity again
+            funRecreateTheActivity()
+            //
+            dialog.dismiss()
+        }
+        alertErrorFromServer.create()
+        alertErrorFromServer.show()
+        //code begins
+    }
+
+    private fun funRecreateTheActivity() {
+        //code begins
+        funToastyShow("re-trying...")
+        this@ProductsHome.recreate()
+        //code ends
     }
 
     private fun funCheckAdminShieldActivationMenuItem() {
@@ -233,7 +725,8 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                         headerTitleUsername.text = "$fName $lName"
                                         headerPhoneNumber.text = phone
                                         headerUniversity.text = university
-                                        headerDateRegistration.text = "Registered: $registrationDate"
+                                        headerDateRegistration.text =
+                                            "Registered: $registrationDate"
                                         //
                                     }
                                     //
@@ -415,6 +908,8 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             FirebaseAuth.getInstance().signOut()
             //kill application
             finish()
+            //final killer
+            exitProcess(0)
             //code ends
         }, 2000)
         //code ends
@@ -609,7 +1104,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     )
                     alertShowHowToVerify.setPositiveButton("Ok") { dialog, _ ->
                         //show notification of email verification
-                        val normalNotification: NormalNotification = NormalNotification(
+                        val normalNotification = NormalNotification(
                             this@ProductsHome,
                             "Email Verification",
                             "email verification link sent",
@@ -838,7 +1333,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val fabInstanceFireStore = FirebaseAuth.getInstance()
         val currentUID = fabInstanceFireStore.currentUser?.uid
         //creating instance of fStore
-        val fStoreUsers = FirebaseFirestore.getInstance();
+        val fStoreUsers = FirebaseFirestore.getInstance()
 
         //creating the map of keySpecific to the password
         val keyPassword = "Password"
@@ -959,12 +1454,12 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun functionUpdatePhoneNow(textPhoneEntered: String) {
         //code begins
         //create pg
-        val progD = ProgressDialog(this@ProductsHome)
-        progD.setTitle("Phone Number Update")
-        progD.setMessage("updating...")
-        progD.setCancelable(false)
-        progD.create()
-        progD.show()
+        val progressDialogPhoneUpdate = ProgressDialog(this@ProductsHome)
+        progressDialogPhoneUpdate.setTitle("Phone Number Update")
+        progressDialogPhoneUpdate.setMessage("updating...")
+        progressDialogPhoneUpdate.setCancelable(false)
+        progressDialogPhoneUpdate.create()
+        progressDialogPhoneUpdate.show()
 
         val keyPhone = "PhoneNumber"
 
@@ -981,7 +1476,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //code begins
                 if (it.isSuccessful) {
                     //dismiss the pg
-                    progD.dismiss()
+                    progressDialogPhoneUpdate.dismiss()
                     //
 
                     //alert the user with congrats
@@ -1005,11 +1500,11 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         //
                         val returnedNum = Random.nextInt(4)
                         //show the progress dialog
-                        progD.setMessage(stringExit[returnedNum])
-                        progD.show()
+                        progressDialogPhoneUpdate.setMessage(stringExit[returnedNum])
+                        progressDialogPhoneUpdate.show()
                         //
                         //delay for 3 seconds and exit
-                        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                        Handler(Looper.getMainLooper()).postDelayed({
 
                             //sign out the user before exit
                             FirebaseAuth.getInstance().signOut()
@@ -1027,7 +1522,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 } else if (!it.isSuccessful) {
                     //dismiss the alert
-                    progD.dismiss()
+                    progressDialogPhoneUpdate.dismiss()
                     //
 
                     //alert the user of error
@@ -1857,8 +2352,8 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 //alert the user of beginning the process of updating the profile picture
                 //after delay 3 seconds
-                val thread = Thread(Runnable {
-                    headerImage.postDelayed(Runnable {
+                val thread = Thread {
+                    headerImage.postDelayed({
 
                         val alertUserPictureUpdating = MaterialAlertDialogBuilder(this)
                         alertUserPictureUpdating.setCancelable(false)
@@ -1879,7 +2374,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         alertUserPictureUpdating.show()
 
                     }, 4300);
-                })
+                }
                 thread.start()
                 //
 
@@ -2000,7 +2495,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //starting the process of image update fStore
         val fabInstanceFireStore = FirebaseAuth.getInstance()
         val currentUID = fabInstanceFireStore.currentUser?.uid
-        val fStoreUsers = FirebaseFirestore.getInstance();
+        val fStoreUsers = FirebaseFirestore.getInstance()
 
         if (currentUID != null) {
             fStoreUsers.collection(ComradeUser).document(currentUID)
