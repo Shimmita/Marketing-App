@@ -39,10 +39,6 @@ class Administration : AppCompatActivity() {
                 R.id.counterfeitReports -> {
                     updateFragment(ReportsAdmin(), "reportsAdmin")
                 }
-                R.id.postApk->
-                {
-                    updateFragment(PostApk(),"postLatestApk")
-                }
 
             }
 
@@ -61,10 +57,13 @@ class Administration : AppCompatActivity() {
         val dataProductControlID: String? = intent.getStringExtra("productControlID")
         val dataVictimID: String? = intent.getStringExtra("victimID")
         val dataSuspectID: String? = intent.getStringExtra("suspectID")
-        if (dataIntentFragmentMigration != null||dataVictimID!=null||dataSuspectID!=null||dataProductControlID!=null) {
+        if (dataIntentFragmentMigration != null || dataVictimID != null || dataSuspectID != null || dataProductControlID != null) {
             if (dataIntentFragmentMigration.equals("fragment_details", true)) {
                 //migrate to fragment details
-                updateFragment(DetailsReport(dataProductControlID,dataVictimID,dataSuspectID), "fragment_details")
+                updateFragment(
+                    DetailsReport(dataProductControlID, dataVictimID, dataSuspectID),
+                    "fragment_details"
+                )
                 //
 
             }
@@ -76,7 +75,7 @@ class Administration : AppCompatActivity() {
     private fun funInit() {
         //code begins
         bottomNav = findViewById(R.id.bottomNavAdmin)
-        toolbarAdministration=findViewById(R.id.toolbarAdmin)
+        toolbarAdministration = findViewById(R.id.toolbarAdmin)
         //enable actionBar
         //code ends
     }

@@ -8,7 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="3dp"
         android:orientation="vertical">
 
         <TextView
@@ -16,12 +16,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/material_eight"
-            android:fontFamily="georgia"
+            android:layout_marginBottom="5dp"
+            android:fontFamily="@font/rajdhani_bold"
             android:gravity="center"
             android:text="@string/my_posted_products"
-            android:textColor="@color/accent_material_light"
+            android:textColor="@color/color_beautiful_one"
             android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView

@@ -9,12 +9,12 @@
 
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardMarketDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="2dp"
-        app:cardBackgroundColor="@color/black"
         android:padding="10dp"
-        android:id="@+id/cardMarketDetails"
+        app:cardBackgroundColor="@color/color_beautiful_one"
         app:cardCornerRadius="20dp">
 
         <LinearLayout
@@ -24,9 +24,9 @@
             android:padding="10dp">
 
             <LinearLayout
+                android:id="@+id/linearParentDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/linearParentDetails"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
@@ -36,14 +36,14 @@
                     android:src="@drawable/cart" />
 
                 <TextView
+                    style="@style/TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:textStyle="bold"
                     android:layout_marginStart="10dp"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/comrade_market"
                     android:textColor="@color/accent_material_light"
-                    style="@style/TextAppearance.AppCompat.Small"
-                    android:text="@string/comrade_market" />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -53,10 +53,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginTop="20dp"
-                android:textColorLink="@color/purple_500"
                 android:autoLink="email|phone"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:textColor="#0D8012"
-                android:textStyle="italic|bold" />
+                android:textColorLink="@color/purple_500"
+                />
 
         </LinearLayout>
 

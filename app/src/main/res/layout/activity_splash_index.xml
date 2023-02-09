@@ -4,7 +4,7 @@
     android:id="@+id/parent_splash_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/switch_thumb_normal_material_dark"
+    android:background="@drawable/list_gradient_anim_splash"
     android:orientation="vertical"
     tools:context=".mains.SplashScreenIndex">
 
@@ -25,8 +25,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/circleImageTire"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"

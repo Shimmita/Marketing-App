@@ -19,9 +19,5 @@
         android:icon="@drawable/ic_cart"
         android:title="@string/posts" />
 
-    <item
-        android:id="@+id/postApk"
-        android:icon="@drawable/ic_upload"
-        android:title="@string/apk" />
 
 </menu>

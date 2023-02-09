@@ -130,7 +130,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/dillan" />
+                      />
 
 
                 </androidx.cardview.widget.CardView>
@@ -176,7 +176,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     style="@style/TextAppearance.AppCompat.Body1"
-                    android:text="@string/date_2022_01_15" />
+                    />
 
             </LinearLayout>
 
@@ -217,7 +217,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/dillan" />
+                         />
 
                 </androidx.cardview.widget.CardView>
 
@@ -261,7 +261,7 @@
                     style="@style/TextAppearance.AppCompat.Body1"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@string/date_2022_01_15" />
+                     />
 
             </LinearLayout>
 

@@ -5,6 +5,7 @@
     android:id="@+id/coordinatorHome"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/tooltip_background_light"
     android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -12,27 +13,26 @@
         style="@style/Theme.AppCompat.DayNight.DarkActionBar"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:background="@drawable/material_one">
+        android:backgroundTint="@color/abc_search_url_text_normal">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsingToolBarHome"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:collapsedTitleTextColor="#2CAA9D"
-            app:contentScrim="@color/white"
+            app:collapsedTitleTextColor="@color/colorButtonQuiz"
+            app:contentScrim="@color/color_beautiful_one"
             app:expandedTitleTextColor="@color/abc_search_url_text_selected"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlwaysCollapsed|snapMargins"
             app:scrimAnimationDuration="1000"
-            app:title="hot products"
             app:toolbarId="@id/toolbarHome">
 
             <com.denzcoskun.imageslider.ImageSlider
                 android:id="@+id/imageSlider"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:visibility="visible"
                 app:iss_auto_cycle="true"
                 app:iss_delay="0"
-                android:visibility="visible"
                 app:iss_period="2000"
                 app:iss_placeholder="@drawable/ic_insert_photo"
                 app:iss_selected_dot="@drawable/default_selected_dot"
@@ -55,6 +55,7 @@
         android:id="@+id/recyclerViewProducts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/data_layout_home_products">
 
@@ -66,7 +67,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:src="@drawable/ic_refresh"
-        app:backgroundTint="#2EB6A8"
+        app:backgroundTint="@color/color_beautiful_one"
         app:layout_anchor="@id/appbarHome"
         app:layout_anchorGravity="bottom|end|right"
         app:rippleColor="#E3B6F6" />

@@ -45,7 +45,7 @@ class ModalPrivacyMarket(var which: String) : BottomSheetDialogFragment() {
 
     private fun funCardAnim(cardView: CardView, linearLayout: LinearLayout,) {
         //code begins
-        val layoutAnim=LayoutAnimationController(AnimationUtils.loadAnimation(requireActivity(),R.anim.yobounce))
+        val layoutAnim=LayoutAnimationController(AnimationUtils.loadAnimation(requireActivity(),R.anim.push_right_in))
         layoutAnim.apply {
             delay=0.5f
             order=LayoutAnimationController.ORDER_REVERSE

@@ -3,6 +3,7 @@ package com.shimitadouglas.marketcm.mains
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
@@ -13,6 +14,7 @@ import android.view.animation.LayoutAnimationController
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import androidx.core.widget.NestedScrollView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -35,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var linearRec: LinearLayout
     lateinit var checkBox: CheckBox
     lateinit var textViewMove: TextView
+    lateinit var nestedScrollViewMain: NestedScrollView
 
     //
 
@@ -51,6 +54,7 @@ class MainActivity : AppCompatActivity() {
 
         //setting onclick listener on button and tv
         btnLogin.setOnClickListener {
+
 
             //defining variables to hold email data and password data
             val enteredEmail = editLoginEmail.text
@@ -70,7 +74,21 @@ class MainActivity : AppCompatActivity() {
             }
             //everything ok lets begin login
             else {
-                funNowLogin(enteredEmail, enteredPassword)
+                btnLogin.apply {
+                    //animate the btn within 2.5 sec
+                    startAnimation(
+                        AnimationUtils.loadAnimation(
+                            this@MainActivity,
+                            R.anim.push_right_in
+                        )
+                    )
+                    //delay fun post
+                    postDelayed({
+                        //begin login operations
+                        funNowLogin(enteredEmail, enteredPassword)
+                        //
+                    }, 500)
+                }
             }
             //
 
@@ -158,10 +176,10 @@ class MainActivity : AppCompatActivity() {
                     "detected invalid email address",
                     Toast.LENGTH_LONG
                 ).show()
-
                 //setting the error enter a valid email
                 editLoginEmail.error = "enter a valid email address!"
                 //
+
             } else {
                 //call function to ready Start Login 101
                 funStartOperationLoginNow(enteredEmail, enteredPassword)
@@ -242,6 +260,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun funInitGlobals() {
         //code begins
+        nestedScrollViewMain = findViewById(R.id.nestedMainLogin)
         relativeLoginParent = findViewById(R.id.relativeMainLogin)
         tvRegistration = findViewById(R.id.tv_register_account)
         btnLogin = findViewById(R.id.buttonLogin)
@@ -268,6 +287,16 @@ class MainActivity : AppCompatActivity() {
         textViewMove.ellipsize = TextUtils.TruncateAt.MARQUEE
         textViewMove.marqueeRepeatLimit = -1
         textViewMove.isSelected = true
+        //
+
+
+        //trigger anim gradient on the parent nested scroll view
+        val animationDrawableMainLogin = nestedScrollViewMain.background as AnimationDrawable
+        animationDrawableMainLogin.apply {
+            setEnterFadeDuration(5000)
+            setExitFadeDuration(5000)
+            start()
+        }
         //
     }
 

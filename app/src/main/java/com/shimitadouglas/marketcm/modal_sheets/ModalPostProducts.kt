@@ -21,6 +21,7 @@ import android.view.animation.LayoutAnimationController
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
+import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -36,11 +37,13 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.shimitadouglas.marketcm.Networking.NetworkMonitor
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreferenceName
+import com.shimitadouglas.marketcm.mains.Registration.Companion.ComradeUser
+import com.shimitadouglas.marketcm.modal_data_profile.DataProfile
 import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
 import com.shimitadouglas.marketcm.utilities.ProductIDGenerator
-import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
@@ -50,20 +53,21 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
     companion object {
         const val CollectionPost = "Products Post"
         const val CollectionAdminWarehouse = "AdminPost WareHouse"
-
+        const val CollectionPostDenied = "CollectionPostDenied"
     }
 
     //globals
     private lateinit var appCompatButtonPickImage: AppCompatButton
     lateinit var appCompatButtonPost: AppCompatButton
     lateinit var appCompatButtonHint: AppCompatButton
-    lateinit var circleImageViewShowProductImage: CircleImageView
+    lateinit var circleImageViewShowProductImage: ImageView
     lateinit var spinnerPostProduct: Spinner
     lateinit var uriProduct: Uri
     lateinit var linearLayout: LinearLayout
     lateinit var editTextTitle: TextInputEditText
     lateinit var editTextDescription: TextInputEditText
     lateinit var editTextPrice: TextInputEditText
+    lateinit var cardviewProvideImage: CardView
 
 
     //list category item
@@ -79,13 +83,14 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         val view: View = inflater.inflate(R.layout.modal_views_posting, container, false) as View
         appCompatButtonPickImage = view.findViewById(R.id.btnProvideImagePost)
         appCompatButtonPost = view.findViewById(R.id.btnPost)
-        circleImageViewShowProductImage = view.findViewById(R.id.circleProvideImagePost)
+        circleImageViewShowProductImage = view.findViewById(R.id.imgProvideImagePost)
         spinnerPostProduct = view.findViewById(R.id.spinnerPostProduct)
         linearLayout = view.findViewById(R.id.linearPostParentModal)
         editTextTitle = view.findViewById(R.id.edtTitleProductPost)
         editTextDescription = view.findViewById(R.id.edtDescriptionProductPost)
         editTextPrice = view.findViewById(R.id.edtPriceProductPost)
         appCompatButtonHint = view.findViewById(R.id.btnCheckHint)
+        cardviewProvideImage = view.findViewById(R.id.cardProvideImageProduct)
         //inflating the array of the items in the adapter
         listOfCategory.add("PowerBanks")
         listOfCategory.add("Laptop RAM")
@@ -828,17 +833,241 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             }
             //everything fine
             else {
-                //launch a coroutine to perform the network transactions
-                funBeginPostingItem(
-                    imageUriDataPost, titleDataPost, descriptionDataPost, priceDataPost, spinnerData
-                )
-                //
+                //check for internet connectivity since user can only post if there is an internet
+                val networkMonitor = NetworkMonitor(requireActivity())
+                if (networkMonitor.checkInternet()) {
+                    //check if the user is allowed to make a post as within the profile details
+                    //check the value of the current user profile if he/she is allowed to make a post
+                    //fun check user is allowed is allowed to make a post
+                    funCheckUserCanPost(
+                        imageUriDataPost,
+                        titleDataPost,
+                        descriptionDataPost,
+                        priceDataPost,
+                        spinnerData
+                    )
+                }
             }
             //
         }
         //code ends
     }
 
+    private fun funCheckUserCanPost(
+        imageUriDataPost: Uri,
+        titleDataPost: String,
+        descriptionDataPost: String,
+        priceDataPost: String,
+        spinnerData: String
+    ) {
+        //code begins
+        val uniqueUIDCurrent = FirebaseAuth.getInstance().currentUser?.uid
+        val storeUserData = FirebaseFirestore.getInstance()
+        if (uniqueUIDCurrent != null) {
+            storeUserData.collection(ComradeUser).document(uniqueUIDCurrent).get()
+                .addOnCompleteListener {
+
+                    if (it.isSuccessful) {
+                        //class filter to filter the results of the user
+                        val classFilter: DataProfile? = it.result.toObject(DataProfile::class.java)
+                        //
+                        if (classFilter != null) {
+
+                            val userCanPost = classFilter.canPost
+                            val boolUserCanPost = userCanPost.toBoolean()
+
+                            if (boolUserCanPost) {
+                                //user can post no problem
+                                funBeginPostingItem(
+                                    imageUriDataPost,
+                                    titleDataPost,
+                                    descriptionDataPost,
+                                    priceDataPost,
+                                    this.spinnerData
+                                )
+                                //
+                            } else {
+                                //user is prohibited from posting products alert
+                                funAlertUserToContactAdmin()
+                                //
+
+                            }
+
+                        } else {
+                            Toasty.error(
+                                requireActivity(),
+                                "something went wrong!",
+                                Toasty.LENGTH_SHORT
+                            ).show()
+                        }
+
+                    } else if (!it.isSuccessful) {
+                        //toast to the user that sth went wrong
+                        Toasty.error(
+                            requireActivity(),
+                            "something went wrong!",
+                            Toasty.LENGTH_SHORT
+                        ).show()
+                        //
+                        return@addOnCompleteListener
+                    }
+
+                }
+        }
+
+        //code ends
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun funAlertUserToContactAdmin() {
+        //code begins
+        val alertUserContactAdmin = MaterialAlertDialogBuilder(requireActivity())
+        alertUserContactAdmin.background =
+            resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
+        alertUserContactAdmin.setTitle("contact administrator")
+        alertUserContactAdmin.setCancelable(false)
+        alertUserContactAdmin.setIcon(R.drawable.cart)
+        alertUserContactAdmin.setMessage("you have been suspended from posting please contact the administrator @market cm for activation")
+        alertUserContactAdmin.setPositiveButton("contact") { dialog, _ ->
+
+            //
+            funSendInfoToAdmin()
+            //
+            dialog.dismiss()
+        }
+        alertUserContactAdmin.setNegativeButton("dismiss")
+        { dialog, _ ->
+            //
+            dialog.dismiss()
+            //
+        }
+        alertUserContactAdmin.create()
+        alertUserContactAdmin.show()
+
+        //code ends
+    }
+
+    @SuppressLint("SimpleDateFormat", "InflateParams")
+    private fun funSendInfoToAdmin() {
+        //creating  a progress Dialog to manage monitoring of the data transfer
+        val view = LayoutInflater.from(requireActivity())
+            .inflate(R.layout.general_progress_dialog_view, null, false)
+        val progressDialogSendMessageAdmin = ProgressDialog(requireActivity())
+        progressDialogSendMessageAdmin.setView(view)
+        progressDialogSendMessageAdmin.setCancelable(false)
+        progressDialogSendMessageAdmin.setTitle("sending message")
+        progressDialogSendMessageAdmin.setMessage("sending")
+        progressDialogSendMessageAdmin.setIcon(R.drawable.ic_send)
+        progressDialogSendMessageAdmin.create()
+        progressDialogSendMessageAdmin.show()
+        //code begins
+        //posting to the adminCollectionDenied
+        //if post is successful invoke sending information to the admin via call,message or email
+        //path to the collection(CollectionPostDenied/uniqueUID/data)
+        val keyUID = "userID"
+        val keyName = "name"
+        val keyTime = "time"
+        val keyMessage = "message"
+
+        //declaration of the data
+        //getting the current time
+        val calendarInstance = Calendar.getInstance().time
+        val timeFormatter = SimpleDateFormat("dd/MM/yyyy hh:mm")
+        val timeCurrent = timeFormatter.format(calendarInstance)
+        //
+        //getting the full name of the user from the instance of the shared preference
+        val sharedPreferences =
+            requireActivity().getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
+        val firstName = sharedPreferences.getString("firstname", "")
+        val lastName = sharedPreferences.getString("lastname", "")
+        val name = "$firstName $lastName"
+        //
+        //declaring the message the user is going to send to me
+        val message =
+            "Hello administrator,my name is $name  and currently iam unable to post my products to the market.kindly resolve this issue for me"
+        //
+
+        //getting the uniqueID of the user from the current session
+        val uniqueID = FirebaseAuth.getInstance().currentUser?.uid
+        //
+
+        //creating the the map of the data to set set the key value pair so that can be sent sent to the storage through mapping technique
+        val mapData = hashMapOf(
+            keyTime to timeCurrent,
+            keyUID to uniqueID,
+            keyName to name,
+            keyMessage to message
+        )
+        //
+        val storeCollectionPostDenied = FirebaseFirestore.getInstance()
+        if (uniqueID != null) {
+            storeCollectionPostDenied.collection(CollectionPostDenied).document(uniqueID)
+                .set(mapData).addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        //dismiss the progressD
+                        progressDialogSendMessageAdmin.dismiss()
+                        //
+
+                        //message sent successfully show dialog options for
+                        //sending sms/calling/emailing
+                        funContactAdmin()
+                        //
+
+                    } else if (!it.isSuccessful) {
+
+                        //dismiss the progressD
+                        progressDialogSendMessageAdmin.dismiss()
+                        //sending the message of activation for posting the products became a failure
+                        Toasty.error(requireActivity(), "something went wrong", Toasty.LENGTH_SHORT)
+                            .show()
+                        //
+                    }
+
+
+                }
+        }
+        //code ends
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun funContactAdmin() {
+        //code begins
+        val alertContactMethod = MaterialAlertDialogBuilder(requireActivity())
+        alertContactMethod.setTitle("select method")
+        alertContactMethod.setMessage("select a method of contacting the administrator")
+        alertContactMethod.setCancelable(false)
+        alertContactMethod.background =
+            resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
+        alertContactMethod.setPositiveButton("sms") { dialog, _ ->
+
+            //fun to to sms admin
+            funSMSDev()
+            //
+            dialog.dismiss()
+        }
+        alertContactMethod.setNeutralButton("call")
+        { dialog, _ ->
+
+            //fun to call admin
+            funCallDev()
+            //
+
+            dialog.dismiss()
+        }
+        alertContactMethod.setNegativeButton("email")
+        { dialog, _ ->
+
+            //fun to email admin
+            funEmailDeveloper()
+            //
+            dialog.dismiss()
+        }
+        alertContactMethod.create()
+        alertContactMethod.show()
+        //code ends
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun funBeginPostingItem(
         imageUriDataPost: Uri,
         titleDataPost: String,
@@ -855,8 +1084,6 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             create()
             show()
         }
-        //
-
         //code begins
         //post image first then get the download uri
         //path to the storage product images=(ProductImages)/(Email)/(UID)/(combinationUIDTimerID)/(file)
@@ -901,6 +1128,11 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                                         setTitle("Posting Failed")
                                         setMessage(it.exception?.message)
                                         setCancelable(false)
+                                        background = resources.getDrawable(
+                                            R.drawable.general_alert_dg,
+                                            requireActivity().theme
+                                        )
+
                                         setPositiveButton("retry") { dialog, _ ->
 
                                             //dismiss dialog to avoid RT errors
@@ -928,6 +1160,10 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                                 setTitle("Posting Failed")
                                 setMessage(it.exception?.message)
                                 setCancelable(false)
+                                background = resources.getDrawable(
+                                    R.drawable.general_alert_dg,
+                                    requireActivity().theme
+                                )
                                 setPositiveButton("retry") { dialog, _ ->
 
                                     //dismiss
@@ -986,11 +1222,11 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         val sharedPreferences =
             requireActivity().getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
 
-        var fNameData = sharedPreferences.getString("firstname", "")
-        var lNameData = sharedPreferences.getString("lastname", "")
-        var imageData = sharedPreferences.getString("image", "")
-        var phoneData = sharedPreferences.getString("phone", "")
-        var uniData = sharedPreferences.getString("university", "")
+        val fNameData = sharedPreferences.getString("firstname", "")
+        val lNameData = sharedPreferences.getString("lastname", "")
+        val imageData = sharedPreferences.getString("image", "")
+        val phoneData = sharedPreferences.getString("phone", "")
+        val uniData = sharedPreferences.getString("university", "")
 
 
         //creating instances for finding date of post
@@ -1051,6 +1287,10 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                         setTitle("Posting Failed")
                         setMessage(it.exception?.message)
                         setCancelable(false)
+                        background = resources.getDrawable(
+                            R.drawable.general_alert_dg,
+                            requireActivity().theme
+                        )
                         setPositiveButton("retry") { dialog, _ ->
                             //dismiss
                             dialog.dismiss()
@@ -1146,7 +1386,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                         alertPostSuccessful.setIcon(R.drawable.ic_nike_done)
                         alertPostSuccessful.setCancelable(false)
                         alertPostSuccessful.background = resources.getDrawable(
-                            R.drawable.material_six, requireActivity().theme
+                            R.drawable.general_alert_dg, requireActivity().theme
                         )
                         alertPostSuccessful.setMessage(
                             "product posted successfully to the online market interested customers will contact you about the product using your registered phone number via CALL,SMS or EMAIL\n" +
@@ -1180,6 +1420,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         //code end
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun funAlertFailureDialog(task: Task<UploadTask.TaskSnapshot>) {
         //code begins
         val alertFailurePost = MaterialAlertDialogBuilder(requireActivity())
@@ -1187,6 +1428,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             setTitle("Posting Failed")
             setMessage(task.exception?.message)
             setCancelable(false)
+            background = resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
             setPositiveButton("retry") { dialog, _ ->
 
                 //dimiss
@@ -1240,7 +1482,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             "Market CM requires that the requested permissions are necessary for it to function properly." + " grant the permissions to use the application"
         )
         alertPermissionRationale.background =
-            resources.getDrawable(R.drawable.material_six, requireActivity().theme)
+            resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
         alertPermissionRationale.setCancelable(false)
         alertPermissionRationale.setPositiveButton("do") { dialog, _ ->
             //start the intent of launching the settings for app info
@@ -1290,7 +1532,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                         uriProduct = it.data!!.data!!
 
                         //alert User Congrats Image Pic Successfully
-                        funAlertUserImageItemPickSucess(uriProduct)
+                        funAlertUserImageItemPickSuccess(uriProduct)
                         //
                     }
 
@@ -1315,16 +1557,16 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    private fun funAlertUserImageItemPickSucess(uriProduct: Uri) {
+    private fun funAlertUserImageItemPickSuccess(uriProduct: Uri) {
         //code begins
         val alertCongrats = MaterialAlertDialogBuilder(requireActivity())
         alertCongrats.setTitle("Successful")
         alertCongrats.setIcon(R.drawable.cart)
         alertCongrats.setMessage(
-            "Congratulations! image loaded successfully." + "Lets continue with product posting process, market your product online and earn your cash ."
+            "Congratulations! image loaded successfully.\nLet us market your product and earn your cash"
         )
         alertCongrats.background =
-            resources.getDrawable(R.drawable.material_six, requireActivity().theme)
+            resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
         alertCongrats.setCancelable(false)
         alertCongrats.setPositiveButton("lets do it") { dialog, _ ->
 
@@ -1345,24 +1587,26 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
     private fun funProceedLoadImageItem(uriProduct: Uri) {
         //code begins
         //animate the view
-        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+        Handler(Looper.getMainLooper()).postDelayed({
             //
             //enable the button post since product image is availed and also the whole view of image
             appCompatButtonPost.visibility = View.VISIBLE
             //
-            //visibility true circleImage
-            circleImageViewShowProductImage.visibility = View.VISIBLE
-            circleImageViewShowProductImage.borderColor =
-                resources.getColor(R.color.white, requireActivity().theme)
-            //enable button hint
-            appCompatButtonHint.visibility = View.VISIBLE
+            //visibility true card holding the image
+            cardviewProvideImage.visibility = View.VISIBLE
+            appCompatButtonHint.apply {
+                //enable button hint
+                visibility = View.VISIBLE
+                //
+                startAnimation(AnimationUtils.loadAnimation(requireActivity(), R.anim.yobounce))
+                //
+            }
             //
 
-            //
             //animate the image view here
             circleImageViewShowProductImage.startAnimation(
                 AnimationUtils.loadAnimation(
-                    requireActivity(), R.anim.rotate
+                    requireActivity(), R.anim.slide_in_left
                 )
             )
 
@@ -1410,7 +1654,6 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             //
             //putting the value of the selected item in a bundle then we can access
             spinnerData = p0.selectedItem.toString()
-            Toast.makeText(requireActivity(), spinnerData, Toast.LENGTH_SHORT).show()
             //
         }
 
@@ -1433,7 +1676,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         alertMatHint.setMessage(message)
         alertMatHint.setIcon(icon)
         alertMatHint.background =
-            resources.getDrawable(R.drawable.material_six, requireActivity().theme)
+            resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
         alertMatHint.setCancelable(false)
         alertMatHint.setPositiveButton("Ok") { dialog, _ ->
             //dismiss dg to avoid RT Exceptions
@@ -1453,7 +1696,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             //
             //
             //dismiss
-            dialog
+            dialog.dismiss()
             //
         }
         alertMatHint.create()
@@ -1485,8 +1728,8 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         alertUserFileSize.setCancelable(false)
         alertUserFileSize.setIcon(R.drawable.ic_info)
         alertUserFileSize.background =
-            resources.getDrawable(R.drawable.material_six, requireActivity().theme)
-        alertUserFileSize.setTitle("Product Image Size")
+            resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
+        alertUserFileSize.setTitle("Image Too Large")
         alertUserFileSize.setMessage(
             "size of the image of your product is larger than the recommended !\n" + "\nImage size of your product:\n${fileSize}KB  -> ${fileSize / conversion}MB\n" + "\nRecommended size of image:\n2500KB -> ${sizeLimit}MB\n\nImage exceeded limit by:${(fileSize - limitKB) / conversion}MB\n" + "\nConclusion:\nprovide an image less than ${sizeLimit}MB ."
         )
@@ -1497,6 +1740,53 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         }
         alertUserFileSize.create()
         alertUserFileSize.show()
+    }
+
+    private fun funEmailDeveloper() {
+        //code
+        //get the name of the current user from the share preferences
+        val sharedPrefs =
+            requireActivity().getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
+        val firstName = sharedPrefs.getString("firstname", "")
+        val lastname = sharedPrefs.getString("lastname", "")
+        val fullName = "$firstName $lastname"
+        //
+        val emailsMyEmails = arrayOf("douglasshimita3@gmail.com", "shimitadouglas@gmail.com")
+        val emailSubject = "write email subject here"
+        val messageBodyText = "Hello $fullName write your message here"
+        val intentEmail = Intent()
+        intentEmail.action = Intent.ACTION_SEND
+        intentEmail.setDataAndType(Uri.parse("email"), "message/rfc822")
+        intentEmail.putExtra(Intent.EXTRA_EMAIL, emailsMyEmails)
+        intentEmail.putExtra(Intent.EXTRA_SUBJECT, emailSubject)
+        intentEmail.putExtra(Intent.EXTRA_TEXT, messageBodyText)
+        startActivity(Intent.createChooser(intentEmail, "Launch Email"))
+        //code ends
+
+    }
+
+    private fun funSMSDev() {
+        //code begins
+        val phoneNumber = "+254757450727"
+        val messageBody =
+            "hey,write your text here and send it to me, i will be glad to feedback you"
+        val intentMessaging =
+            Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phoneNumber, null))
+        startActivity(Intent.createChooser(intentMessaging, "Launch SMS APP"))
+        //code ends
+
+    }
+
+    private fun funCallDev() {
+        //code begins
+        //start an intent to the phone call
+        val numberIntent = Intent()
+        numberIntent.action = Intent.ACTION_DIAL
+        numberIntent.data = Uri.parse("tel:+254757450727")
+        startActivity(numberIntent)
+        //
+        //code ends
+
     }
 
 

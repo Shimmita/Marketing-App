@@ -10,5 +10,6 @@ data class DataProfile(
     var LastName:String?=null,
     var FirstName:String?=null,
     var Password:String?=null,
-    var registrationDate: String?=null
+    var registrationDate: String?=null,
+    var canPost:String?=null
 )

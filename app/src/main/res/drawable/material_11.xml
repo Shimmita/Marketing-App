@@ -3,12 +3,13 @@
 
     <gradient
         android:angle="45"
-        android:centerColor="@color/primaryColor"
-        android:endColor="@color/primaryLightColor"
-        android:startColor="@color/primaryDarkColor" />
+        android:centerColor="@color/primary_color_index"
+        android:endColor="@color/primary_light_color_index"
+        android:startColor="@color/primary_dark_color_index" />
     <stroke
         android:width="2dp"
-        android:color="@color/primaryLightColor" />
-    <corners android:radius="20dp"/>
+        android:color="@color/primary_light_color_index" />
+    <corners android:radius="50dp" />
+
 
 </shape>

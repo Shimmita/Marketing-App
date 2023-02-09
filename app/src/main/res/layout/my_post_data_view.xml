@@ -10,11 +10,11 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:elevation="5dp"
-        app:cardBackgroundColor="@color/bright_foreground_disabled_material_dark"
+        app:cardBackgroundColor="@color/color_beautiful_one"
         app:cardCornerRadius="10dp"
-        app:contentPadding="5dp">
+        app:contentPadding="3dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,16 +24,15 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/myImage"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="end"
-                android:layout_marginBottom="5dp"
-                android:src="@drawable/dillan" />
+                android:layout_marginBottom="5dp" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                app:cardCornerRadius="10dp"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="10dp">
 
                 <ImageView
                     android:id="@+id/myProductImage"
@@ -46,14 +45,13 @@
 
             <TextView
                 android:id="@+id/myProductTitle"
-                style="@style/TextAppearance.Material3.TitleMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:fontFamily="@font/rajdhani_bold"
                 android:gravity="center"
                 android:text="@string/my_product_title"
-                android:textColor="#422D0F"
-                android:textStyle="bold" />
+                android:textColor="#422D0F" />
 
             <TextView
                 android:id="@+id/myProductDatePost"
@@ -62,8 +60,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/date_posted"
-                android:textStyle="bold"
                 android:textColor="#322809" />
 
             <TextView
@@ -73,9 +71,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/place_posted"
-                android:textColor="#322809"
-                android:textStyle="bold" />
+                android:textColor="#322809" />
 
             <TextView
                 android:id="@+id/myProductUniqueID"
@@ -84,55 +82,54 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/product_id_stamp"
-                android:textColor="#322809"
-                android:textStyle="bold" />
+                android:textColor="#322809" />
 
 
             <TextView
                 android:id="@+id/myProductCategory"
+                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/category_product"
-                android:textColor="#322809"
-                android:textStyle="bold" />
+                android:textColor="#322809" />
 
             <TextView
                 android:id="@+id/myProductPhone"
+                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                style="@style/TextAppearance.Material3.BodySmall"
-
                 android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/phone_number"
-                android:textColor="#322809"
-                android:textStyle="bold" />
+                android:textColor="#322809" />
 
             <TextView
                 android:id="@+id/myProductEmail"
+                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/product_email"
-                android:textColor="#322809"
-                android:textStyle="bold" />
+                android:textColor="#322809" />
 
             <TextView
                 android:id="@+id/myProductDescription"
+                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/product_description"
-                android:textColor="#322809"
-                android:textStyle="bold" />
+                android:textColor="#322809" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnUpdateMyProduct"

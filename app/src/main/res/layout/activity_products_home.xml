@@ -35,10 +35,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:padding="2dp"
-            app:backgroundTint="@color/colorWhite"
-            app:itemBackground="@drawable/material_eight"
-            app:itemTextColor="#E4056C09"
+            android:padding="5dp"
+            app:itemIconTint="@color/colorButtonQuiz"
+            app:itemBackground="@drawable/layout_backg"
+            app:itemTextColor="@color/background_floating_material_dark"
             app:menu="@menu/bottom_nav_menu" />
     </RelativeLayout>
 

@@ -3,7 +3,6 @@ package com.shimitadouglas.marketcm.fragmentProducts
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -32,7 +31,6 @@ import com.google.firebase.firestore.Query
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.adapter_products_posted.MyAdapterProducts
 import com.shimitadouglas.marketcm.mains.ProductsHome
-import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreferenceName
 import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
 import com.shimitadouglas.marketcm.modal_data_slide_model.DataClassSlideModal
 import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
@@ -118,9 +116,11 @@ class HomeFragment : Fragment() {
         //testing notification
         //funCheckNotification()
 
+
         //code ends
         return viewHome
     }
+
 
     private fun funFabClicked() {
         //code begins
@@ -165,23 +165,8 @@ class HomeFragment : Fragment() {
             when (it.itemId) {
                 R.id.searchProduct -> {
                     //call function search products
-                    //alert the user, show searching hint then on press ok initiate the actual search
-                    //basing o the value returned from the shared pref
-                    val sharedPref = requireActivity().getSharedPreferences(
-                        sharedPreferenceName,
-                        Context.MODE_PRIVATE
-                    )
-                    val resultFromSharedPref = sharedPref.getString("searchDialog", "")
-                    if (resultFromSharedPref == "no") {
-                        //do no show alertSearchHintDialog instead direct search
-                        funSearchProducts()
-                        //
-
-                    } else {
-                        //show the alert
-                        funAlertSearch()
-                    }
-
+                    //do no show alertSearchHintDialog instead direct search
+                    funSearchProducts()
                     //
                 }
 
@@ -203,74 +188,9 @@ class HomeFragment : Fragment() {
         }
         //
 
-        //code ends
 
-    }
-
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private fun funAlertSearch() {
-        //code begins
-        val alertSearchHint = MaterialAlertDialogBuilder(requireActivity())
-        alertSearchHint.background =
-            resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
-        alertSearchHint.setTitle("Searching Hint")
-        alertSearchHint.setIcon(R.drawable.ic_search)
-        alertSearchHint.setMessage(
-            "search using university name\n\n" + "search using product name\n\n" + "search using product type"
-        )
-        alertSearchHint.setCancelable(false)
-        alertSearchHint.setNeutralButton("Ok search") { dialog, _ ->
-
-            //call fun search
-            funSearchProducts()
-            //
-            //dismiss dialog to avoid RT Exceptions
-            dialog.dismiss()
-            //
-        }
-        alertSearchHint.setPositiveButton("no show") { dg, _ ->
-
-            AlertDialog.Builder(requireActivity())
-                .setCancelable(false)
-                .setIcon(R.drawable.ic_info)
-                .setTitle("Note")
-                .setMessage("Search hint dialog won't be shown again. if this is the case accept.")
-                .setPositiveButton("accept") { dialog, _ ->
-                    //save status in the shared preference
-                    val sharedPref =
-                        requireActivity().getSharedPreferences(
-                            sharedPreferenceName,
-                            Context.MODE_PRIVATE
-                        )
-                    sharedPref.edit().putString("searchDialog", "no").apply()
-                    //dismiss
-                    dialog.dismiss()
-                    //
-
-                    //dismiss the parent dialog too
-                    dg.dismiss()
-                    //
-                }.setNegativeButton("dismiss") { dialog, _ ->
-
-                    //dismiss to avoid RT Exceptions
-                    dialog.dismiss()
-                    //
-
-                    //dismiss the parent dialog too
-                    //dismiss
-                    dg.dismiss()
-                    //
-                    //
-                }
-                .create().show()
-
-
-        }
-        alertSearchHint.create().show()
         //code ends
     }
-
 
     @SuppressLint("NotifyDataSetChanged")
     private fun funRecyclerOperationsAndPostDataLoading() {
@@ -438,7 +358,7 @@ class HomeFragment : Fragment() {
             }
             if (scrollRange + verticalOffset == 0) {
                 //collapsing toolbar fully collapsed and the toolbar should be given title
-                collapsingToolbarLayoutHome.title = "hot products"
+                collapsingToolbarLayoutHome.title = "trending now"
                 //
                 //set navigation icon hot toolbar
                 toolbarHome.navigationIcon =

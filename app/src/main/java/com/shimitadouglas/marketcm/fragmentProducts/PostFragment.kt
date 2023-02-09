@@ -1,4 +1,5 @@
 package com.shimitadouglas.marketcm.fragmentProducts
+
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -83,7 +84,7 @@ class PostFragment : Fragment() {
             cardViewMyRecentPost.postDelayed(Runnable {
                 //define  myRecent operation here
                 //fun show modal sheet
-                val section="views"
+                val section = "views"
                 funShowModalSheetMyPostsOp(section)
                 //
             }, 450)
@@ -176,7 +177,7 @@ class PostFragment : Fragment() {
         val alertPostingHint = MaterialAlertDialogBuilder(requireActivity())
         alertPostingHint.setTitle("How To Post")
         alertPostingHint.background =
-            resources.getDrawable(R.drawable.material_seven, requireActivity().theme)
+            resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
         alertPostingHint.setMessage(
             "With Market CM, posting a product to the online market involves:\n" +
                     "\n1.providing an image of an item(product)\n\n2.providing the name(title) of the product\n\n3.providing description of the product i.e condition of the " +

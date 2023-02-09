@@ -3,8 +3,6 @@ package com.shimitadouglas.marketcm.adapter_products_posted
 import android.annotation.SuppressLint
 import android.content.Context
 import android.icu.text.SimpleDateFormat
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -66,75 +64,73 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
 
             //setting onclick on the btn enquire
             buttonEnquire.setOnClickListener {
-                //check internet connectivity
-                val classInternetCheck = NetworkMonitor(context)
-                val result = classInternetCheck.checkInternet()
-                if (result) //there is connection to the internet
-                {
-                    val uniqueUID = FirebaseAuth.getInstance().uid
-                    val productOwnerID = products[position].userID
-                    //check if the ownerID is == uniqueID
-                    //if are equal toast cannot enquire for the product that belongs to you
-                    if (uniqueUID != null) {
-                        if (uniqueUID == productOwnerID) {
-                            //cannot happen since the product belongs to the currently logged in user
-                            funToastyCustom(
-                                "cannot enquire your own products!",
-                                R.drawable.ic_smile,
-                                R.color.androidx_core_secondary_text_default_material_light
-                            )
-                        }
-                    } else {
-                        //user can make an enquiry since the product is not of his/her
-                        //animate the card
-                        cardView.apply {
-                            startAnimation(AnimationUtils.loadAnimation(context, R.anim.rotate_avg))
-                        }
+                buttonEnquire.apply {
+                    //rotate btn
+                    startAnimation(AnimationUtils.loadAnimation(context, R.anim.rotate_avg))
+                    //
+                    //check internet connectivity
+                    val classInternetCheck = NetworkMonitor(context)
+                    val result = classInternetCheck.checkInternet()
+                    if (result) //there is connection to the internet
+                    {
+                        val uniqueUID = FirebaseAuth.getInstance().uid
+                        val productOwnerID = products[position].userID
+                        //check if the ownerID is == uniqueID
+                        //if are equal toast cannot enquire for the product that belongs to you
+                        if (uniqueUID != null) {
+                            if (uniqueUID == productOwnerID) {
+                                //cannot happen since the product belongs to the currently logged in user
+                                funToastyCustom(
+                                    "cannot enquire your own products!",
+                                    R.drawable.ic_smile,
+                                    R.color.androidx_core_secondary_text_default_material_light
+                                )
+                            }
+                        } else {
 
-                        //
-                        //creating the date instance from the Calendar
-                        val timeUsingCalendar = Calendar.getInstance().time
-                        val dateFormat = SimpleDateFormat("dd-MM-yyyy")
-                        val formattedTime = dateFormat.format(timeUsingCalendar)
+                            //creating the date instance from the Calendar
+                            val timeUsingCalendar = Calendar.getInstance().time
+                            val dateFormat = SimpleDateFormat("dd-MM-yyyy")
+                            val formattedTime = dateFormat.format(timeUsingCalendar)
+                            //obtain owner uniqueUID
+                            val uniqueIDOwnerProduct = products[position].userID
 
-                        //obtain owner uniqueUID
-                        val uniqueIDOwnerProduct = products[position].userID
-
-                        //obtaining enquirer name from the sharedPreference
-                        val sharedPreferences =
-                            context.getSharedPreferences(
-                                sharedPreferenceName,
-                                Context.MODE_PRIVATE
-                            )
-                        val fName = sharedPreferences.getString("firstname", "")
-                        val lName = sharedPreferences.getString("lastname", "")
-                        val uni = sharedPreferences.getString("university", "")
-                        val email = sharedPreferences.getString("email", "")
-                        val phone = sharedPreferences.getString("phone", "")
-                        //
-                        //call function to perform enquiries
-                        val titleEnquiredProduct = textViewTitleProduct.text.toString()
-                        val imageEnquiredProduct = products[position].imageProduct
-                        val enquirerName = "$fName $lName"
-                        //
-
-                        //creating a handler that will delay 1.2m and then call fun that performs posting of the enquiry requests
-                        Handler(Looper.myLooper()!!).postDelayed({
-                            holder.funEnquiriesOperations(
-                                titleEnquiredProduct,
-                                imageEnquiredProduct,
-                                enquirerName,
-                                uni,
-                                email,
-                                phone,
-                                formattedTime,
-                                uniqueIDOwnerProduct
-                            )
+                            //obtaining enquirer name from the sharedPreference
+                            val sharedPreferences =
+                                context.getSharedPreferences(
+                                    sharedPreferenceName,
+                                    Context.MODE_PRIVATE
+                                )
+                            val fName = sharedPreferences.getString("firstname", "")
+                            val lName = sharedPreferences.getString("lastname", "")
+                            val uni = sharedPreferences.getString("university", "")
+                            val email = sharedPreferences.getString("email", "")
+                            val phone = sharedPreferences.getString("phone", "")
                             //
-                        }, 1200)
-                        //
+                            //call function to perform enquiries
+                            val titleEnquiredProduct = textViewTitleProduct.text.toString()
+                            val imageEnquiredProduct = products[position].imageProduct
+                            val enquirerName = "$fName $lName"
+                            //
+
+                            //creating a handler that will delay 1.2m and then call fun that performs posting of the enquiry requests
+                            postDelayed({
+                                holder.funEnquiriesOperations(
+                                    titleEnquiredProduct,
+                                    imageEnquiredProduct,
+                                    enquirerName,
+                                    uni,
+                                    email,
+                                    phone,
+                                    formattedTime,
+                                    uniqueIDOwnerProduct
+                                )
+                                //
+                            }, 1200)
+                        }
                     }
                 }
+                //
 
             }
 

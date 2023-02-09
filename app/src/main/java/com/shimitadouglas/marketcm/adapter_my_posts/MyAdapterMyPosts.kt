@@ -186,6 +186,7 @@ class MyAdapterMyPosts(
             //code ends
         }
 
+        @SuppressLint("UseCompatLoadingForDrawables")
         fun funUpdatePostOperations(
             timerControllerID: String?, productImageUri: String?, productPrice: String?
         ) {
@@ -210,7 +211,9 @@ class MyAdapterMyPosts(
                 "update product price"
             )
             val alertUpdateDialog = MaterialAlertDialogBuilder(context)
-            alertUpdateDialog.setTitle("Update Window")
+            alertUpdateDialog.setTitle("update window")
+            alertUpdateDialog.background =
+                context.resources.getDrawable(R.drawable.general_alert_dg, context.theme)
             alertUpdateDialog.setSingleChoiceItems(arrayOfUpdateOptions, 2) { _, which ->
                 selected = arrayOfUpdateOptions[which]
             }
@@ -316,9 +319,14 @@ class MyAdapterMyPosts(
         //
 
         //create an alert that will display the phone
-        MaterialAlertDialogBuilder(context).setTitle("Price Entry\n(currently @KES $productPrice)")
+        MaterialAlertDialogBuilder(context).setTitle("price entry\n(currently KES $productPrice)")
             .setCancelable(false)
-            .setBackground(context.resources.getDrawable(R.drawable.material_seven, context.theme))
+            .setBackground(
+                context.resources.getDrawable(
+                    R.drawable.general_alert_dg,
+                    context.theme
+                )
+            )
             .setIcon(R.drawable.ic_info).setView(view).setPositiveButton("update") { dialog, _ ->
 
                 //extract the price entered
@@ -540,8 +548,13 @@ class MyAdapterMyPosts(
         //
 
         //create an alert that will display the phone
-        MaterialAlertDialogBuilder(context).setTitle("Phone Number Entry")
-            .setBackground(context.resources.getDrawable(R.drawable.material_seven, context.theme))
+        MaterialAlertDialogBuilder(context).setTitle("phone number entry")
+            .setBackground(
+                context.resources.getDrawable(
+                    R.drawable.general_alert_dg,
+                    context.theme
+                )
+            )
 
             .setIcon(R.drawable.ic_info).setView(view).setPositiveButton("update") { dialog, _ ->
 
@@ -724,8 +737,13 @@ class MyAdapterMyPosts(
         //
 
         //create an alert that will display the phone
-        MaterialAlertDialogBuilder(context).setTitle("Place Entry")
-            .setBackground(context.resources.getDrawable(R.drawable.material_seven, context.theme))
+        MaterialAlertDialogBuilder(context).setTitle("place entry")
+            .setBackground(
+                context.resources.getDrawable(
+                    R.drawable.general_alert_dg,
+                    context.theme
+                )
+            )
 
             .setIcon(R.drawable.ic_info).setView(view).setPositiveButton("update") { dialog, _ ->
 

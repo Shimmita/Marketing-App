@@ -386,7 +386,13 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val keyPhone = "PhoneNumber"
         val keyImageUri = "ImagePath"
         val keyRegistrationDate = "registrationDate"
+        val keyCanPost = "canPost"
         //
+
+        //separate declaration of can post to the market is yes
+        val dataCanPost = "true"
+        //
+
         //creating the hashmap for the data be stored in fireStore
         val mapUserData = hashMapOf(
             keyEmail to emailData,
@@ -396,7 +402,8 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             keyPhone to phoneData,
             keyUniversity to spinnerDataUniversity,
             keyImageUri to uriPath.toString(),
-            keyRegistrationDate to formattedTime
+            keyRegistrationDate to formattedTime,
+            keyCanPost to dataCanPost
         )
         //
 
@@ -623,7 +630,8 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             //
             if ((FirebaseAuth.getInstance().currentUser) != null) {
                 //clear all the data saved in the shared preference
-                val sharedPreferences=getSharedPreferences(sharedPreferenceName,Context.MODE_PRIVATE)
+                val sharedPreferences =
+                    getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
                 sharedPreferences.edit().clear().apply()
                 //sign ou the current user
                 FirebaseAuth.getInstance().signOut()

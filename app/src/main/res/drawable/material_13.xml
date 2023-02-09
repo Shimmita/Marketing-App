@@ -5,8 +5,8 @@
         android:color="@color/green" />
     <corners android:radius="20dp" />
     <gradient
-        android:centerColor="@color/primaryColor"
+        android:centerColor="@color/primary_color_index"
         android:angle="-225"
-        android:endColor="@color/primaryDarkColor"
+        android:endColor="@color/primary_dark_color_index"
         android:startColor="@color/green" />
 </shape>

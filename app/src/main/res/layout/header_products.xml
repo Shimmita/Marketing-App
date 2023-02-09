@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="350dp"
+    android:layout_height="400dp"
     android:background="@drawable/material_nine"
     android:orientation="vertical">
 
@@ -13,7 +13,7 @@
         android:layout_gravity="start"
         android:layout_marginStart="15dp"
         android:layout_marginTop="5dp"
-        android:fontFamily="@font/teko_bold"
+        android:fontFamily="@font/rajdhani_semi_bold"
         android:text="@string/account_profile"
         android:textColor="@color/abc_search_url_text_normal"
         android:textStyle="bold|italic" />
@@ -31,7 +31,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="15dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/dillan"
+            android:src="@drawable/ic_insert_photo"
             app:civ_border_color="@color/bright_foreground_disabled_material_dark"
             app:civ_border_width="1.5dp" />
 
@@ -63,7 +63,6 @@
                 android:background="@drawable/backg_slider"
                 android:fontFamily="sans-serif-condensed"
                 android:padding="7dp"
-                android:text="@string/allan_okoth_onyango"
                 android:textColor="#00BCD4"
                 android:textStyle="bold|italic" />
 
@@ -75,7 +74,6 @@
                 android:background="@drawable/backg_slider"
                 android:fontFamily="sans-serif-condensed-light"
                 android:padding="8dp"
-                android:text="@string/_0752525276"
                 android:textColor="#00BCD4"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -88,7 +86,6 @@
                 android:background="@drawable/backg_slider"
                 android:fontFamily="sans-serif-condensed-light"
                 android:padding="8dp"
-                android:text="@string/maseno_university"
                 android:textColor="#00BCD4"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -101,7 +98,6 @@
                 android:background="@drawable/backg_slider"
                 android:fontFamily="sans-serif-condensed-light"
                 android:padding="8dp"
-                android:text="@string/username_gmail_com"
                 android:textColor="#00BCD4"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -115,7 +111,6 @@
                 android:background="@drawable/backg_slider"
                 android:fontFamily="sans-serif-condensed-light"
                 android:padding="8dp"
-                android:text="@string/date_2022_01_15"
                 android:textColor="#00BCD4"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -129,7 +124,7 @@
                 android:layout_marginTop="25dp"
                 android:fontFamily="georgia"
                 android:padding="10dp"
-                android:text="@string/verify_email"
+                android:text="@string/verify_account"
                 android:textAllCaps="false"
                 android:textColor="@color/accent_material_light"
                 android:textStyle="bold|italic" />

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_views_posting"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:elevation="5dp"
-    app:cardCornerRadius="25dp">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -15,81 +14,87 @@
             android:id="@+id/linearPostParentModal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/material_six"
+            android:background="@color/white"
+            android:backgroundTint="@color/dim_foreground_disabled_material_dark"
             android:orientation="vertical"
             android:padding="5dp">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/material_seven"
-                android:fontFamily="georgia"
-                android:text="PRODUCT POSTING WINDOW"
-                android:textColor="#03675D"
-                android:textSize="18sp"
+                android:fontFamily="@font/rajdhani_semi_bold"
+                android:padding="5dp"
+                android:text="@string/product_posting_window"
+                android:textColor="@color/accent_material_light"
+                android:textSize="22sp"
                 android:textStyle="bold" />
 
-            <LinearLayout
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnProvideImagePost"
+                style="@style/Widget.AppCompat.Button.Small"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:backgroundTint="@color/bright_foreground_disabled_material_dark"
+                android:drawableStart="@drawable/ic_touch"
+                android:text="@string/provide_an_image_of_the_product_from_gallery"
+                android:textAllCaps="false"
+                android:textColor="#786C08"
+                android:textStyle="italic" />
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardProvideImageProduct"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:layout_marginBottom="10dp"
-                android:orientation="horizontal">
+                android:visibility="gone"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                app:contentPadding="10dp">
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnProvideImagePost"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginEnd="5dp"
-                    android:background="@drawable/material_six"
-                    android:padding="15dp"
-                    android:text="provide image"
-                    android:textAllCaps="false"
-                    android:textColor="#786C08"
-                    android:textStyle="italic|bold" />
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/circleProvideImagePost"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                <ImageView
+                    android:id="@+id/imgProvideImagePost"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_photo_placeholder"
-                    android:visibility="gone"
-                    app:civ_border_color="@color/green"
-                    app:civ_border_width="2dp" />
+                    android:src="@drawable/laptop" />
+            </androidx.cardview.widget.CardView>
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnCheckHint"
+                style="@style/Widget.AppCompat.Button.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:backgroundTint="@color/bright_foreground_disabled_material_dark"
+                android:drawableStart="@drawable/ic_touch"
+                android:drawablePadding="5dp"
+                android:padding="5dp"
+                android:text="@string/use_suggestion"
+                android:textAllCaps="false"
+                android:textColor="#786C08"
+                android:textStyle="italic"
+                android:visibility="gone" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnCheckHint"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="20dp"
-                    android:textColor="@color/abc_search_url_text_normal"
-                    android:text="suggestion"
-                    android:visibility="gone"
-                    android:background="@drawable/shaper_2"
-                    android:textStyle="bold"
-                    android:textAllCaps="false"
-                    />
-
-            </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:background="@drawable/material_six"
+                android:background="@drawable/material_nine"
                 app:startIconDrawable="@drawable/ic_cart">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
-                    android:hint="product category(type of the product)"
-                    android:textColorHint="@color/material_grey_900" />
+                    android:hint="@string/product_category_type_of_the_product"
+                    android:textColorHint="@color/colorWhite" />
 
                 <Spinner
                     android:id="@+id/spinnerPostProduct"
@@ -98,17 +103,17 @@
                     android:layout_marginStart="25dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
-                    android:background="@drawable/layout_backg" />
+                    android:background="@drawable/material_15" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutTitlle"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/material_six"
+                android:background="@drawable/backg_slider"
                 app:counterEnabled="true"
-                android:id="@+id/layoutTitlle"
                 app:counterMaxLength="30"
                 app:errorEnabled="true">
 
@@ -116,21 +121,22 @@
                     android:id="@+id/edtTitleProductPost"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/material_six"
+                    android:background="@drawable/material_15"
                     android:drawableStart="@drawable/ic_title"
                     android:drawablePadding="10dp"
-                    android:hint="title of the product here (brief)"
-                    android:inputType="text" />
+                    android:hint="@string/title_of_the_product_here_brief"
+                    android:inputType="text"
+                    android:textColor="@color/color_beautiful_one" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutDescription"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:id="@+id/layoutDescription"
-                android:background="@drawable/material_six"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/backg_slider"
                 app:counterEnabled="true"
                 app:counterMaxLength="60"
                 app:errorEnabled="true">
@@ -139,11 +145,12 @@
                     android:id="@+id/edtDescriptionProductPost"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/material_six"
+                    android:background="@drawable/material_15"
                     android:drawableStart="@drawable/ic_description"
                     android:drawablePadding="10dp"
-                    android:hint="description of the product here (brief)"
-                    android:inputType="text" />
+                    android:hint="@string/description_of_the_product_here_brief"
+                    android:inputType="text"
+                    android:textColor="@color/color_beautiful_one" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -151,8 +158,8 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/material_six"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/backg_slider"
                 app:counterEnabled="true"
                 app:counterMaxLength="10"
                 app:errorEnabled="true">
@@ -161,25 +168,27 @@
                     android:id="@+id/edtPriceProductPost"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/material_six"
+                    android:background="@drawable/material_15"
                     android:drawableStart="@drawable/ic_money"
                     android:drawablePadding="10dp"
-                    android:hint="price of the product in ksh"
-                    android:inputType="text" />
+                    android:hint="@string/price_of_the_product_in_ksh"
+                    android:inputType="text"
+                    android:textColor="@color/color_beautiful_one" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnPost"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:drawableStart="@drawable/ic_cart"
-                android:drawablePadding="10dp"
-                android:fontFamily="georgia"
-                android:backgroundTint="@color/design_dark_default_color_primary"
-                android:text="@string/post_to_the_market"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/material_16"
+                android:backgroundTint="@color/design_dark_default_color_primary"
+                android:drawableStart="@drawable/ic_upload"
+                android:fontFamily="georgia"
+
+                android:text="@string/post_to_the_market"
                 android:textAllCaps="true"
                 android:textColor="@color/abc_decor_view_status_guard_light"
                 android:textStyle="bold"
@@ -189,4 +198,5 @@
 
     </androidx.core.widget.NestedScrollView>
 
-</androidx.cardview.widget.CardView>
+
+</LinearLayout>

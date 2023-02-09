@@ -4,10 +4,10 @@
     android:id="@+id/cardAdapterProducts"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    app:cardBackgroundColor="@color/button_material_light"
-    app:cardCornerRadius="20dp"
-    app:cardElevation="5dp">
+    android:layout_margin="4dp"
+    app:cardBackgroundColor="@color/color_beautiful_one"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="8dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -38,9 +38,9 @@
             <ImageView
                 android:id="@+id/imgNewIcon"
                 android:layout_width="30dp"
-                android:contentDescription="@string/by_shimmita_douglas"
                 android:layout_height="30dp"
                 android:layout_alignParentEnd="true"
+                android:contentDescription="@string/by_shimmita_douglas"
                 android:src="@drawable/new_one" />
         </RelativeLayout>
 
@@ -57,6 +57,7 @@
                 android:layout_height="230dp"
                 android:layout_margin="2dp"
                 app:cardCornerRadius="30dp"
+                app:contentPadding="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -77,11 +78,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/teko_bold"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/title"
-                android:textColor="@color/dim_foreground_material_light"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:textColor="@color/colorButtonQuiz"
+                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
@@ -90,32 +90,30 @@
 
             <TextView
                 android:id="@+id/tvDescriptionProduct"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/material_15"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/teko_bold"
+                android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/details"
                 android:textAllCaps="false"
-                android:textColor="#514B36"
+                android:textColor="@color/switch_thumb_disabled_material_dark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvTitleProduct" />
 
             <TextView
                 android:id="@+id/tvCategoryProduct"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:background="@drawable/material_15"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/teko_bold"
+                android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/category_laptops"
                 android:textAllCaps="false"
-                android:textColor="#514B36"
+                android:textColor="@color/switch_thumb_disabled_material_dark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvDescriptionProduct"
@@ -123,15 +121,13 @@
 
             <TextView
                 android:id="@+id/tvProductID"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/productID"
-                android:textAllCaps="false"
-                android:textStyle="bold"
                 android:textColor="@color/floatingButton"
                 android:textIsSelectable="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -140,28 +136,25 @@
 
             <TextView
                 android:id="@+id/tvDate"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:background="@drawable/material_15"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/teko_bold"
-                android:text="@string/date_2022_01_15"
-                android:textColor="#514B36"
+                android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
+                android:textColor="@color/switch_thumb_disabled_material_dark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvProductID" />
 
             <TextView
                 android:id="@+id/tvVicinityProduct"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/material_15"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/teko_bold"
+                android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/vicinity"
                 android:textColor="@color/switch_thumb_disabled_material_dark"
                 android:textStyle="bold"
@@ -171,32 +164,37 @@
 
             <TextView
                 android:id="@+id/tvOwnerProduct"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/teko_bold"
+                android:background="@drawable/material_15"
+                android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/owner_angel_michael"
                 android:textColor="@color/switch_thumb_disabled_material_dark"
                 android:textStyle="bold"
-                android:background="@drawable/material_15"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvVicinityProduct" />
 
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnEnquire"
                 style="@style/Widget.AppCompat.Button.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_marginTop="3dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/material_11"
+                android:backgroundTint="@color/abc_decor_view_status_guard_light"
+                android:elevation="8dp"
+                android:fontFamily="@font/roboto_bold"
+                android:padding="15dp"
                 android:text="@string/enquire"
                 android:textAllCaps="false"
+                android:textColor="@color/teal_700"
                 android:textSize="12sp"
-                android:textStyle="italic"
+                app:layout_constraintBottom_toTopOf="@+id/circleProductOwnerImage"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvOwnerProduct" />
 
@@ -206,7 +204,6 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="2dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/dillan"
                 app:civ_border_color="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />

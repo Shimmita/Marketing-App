@@ -11,11 +11,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="any"></string>
-    <string name="allan_okoth_onyango">Allan Okoth Onyango</string>
-    <string name="maseno_university">Maseno University</string>
-    <string name="username_gmail_com">username@gmail.com</string>
-    <string name="_0752525276">0752525276</string>
-    <string name="verify_email">verify email</string>
     <string name="update_account">update account</string>
     <string name="ultimate_marketing">ultimate marketing platform for a comrade to post and advertise their products for sale online</string>
     <string name="vicinity">Vicinity: Maseno University</string>
@@ -46,13 +41,12 @@
     <string name="email">email:shimmitadouglas@gmail.com</string>
     <string name="hey_interested">hey iam interested to know more about this product.we can make things work-out concerning this product.contact via the information above.</string>
     <string name="owner_angel_michael">Owner: Angel Michael</string>
-    <string name="date_2022_01_15">Date: 2022-01-15</string>
     <string name="date">Date:</string>
     <string name="promotional">Promotional</string>
     <string name="delete">Delete</string>
     <string name="home">home</string>
     <string name="post">post</string>
-    <string name="notification_bottom_nav">notification</string>
+    <string name="alert_bottom_nav">alerts</string>
     <string name="logout">logout</string>
     <string name="my_product_title">my product title</string>
     <string name="date_posted">date posted</string>
@@ -69,7 +63,7 @@
     <string name="enter_the_new_phone_number">enter the new phone number</string>
     <string name="enter_new_place_where_the_product_is_located">enter new place where the product is located</string>
     <string name="enter_the_new_price_i_e_5_000_1_000_500">enter the new price i.e (5,000 1,000 500)</string>
-    <string name="type_here_to_search">type here to search products</string>
+    <string name="type_here_to_search">type here to search </string>
     <string name="file_size_description"></string>
     <string name="today">today</string>
     <string name="developer">Technical Assistance</string>
@@ -88,7 +82,7 @@
     <string name="scammer_option"></string>
     <string name="write_your_message_here">enter your message here</string>
     <string name="product_code_i_e_hxc4fyt">enter product code here</string>
-    <string name="about_market">Market CM (Comrade Market) is a mobile trading application built to facilitate quick marketing of products for its members on a click of a button.\n\nTo use the application:\n\ni)members have to create a new account as required by the application during the registration process.\nii)members must verify their email address to own genuine accounts.\n\niii)members with genuine accounts gain the freedom of posting their products to the market for free.\n\niv)members with genuine accounts get notified whenever other user(s) enquires for their products hence can perform their business transactions in an easy-peasy way.\n\ndesigned and developed by:\n\nEmail:  shimitadouglas@gmail.com\n\nEmail:  douglasshimita3@gmail.com\n\nPhone: 0757450727\n\nStudent @Maseno University out 2024\nSchool Of Computing and Informatics
+    <string name="about_market">market cM (comrade market) is a mobile trading application built to facilitate quick marketing of products for its members on a click of a button.\n\nTo use the application:\n\ni)members have to create a new account as required by the application during the registration process.\nii)members must verify their email address to own genuine accounts.\n\niii)members with genuine accounts gain the freedom of posting their products to the market for free.\n\niv)members with genuine accounts get notified whenever other user(s) enquires for their products hence can perform their business transactions in an easy-peasy way.\n\ndesigned and developed by:\n\nEmail:  shimitadouglas@gmail.com\n\nEmail:  douglasshimita3@gmail.com\n\nPhone: 0757450727\n\nStudent @Maseno University out 2024\nSchool Of Computing and Informatics
     </string>
     <string name="post_to_the_market">post to the market</string>
     <string name="counterfeit_claim">Counterfeit Claim</string>
@@ -227,7 +221,7 @@
         <item>Management University of Africa</item>
     </string-array>
 
-    <string name="privacy_policy_terms">Shimita Douglas built Market CM (Comrade Market) app as a free online marketing app for comrades.\nThis service is provided by him with/without cost and is intended for use as is.\n\n
+    <string name="privacy_policy_terms">shimita douglas built market cm (comrade market) app as a free marketing app for comrades.\nThis service is provided by him with/without cost and is intended for use as is.\n\n
     This page informs visitors regarding my policies with the collection,use and disclosure of personal information if anyone decides to use my service.\n
     If chosen to use my service,then you agree to the collection and use of information in relation to this policy.\n\n
     The personal information that I collect is used for providing and improving the service.\n\n
@@ -280,5 +274,13 @@
     <string name="tittle_small">Reminder</string>
     <string name="by_me">by:shimmitadouglas</string>
     <string name="reminder_big">Reminder</string>
+    <string name="product_category_type_of_the_product">product category(type of the product)</string>
+    <string name="product_posting_window">PRODUCT POSTING WINDOW</string>
+    <string name="provide_an_image_of_the_product_from_gallery">provide an image of the product from gallery</string>
+    <string name="use_suggestion">do auto filling of the required fields for me</string>
+    <string name="title_of_the_product_here_brief">title of the product here (brief)</string>
+    <string name="price_of_the_product_in_ksh">price of the product in ksh</string>
+    <string name="description_of_the_product_here_brief">description of the product here (brief)</string>
+    <string name="verify_account">verify account</string>
 
 </resources>

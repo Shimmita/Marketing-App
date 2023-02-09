@@ -10,7 +10,7 @@
         android:id="@+id/linearPostParent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/material_15"
+        android:background="@drawable/material_16"
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView

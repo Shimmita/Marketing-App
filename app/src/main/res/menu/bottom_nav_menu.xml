@@ -15,7 +15,7 @@
     <item
         android:id="@+id/notification"
         android:icon="@drawable/ic_notification"
-        android:title="@string/notification_bottom_nav"
+        android:title="@string/alert_bottom_nav"
         app:showAsAction="always" />
 
     <item
