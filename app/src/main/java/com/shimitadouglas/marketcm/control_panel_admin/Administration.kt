@@ -9,6 +9,7 @@ import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.fragment_admin_control_panel.*
 import es.dmoral.toasty.Toasty
 
+@Suppress("Deprecation")
 class Administration : AppCompatActivity() {
     lateinit var bottomNav: BottomNavigationView
     lateinit var toolbarAdministration: Toolbar
@@ -18,16 +19,11 @@ class Administration : AppCompatActivity() {
         //code begins
         funInit()
         //load the default fragment is reports
-        updateFragment(ReportsAdmin(), "messageAdmin")
-        //
-
+        updateFragment(UsersAdmin(), "usersAdmin")
         //setting listener on the bottom nav
         bottomNav.setOnNavigationItemSelectedListener {
 
             when (it.itemId) {
-                R.id.messagesAdmin -> {
-                    updateFragment(MessageAdmin(), "messagesAdmin")
-                }
 
                 R.id.usersAdmin -> {
                     updateFragment(UsersAdmin(), "usersAdmin")

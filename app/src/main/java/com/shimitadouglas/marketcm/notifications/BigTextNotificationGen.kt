@@ -8,6 +8,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.shimitadouglas.marketcm.mains.ProductsHome
 
+@Suppress("Deprecation")
 class BigTextNotificationGen(
     var context: Context,
     var titleBig: String,

@@ -33,12 +33,14 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavProducts"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?actionBarSize"
             android:layout_alignParentBottom="true"
-            android:padding="5dp"
-            app:itemIconTint="@color/colorButtonQuiz"
-            app:itemBackground="@drawable/layout_backg"
-            app:itemTextColor="@color/background_floating_material_dark"
+            app:elevation="15dp"
+            android:background="@color/color_beautiful_one"
+            app:itemBackground="@color/transparrent"
+            app:itemIconTint="@color/state_bottom_nav"
+            app:itemTextColor="@color/button_material_dark"
+            app:labelVisibilityMode="selected"
             app:menu="@menu/bottom_nav_menu" />
     </RelativeLayout>
 

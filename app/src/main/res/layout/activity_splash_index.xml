@@ -4,8 +4,8 @@
     android:id="@+id/parent_splash_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/list_gradient_anim_splash"
     android:orientation="vertical"
+    android:background="@drawable/gradient_one_gen"
     tools:context=".mains.SplashScreenIndex">
 
     <TextView
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_gravity="center"
-        android:background="@drawable/material_11"
+        android:background="@drawable/material_16"
         android:fontFamily="cursive"
         android:gravity="center"
         android:padding="10dp"
@@ -30,7 +30,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
-        android:src="@drawable/tire" />
+        android:src="@drawable/cart" />
 
 
 </RelativeLayout>

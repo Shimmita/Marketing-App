@@ -3,6 +3,7 @@ package com.shimitadouglas.marketcm.adapter_products_posted
 import android.annotation.SuppressLint
 import android.content.Context
 import android.icu.text.SimpleDateFormat
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,6 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
@@ -25,6 +25,7 @@ import com.shimitadouglas.marketcm.Networking.NetworkMonitor
 import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreferenceName
 import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
+import com.shimitadouglas.marketcm.notifications.NormalNotification
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
 import java.util.*
@@ -56,6 +57,13 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
             textViewDate.text = "Date:   " + products[position].date + " +12hrs"
             buttonEnquire.text = "Enquire @KES " + products[position].price
 
+            //applying the text marque effect on description text in case it is long
+            textViewDescription.setSingleLine()
+            textViewDescription.ellipsize = TextUtils.TruncateAt.MARQUEE
+            textViewDescription.marqueeRepeatLimit = -1
+            textViewDescription.isSelected = true
+            //
+
             //using the glide library to set the images
             Glide.with(context).load(products[position].imageProduct).into(imageViewProduct)
             Glide.with(context).load(products[position].imageOwner)
@@ -67,7 +75,6 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
                 buttonEnquire.apply {
                     //rotate btn
                     startAnimation(AnimationUtils.loadAnimation(context, R.anim.rotate_avg))
-                    //
                     //check internet connectivity
                     val classInternetCheck = NetworkMonitor(context)
                     val result = classInternetCheck.checkInternet()
@@ -81,52 +88,55 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
                             if (uniqueUID == productOwnerID) {
                                 //cannot happen since the product belongs to the currently logged in user
                                 funToastyCustom(
-                                    "cannot enquire your own products!",
+                                    "cannot enquire your own products",
                                     R.drawable.ic_smile,
                                     R.color.androidx_core_secondary_text_default_material_light
                                 )
+                            } else {
+                                //creating the date instance from the Calendar
+                                val timeUsingCalendar = Calendar.getInstance().time
+                                val dateFormat = SimpleDateFormat("dd-MM-yyyy")
+                                val formattedTime = dateFormat.format(timeUsingCalendar)
+                                //obtain owner uniqueUID
+                                val uniqueIDOwnerProduct = products[position].userID
+
+                                //obtaining enquirer name from the sharedPreference
+                                val sharedPreferences =
+                                    context.getSharedPreferences(
+                                        sharedPreferenceName,
+                                        Context.MODE_PRIVATE
+                                    )
+
+                                val fName = sharedPreferences.getString("firstname", "")
+                                val lName = sharedPreferences.getString("lastname", "")
+                                val uni = sharedPreferences.getString("university", "")
+                                val email = sharedPreferences.getString("email", "")
+                                val phone = sharedPreferences.getString("phone", "")
+
+                                //call function to perform enquiries
+                                val titleEnquiredProduct = textViewTitleProduct.text.toString()
+                                val imageEnquiredProduct = products[position].imageProduct
+                                val enquirerName = "$fName $lName"
+
+                                //creating a handler that will delay 1.2m and then call fun that performs posting of the enquiry requests
+                                postDelayed({
+                                    holder.funEnquiriesOperations(
+                                        titleEnquiredProduct,
+                                        imageEnquiredProduct,
+                                        enquirerName,
+                                        uni,
+                                        email,
+                                        phone,
+                                        formattedTime,
+                                        uniqueIDOwnerProduct
+                                    )
+                                    //
+                                }, 1200)
                             }
                         } else {
-
-                            //creating the date instance from the Calendar
-                            val timeUsingCalendar = Calendar.getInstance().time
-                            val dateFormat = SimpleDateFormat("dd-MM-yyyy")
-                            val formattedTime = dateFormat.format(timeUsingCalendar)
-                            //obtain owner uniqueUID
-                            val uniqueIDOwnerProduct = products[position].userID
-
-                            //obtaining enquirer name from the sharedPreference
-                            val sharedPreferences =
-                                context.getSharedPreferences(
-                                    sharedPreferenceName,
-                                    Context.MODE_PRIVATE
-                                )
-                            val fName = sharedPreferences.getString("firstname", "")
-                            val lName = sharedPreferences.getString("lastname", "")
-                            val uni = sharedPreferences.getString("university", "")
-                            val email = sharedPreferences.getString("email", "")
-                            val phone = sharedPreferences.getString("phone", "")
+                            //current user session has no UID
+                            funToastyFail("unexpected error has occurred")
                             //
-                            //call function to perform enquiries
-                            val titleEnquiredProduct = textViewTitleProduct.text.toString()
-                            val imageEnquiredProduct = products[position].imageProduct
-                            val enquirerName = "$fName $lName"
-                            //
-
-                            //creating a handler that will delay 1.2m and then call fun that performs posting of the enquiry requests
-                            postDelayed({
-                                holder.funEnquiriesOperations(
-                                    titleEnquiredProduct,
-                                    imageEnquiredProduct,
-                                    enquirerName,
-                                    uni,
-                                    email,
-                                    phone,
-                                    formattedTime,
-                                    uniqueIDOwnerProduct
-                                )
-                                //
-                            }, 1200)
                         }
                     }
                 }
@@ -224,10 +234,10 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
             alertEnquiry.setTitle("Enquiry Notification")
             alertEnquiry.setIcon(R.drawable.ic_info)
             alertEnquiry.background =
-                context.resources.getDrawable(R.drawable.material_seven, context.theme)
+                context.resources.getDrawable(R.drawable.general_alert_dg, context.theme)
             alertEnquiry.setMessage(
-                "enquiry notification will be sent to:\n\n(${textViewOwner.text})\n\n" +
-                        "That you are interested to bargain or purchase:\n\n(${textViewTitleProduct.text})"
+                "A notification will be sent to:\n\n(${textViewOwner.text})\n\n" +
+                        "That you are interested to bargain and purchase:\n\n(${textViewTitleProduct.text})"
             )
             alertEnquiry.setCancelable(false)
             alertEnquiry.setPositiveButton("Accept") { dialog, _ ->
@@ -242,8 +252,6 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
                     formattedTime,
                     uniqueIDOwnerProduct
                 )
-                //
-
                 //dismiss the dialog to avoid RT Exception
                 dialog.dismiss()
                 //
@@ -254,7 +262,8 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
                 dialog.dismiss()
                 //
             }
-            alertEnquiry.create().show()
+            alertEnquiry.create()
+            alertEnquiry.show()
             //code ends
         }
 
@@ -336,47 +345,39 @@ class MyAdapterProducts(var products: ArrayList<DataClassProductsData>, var cont
             storeCloudBackend.collection(uniqueIDOwnerProduct).document(timeInMillis)
                 .set(hashMapEnquiries).addOnCompleteListener {
                     if (it.isSuccessful) {
+
                         //sent successfully
-                        Toast.makeText(context, "enquiry sent successfully", Toast.LENGTH_LONG)
+                        Toasty.success(context, "enquiry sent successfully", Toasty.LENGTH_SHORT)
                             .show()
-                        //
-                    } else if (!it.isSuccessful) {
-                        //failed to send enquiry to the backend cloud
-                        Toast.makeText(
+
+                        //show a notification of success
+                        NormalNotification(
                             context,
-                            "failed to send an enquiry connection issues!",
-                            Toast.LENGTH_LONG
+                            "Product Enquiry",
+                            "congratulations! $titleEnquiredProduct enquired successfully",
+                            R.drawable.ic_cart
+                        ).funCreateNotification()
+
+                    } else if (!it.isSuccessful) {
+
+                        //failed to send enquiry to the backend cloud
+                        Toasty.error(
+                            context,
+                            "enquiry not sent try again!",
+                            Toasty.LENGTH_SHORT
                         ).show()
-                        //
                     }
                 }
         }
         //code ends
     }
 
-    //normal success Toasty
-    private fun funToasty(message: String) {
-        Toasty.custom(
-            context,
-            message,
-            R.drawable.ic_nike_done,
-            R.color.androidx_core_secondary_text_default_material_light,
-            Toasty.LENGTH_SHORT,
-            true,
-            true
-        ).show()
-    }
 
-    //normal failed toasty
     private fun funToastyFail(message: String) {
-        Toasty.custom(
+        Toasty.error(
             context,
             message,
-            R.drawable.ic_warning,
-            R.color.androidx_core_secondary_text_default_material_light,
             Toasty.LENGTH_SHORT,
-            true,
-            true
         ).show()
     }
 

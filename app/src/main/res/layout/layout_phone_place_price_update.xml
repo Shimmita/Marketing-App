@@ -43,7 +43,7 @@
                 android:id="@+id/edtProductPriceUpdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/enter_the_new_price_i_e_5_000_1_000_500"
+                android:hint="@string/price_details"
                 android:visibility="gone" />
 
         </LinearLayout>

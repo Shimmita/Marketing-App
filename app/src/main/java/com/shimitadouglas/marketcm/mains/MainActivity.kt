@@ -2,6 +2,7 @@ package com.shimitadouglas.marketcm.mains
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //globals declaration
-    lateinit var relativeLoginParent: RelativeLayout
+    private lateinit var relativeLoginParent: RelativeLayout
     lateinit var tvRegistration: AppCompatButton
     lateinit var btnLogin: AppCompatButton
     lateinit var editLoginEmail: TextInputEditText
@@ -38,20 +39,22 @@ class MainActivity : AppCompatActivity() {
     lateinit var checkBox: CheckBox
     lateinit var textViewMove: TextView
     lateinit var nestedScrollViewMain: NestedScrollView
-
     //
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //call function fullscreen
-        funFullScreen()
-        //
+
+        //clear sign out the current user
+        FirebaseAuth.getInstance().signOut()
+        //clear all the data saved in the shared preference
+        val sharedPreferences = getSharedPreferences(ProductsHome.sharedPreferenceName, Context.MODE_PRIVATE)
+        sharedPreferences.edit().clear().apply()
+
+
         //call function init of the globals
         funInitGlobals()
-        //
-
         //setting onclick listener on button and tv
         btnLogin.setOnClickListener {
 
@@ -188,6 +191,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("Deprecation")
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun funStartOperationLoginNow(enteredEmail: Editable, enteredPassword: Editable?) {
         //create progress dialog to show login progress
@@ -298,13 +302,5 @@ class MainActivity : AppCompatActivity() {
             start()
         }
         //
-    }
-
-    private fun funFullScreen() {
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
-        supportActionBar?.hide()
     }
 }

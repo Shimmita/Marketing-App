@@ -21,14 +21,12 @@
             android:id="@+id/linearLoginImageTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imgCart"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="20dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_gravity="center"
                 android:scaleType="centerCrop"
                 android:src="@drawable/cart"
@@ -37,15 +35,15 @@
 
             <TextView
                 android:id="@+id/tvLoginTitle"
+                style="@style/TextAppearance.Material3.TitleLarge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/roboto_bold"
                 android:text="@string/account_login"
-                android:layout_gravity="center"
                 android:textAllCaps="true"
                 android:textColor="@color/color_beautiful_one"
-                android:textSize="20sp"
                 android:textStyle="bold|italic" />
 
 
@@ -110,12 +108,12 @@
                 android:id="@+id/buttonLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/roboto_bold_italic"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="25dp"
-                android:backgroundTint="@color/primary_color_10"
                 android:background="@drawable/material_14"
+                android:backgroundTint="@color/primary_color_10"
+                android:fontFamily="@font/roboto_bold_italic"
                 android:text="@string/login"
                 android:textColor="@color/design_dark_default_color_on_surface"
                 app:rippleColor="@color/black" />
@@ -136,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/rajdhani_bold"
                     android:text="@string/password_recovery_or_register_account"
-                    android:textColor="#2D4B59"
+                    android:textColor="#FF9800"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -148,7 +146,7 @@
                     android:fontFamily="@font/rajdhani_semi_bold"
                     android:text="@string/ultimate_marketing"
                     android:textAllCaps="false"
-                    android:textColor="@color/material_grey_600"
+                    android:textColor="@color/white"
                     android:textSize="13sp"
                     android:textStyle="italic|bold" />
             </LinearLayout>
@@ -158,7 +156,7 @@
                 android:id="@+id/linearRecoverCreate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/backg_slider"
+                android:background="@drawable/material_15"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone">
@@ -168,7 +166,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
-                    android:background="@drawable/backg_slider"
+                    android:background="@drawable/material_16"
                     android:drawablePadding="5dp"
                     android:fontFamily="sans-serif-condensed-light"
                     android:padding="10dp"
@@ -183,7 +181,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/backg_slider"
+                    android:background="@drawable/material_16"
                     android:drawablePadding="5dp"
                     android:fontFamily="sans-serif-condensed-light"
                     android:padding="10dp"

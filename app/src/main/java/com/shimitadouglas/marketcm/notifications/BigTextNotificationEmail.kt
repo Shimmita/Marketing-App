@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.shimitadouglas.marketcm.mains.ProductsHome
 
+@Suppress("Deprecation")
 class BigTextNotificationEmail(
     var context: Context,
     var titleBig: String,

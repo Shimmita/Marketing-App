@@ -62,8 +62,8 @@
     <string name="update_image">update image</string>
     <string name="enter_the_new_phone_number">enter the new phone number</string>
     <string name="enter_new_place_where_the_product_is_located">enter new place where the product is located</string>
-    <string name="enter_the_new_price_i_e_5_000_1_000_500">enter the new price i.e (5,000 1,000 500)</string>
-    <string name="type_here_to_search">type here to search </string>
+    <string name="price_details">new price i.e (5,000)</string>
+    <string name="type_here_to_search">search product here </string>
     <string name="file_size_description"></string>
     <string name="today">today</string>
     <string name="developer">Technical Assistance</string>
@@ -249,7 +249,7 @@
     <string name="sort">sort</string>
     <string name="analytics">analytics</string>
     <string name="search">search</string>
-    <string name="share_market_cm">share market cm and help other to comrades market their products freely</string>
+    <string name="share_market_cm">share market cm and help other users to market their products freely in addition to promoting us</string>
     <string name="share_via">share via</string>
     <string name="account_login">Account Login</string>
     <string name="enter_email_address">enter email address</string>

@@ -33,23 +33,20 @@ import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.Coll
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
 
+@Suppress("Deprecation")
 class MyAdapterMyPosts(
     var context: Context, var arrayList: ArrayList<DataClassMyPosts>, var section: String
 ) : RecyclerView.Adapter<MyAdapterMyPosts.MyViewHolder>() {
     //get the UID
     val uniqueUID = FirebaseAuth.getInstance().uid
-
-    //
-    //init general view containing ProgD
-    val viewGeneralProgress: View
+    //init general view containing ProgressD
+    private val viewGeneralProgress: View =
+        LayoutInflater.from(context).inflate(R.layout.general_progress_dialog_view, null, false)
 
     //progressDialog Object
-    val progressDialog: ProgressDialog
+    val progressDialog: ProgressDialog = ProgressDialog(context)
 
     init {
-        progressDialog = ProgressDialog(context)
-        viewGeneralProgress =
-            LayoutInflater.from(context).inflate(R.layout.general_progress_dialog_view, null, false)
         progressDialog.setContentView(viewGeneralProgress)
         progressDialog.setTitle("Deleting")
         progressDialog.setIcon(R.drawable.ic_delete) //default icon that is changed as per the context
@@ -75,7 +72,7 @@ class MyAdapterMyPosts(
             textViewMyProductPlace.text = "place:" + arrayList[position].university
             textViewMyProductTitle.text = arrayList[position].title
             textViewMyProductDescription.text = "info: " + arrayList[position].description
-            textViewMyProductDate.text = "date: " + arrayList[position].date
+            textViewMyProductDate.text = "date: " + arrayList[position].date +" 12hrs"
             //loading the images images using the glide library
             Glide.with(context).load(arrayList[position].imageOwner).into(circleImageViewOwner)
             Glide.with(context).load(arrayList[position].imageProduct).into(imageViewMyProduct)
@@ -197,7 +194,7 @@ class MyAdapterMyPosts(
             //2.update of the image uri in the map of my personal repo
             //3.update of the image uri in the public repository
 
-            //of the other items credentials will be of ease update of only the fstore map data both on
+            //of the other items credentials will be of ease update of only the store map data both on
             //my personal repo and the public repo
 
             //
@@ -304,7 +301,7 @@ class MyAdapterMyPosts(
         //1.update the price in the private-repo(UID/timerStampID/data)
         //2.update the price in the public repo(CollectionPost/timerStampID/data)
         val view: View =
-            LayoutInflater.from(context).inflate(R.layout.layout_phone_place_update, null, false)
+            LayoutInflater.from(context).inflate(R.layout.layout_phone_place_price_update, null, false)
         val editTextPrice: EditText = view.findViewById(R.id.edtProductPriceUpdate)
 
         val editTextPlace: EditText = view.findViewById(R.id.edtProductPlaceUpdate)
@@ -534,7 +531,7 @@ class MyAdapterMyPosts(
         //2.update of the phone in public repo
         //load a view resource to display alert that shows input dialog for number
         val view: View =
-            LayoutInflater.from(context).inflate(R.layout.layout_phone_place_update, null, false)
+            LayoutInflater.from(context).inflate(R.layout.layout_phone_place_price_update, null, false)
         val editTextNumber: EditText = view.findViewById(R.id.edtProductPhoneUpdate)
 
         val editTextPrice: EditText = view.findViewById(R.id.edtProductPriceUpdate)
@@ -722,7 +719,7 @@ class MyAdapterMyPosts(
         //1.update the number in the private-repo(UID/timerStampID/data)
         //2.update the number in the public-repo(CollectionPost/timerStampID/data)
         val view: View =
-            LayoutInflater.from(context).inflate(R.layout.layout_phone_place_update, null, false)
+            LayoutInflater.from(context).inflate(R.layout.layout_phone_place_price_update, null, false)
         val editTextNumber: EditText = view.findViewById(R.id.edtProductPhoneUpdate)
         val editTextPlace: EditText = view.findViewById(R.id.edtProductPlaceUpdate)
         val editTextPrice: EditText = view.findViewById(R.id.edtProductPriceUpdate)

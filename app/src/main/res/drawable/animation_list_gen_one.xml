@@ -2,12 +2,12 @@
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:drawable="@drawable/gradient_one_gen"
-        android:duration="4000" />
+        android:duration="5000" />
     <item
         android:drawable="@drawable/gradient_two_gen"
-        android:duration="4000" />
+        android:duration="5000" />
     <item
         android:drawable="@drawable/gradient_three_gen"
-        android:duration="4000" />
+        android:duration="5000" />
 
 </animation-list>

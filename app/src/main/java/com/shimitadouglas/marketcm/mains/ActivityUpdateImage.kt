@@ -23,6 +23,7 @@ import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.Coll
 import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
 import es.dmoral.toasty.Toasty
 
+@Suppress("Deprecation")
 class ActivityUpdateImage : AppCompatActivity() {
     lateinit var timerStampControllerValue: String
     lateinit var oldImageFetched: String
@@ -80,7 +81,8 @@ class ActivityUpdateImage : AppCompatActivity() {
         progressDialog = ProgressDialog(this@ActivityUpdateImage)
         progressDialog.setIcon(R.drawable.ic_update_green)
         progressDialog.setCancelable(false)
-        progressDialog.setTitle("Updating")
+        progressDialog.setTitle("updating")
+        progressDialog.setMessage("processing")
         progressDialog.setContentView(viewProgressD)
         //code ends
     }
@@ -107,7 +109,7 @@ class ActivityUpdateImage : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables")
     private val galleryOperations =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
@@ -148,8 +150,11 @@ class ActivityUpdateImage : AppCompatActivity() {
                             val alertUserAcceptImage =
                                 MaterialAlertDialogBuilder(this@ActivityUpdateImage)
                             alertUserAcceptImage.setIcon(R.drawable.ic_question)
-                            alertUserAcceptImage.setTitle("Image Update")
-                            alertUserAcceptImage.setMessage("update the image ?")
+                            alertUserAcceptImage.setTitle("image")
+                            alertUserAcceptImage.setCancelable(false)
+                            alertUserAcceptImage.background =
+                                resources.getDrawable(R.drawable.general_alert_dg, theme)
+                            alertUserAcceptImage.setMessage("update the image?")
                             alertUserAcceptImage.setPositiveButton("yes") { dialog, _ ->
                                 funBeginUpdateImage(data)
                                 //
@@ -215,13 +220,11 @@ class ActivityUpdateImage : AppCompatActivity() {
 
                         } else if (!it.isSuccessful) {
                             //toast the error and make the user returned home immediately
-                            Toast.makeText(
+                            Toasty.error(
                                 this@ActivityUpdateImage,
                                 "operation failed try again",
-                                Toast.LENGTH_LONG
+                                Toasty.LENGTH_SHORT
                             ).show()
-                            //
-
                             //dismiss the progressD and return home
                             progressDialog.dismiss()
                             val intentHomeProducts =
@@ -235,10 +238,10 @@ class ActivityUpdateImage : AppCompatActivity() {
                     //
                 } else if (!it.isSuccessful) {
                     //toast the error to the user and return
-                    Toast.makeText(
+                    Toasty.error(
                         this@ActivityUpdateImage,
                         "operation failed try again",
-                        Toast.LENGTH_LONG
+                        Toasty.LENGTH_SHORT
                     ).show()
 
                     //dismiss the progressD and return home
@@ -278,13 +281,11 @@ class ActivityUpdateImage : AppCompatActivity() {
                         //
                     } else if (!it.isSuccessful) {
                         //toast the error to the user
-                        Toast.makeText(
+                        Toasty.error(
                             this@ActivityUpdateImage,
                             "operation failed try again",
-                            Toast.LENGTH_LONG
+                            Toasty.LENGTH_SHORT
                         ).show()
-                        //
-
                         //dismiss the progressD and return home
                         progressDialog.dismiss()
                         val intentHomeProducts =
@@ -326,13 +327,11 @@ class ActivityUpdateImage : AppCompatActivity() {
                     //
                 } else if (!it.isSuccessful) {
                     //toast the error to the user and return
-                    Toast.makeText(
+                    Toasty.error(
                         this@ActivityUpdateImage,
                         "operation failed try again",
-                        Toast.LENGTH_LONG
+                        Toasty.LENGTH_SHORT
                     ).show()
-                    //
-
                     //dismiss the progressD and return home
                     progressDialog.dismiss()
                     val intentHomeProducts =

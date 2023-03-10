@@ -45,91 +45,85 @@
 
             <TextView
                 android:id="@+id/myProductTitle"
+                style="@style/TextAppearance.Material3.TitleMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:fontFamily="@font/rajdhani_bold"
                 android:gravity="center"
                 android:text="@string/my_product_title"
-                android:textColor="#422D0F" />
+                android:textColor="@color/teal_700" />
 
             <TextView
                 android:id="@+id/myProductDatePost"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/material_15"
                 android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/date_posted"
-                android:textColor="#322809" />
+                android:textColor="@color/dim_foreground_material_light" />
 
             <TextView
                 android:id="@+id/myProductPlace"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/material_15"
                 android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/place_posted"
-                android:textColor="#322809" />
+                android:textColor="@color/dim_foreground_material_light" />
 
             <TextView
                 android:id="@+id/myProductUniqueID"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/material_15"
                 android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/product_id_stamp"
-                android:textColor="#322809" />
+                android:textColor="@color/dim_foreground_material_light" />
 
 
             <TextView
                 android:id="@+id/myProductCategory"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/material_15"
                 android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/category_product"
-                android:textColor="#322809" />
+                android:textColor="@color/dim_foreground_material_light" />
 
             <TextView
                 android:id="@+id/myProductPhone"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/material_15"
                 android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/phone_number"
-                android:textColor="#322809" />
+                android:textColor="@color/dim_foreground_material_light" />
 
             <TextView
                 android:id="@+id/myProductEmail"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/material_15"
                 android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/product_email"
-                android:textColor="#322809" />
+                android:textColor="@color/dim_foreground_material_light" />
 
             <TextView
                 android:id="@+id/myProductDescription"
-                style="@style/TextAppearance.Material3.BodySmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/material_15"
                 android:fontFamily="@font/rajdhani_semi_bold"
                 android:text="@string/product_description"
-                android:textColor="#322809" />
+                android:textColor="@color/dim_foreground_material_light" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnUpdateMyProduct"
@@ -137,10 +131,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:backgroundTint="@color/diff_del_background"
+                android:backgroundTint="@color/colorWhite"
                 android:text="@string/update"
                 android:textAllCaps="false"
-                android:textColor="@color/abc_search_url_text_normal"
+                android:textColor="@color/beautiful_purple"
                 android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -149,7 +143,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:backgroundTint="@color/diff_del_background"
+                android:backgroundTint="@color/colorWhite"
                 android:text="@string/delete_post"
                 android:textAllCaps="false"
                 android:textColor="#856155"

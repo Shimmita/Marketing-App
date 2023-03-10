@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/home"
-        android:icon="@drawable/ic_home"
+        android:icon="@drawable/round_home"
         android:title="@string/home"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/post"
-        android:icon="@drawable/ic_add"
+        android:icon="@drawable/round_upload"
         android:title="@string/post"
         app:showAsAction="ifRoom" />
     <item

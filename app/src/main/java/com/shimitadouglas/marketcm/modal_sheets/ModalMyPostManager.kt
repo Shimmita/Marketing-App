@@ -39,7 +39,6 @@ class ModalMyPostManager(accessSection: String) : BottomSheetDialogFragment() {
         recyclerView = view.findViewById(R.id.rvMyPostManager)
         //fun load myPost data from the cloud
         funLoadMyPostCloud()
-        //
         //toast the section in context
         if (section.contains("update")) {
             Toasty.custom(
@@ -69,7 +68,7 @@ class ModalMyPostManager(accessSection: String) : BottomSheetDialogFragment() {
         val uniqueUID = FirebaseAuth.getInstance().uid
         //
         //the path to the my post is specific included document path(UID/combinationUIDTimer/data)
-        val store = uniqueUID?.let {
+        uniqueUID?.let {
             FirebaseFirestore.getInstance().collection(it).get().addOnSuccessListener {
                 if (!it.isEmpty) {
                     arrayList = arrayListOf()

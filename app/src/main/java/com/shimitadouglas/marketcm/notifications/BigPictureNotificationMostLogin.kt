@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+@Suppress("Deprecation")
 class BigPictureNotificationMostLogin(
     var context: Context,
     var iconBitmap: Bitmap,

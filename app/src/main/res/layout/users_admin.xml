@@ -2,12 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView3"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvUsersAll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="users" />
+        android:layout_height="match_parent" />
+
 </LinearLayout>

@@ -19,7 +19,7 @@
             android:id="@+id/collapsingToolBarHome"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:collapsedTitleTextColor="@color/colorButtonQuiz"
+            app:collapsedTitleTextColor="@color/colorAccent"
             app:contentScrim="@color/color_beautiful_one"
             app:expandedTitleTextColor="@color/abc_search_url_text_selected"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlwaysCollapsed|snapMargins"

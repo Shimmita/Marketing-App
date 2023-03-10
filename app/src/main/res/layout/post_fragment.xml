@@ -3,14 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="1dp">
+    android:layout_margin="5dp"
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/linearPostParent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/material_16"
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
@@ -23,16 +22,18 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/material_15"
+                android:background="@color/color_beautiful_one"
                 android:padding="20dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/cirImagePostNow"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
+                    android:layout_width="85dp"
+                    android:layout_height="85dp"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/cart" />
+                    android:src="@drawable/cart"
+                    app:civ_border_color="@color/white"
+                    app:civ_border_width="2dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -40,12 +41,11 @@
                     android:layout_below="@id/cirImagePostNow"
                     android:layout_alignParentBottom="true"
                     android:layout_centerInParent="true"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="5dp"
                     android:fontFamily="@font/teko_bold"
                     android:text="@string/post_to_the_market"
-                    android:textColor="@color/abc_search_url_text_normal"
+                    android:textColor="@color/beautiful_purple"
                     android:textStyle="bold" />
-
             </RelativeLayout>
 
         </androidx.cardview.widget.CardView>
@@ -62,16 +62,18 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/material_15"
+                android:background="@color/color_beautiful_one"
                 android:padding="20dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/cirImageRecentPost"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/recent_one" />
+                    android:src="@drawable/recent_one"
+                    app:civ_border_color="@color/white"
+                    app:civ_border_width="2dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -79,10 +81,10 @@
                     android:layout_below="@id/cirImageRecentPost"
                     android:layout_alignParentBottom="true"
                     android:layout_centerInParent="true"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="5dp"
                     android:fontFamily="@font/teko_bold"
                     android:text="@string/my_recent_posts"
-                    android:textColor="@color/abc_search_url_text_normal"
+                    android:textColor="@color/beautiful_purple"
                     android:textStyle="bold" />
 
             </RelativeLayout>
@@ -101,16 +103,18 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/material_15"
+                android:background="@color/color_beautiful_one"
                 android:padding="20dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/circleImageUpdate"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/update_b" />
+                    android:src="@drawable/upload_bluee"
+                    app:civ_border_color="@color/white"
+                    app:civ_border_width="2dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -118,12 +122,11 @@
                     android:layout_below="@id/circleImageUpdate"
                     android:layout_alignParentBottom="true"
                     android:layout_centerInParent="true"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="5dp"
                     android:fontFamily="@font/teko_bold"
                     android:text="@string/update_a_post"
-                    android:textColor="@color/abc_search_url_text_normal"
+                    android:textColor="@color/beautiful_purple"
                     android:textStyle="bold" />
-
             </RelativeLayout>
 
         </androidx.cardview.widget.CardView>
@@ -140,7 +143,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/material_15"
+                android:background="@color/color_beautiful_one"
                 android:padding="20dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
@@ -149,7 +152,9 @@
                     android:layout_height="80dp"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/delete" />
+                    android:src="@drawable/delete_red"
+                    app:civ_border_color="@color/white"
+                    app:civ_border_width="2dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -157,7 +162,7 @@
                     android:layout_below="@id/circleImageDeletePost"
                     android:layout_alignParentBottom="true"
                     android:layout_centerInParent="true"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="5dp"
                     android:fontFamily="@font/teko_bold"
                     android:text="@string/delete_a_post"
                     android:textColor="#FF5722"

@@ -81,12 +81,8 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration)
-        //call function fullscreen
-        funFullScreen()
-        //
         //call functionButton
         funInitGlobals()
-        //
         //animate parent
         funAnimParent()
         //
@@ -841,13 +837,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     }
 
-    private fun funFullScreen() {
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
-        supportActionBar?.hide()
 
-    }
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
         if (p0 != null) {

@@ -23,7 +23,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
-import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -31,7 +30,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -39,6 +37,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.shimitadouglas.marketcm.Networking.NetworkMonitor
 import com.shimitadouglas.marketcm.R
+import com.shimitadouglas.marketcm.mains.ProductsHome
 import com.shimitadouglas.marketcm.mains.ProductsHome.Companion.sharedPreferenceName
 import com.shimitadouglas.marketcm.mains.Registration.Companion.ComradeUser
 import com.shimitadouglas.marketcm.modal_data_profile.DataProfile
@@ -1188,12 +1187,13 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
     }
 
     @SuppressLint("UseCompatLoadingForDrawables", "SimpleDateFormat")
+    @Suppress("DEPRECATION")
     private fun funUploadPostStore(
         uriStringItemPosted: String,
         titleDataPost: String,
         descriptionDataPost: String,
         spinnerData: String,
-        progD: ProgressDialog,
+        progressD: ProgressDialog,
         priceDataPost: String
     ) {
         //code begins
@@ -1264,7 +1264,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         )
 
         //fStore Process
-
+        //path->CollectionPost/CombinationUIDTimer/Data)
         val fStore = FirebaseFirestore.getInstance().collection(CollectionPost)
         //
         if (uniqueUIDDocument != null) {
@@ -1274,7 +1274,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     //dismiss the pg and update user of congrats item posted
                     //now post to the user repo for  personal management
                     funPostToPersonalUserPosts(
-                        progD,
+                        progressD,
                         mapItemPostDataFStore,
                         combinationUIDTimer,
                         productUniqueID
@@ -1302,7 +1302,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     //
 
                     //dismiss the pg
-                    progD.dismiss()
+                    progressD.dismiss()
                     //
                 }
             }
@@ -1312,15 +1312,16 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
+    @Suppress("DEPRECATION")
     private fun funPostToPersonalUserPosts(
-        progD: ProgressDialog,
+        progressD: ProgressDialog,
         mapItemPostDataFStore: HashMap<String, String?>,
         combinationUIDTimer: String,
         productUniqueID: String
     ) {
         //code begins
         //userPost path=>(uniqueUID/combinationUIDTimer/data)
-        val userUIDCollection = FirebaseAuth.getInstance().uid
+        val userUIDCollection = FirebaseAuth.getInstance().currentUser?.uid
         //
 
         //
@@ -1333,14 +1334,14 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     if (it.isSuccessful) {
                         //process of posting the in the personal repo successful
                         //change progress dialog to done
-                        progD.setMessage("done...")
+                        progressD.setMessage("done...")
                         //
                         //create another collection which will be used during calamities of scamming.
                         //suspect might delete the details after malice activities thus having a backup store will make it easier
                         //to hunt such down
                         funPostAdminWareHouse(
                             mapItemPostDataFStore,
-                            progD,
+                            progressD,
                             productUniqueID,
                             combinationUIDTimer
                         )
@@ -1354,10 +1355,9 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                             Toast.LENGTH_LONG
                         )
                             .show()
-                        //
 
-                        //dismiss the progD
-                        progD.dismiss()
+                        //dismiss the progressD
+                        progressD.dismiss()
                         //
                     }
                 }
@@ -1366,6 +1366,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
+    @Suppress("Deprecation")
     private fun funPostAdminWareHouse(
         mapItemPostDataFStore: HashMap<String, String?>,
         progressDialogPost: ProgressDialog,
@@ -1393,9 +1394,10 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                                     "\n(PRODUCT ID=$productUniqueID)"
                         )
                         alertPostSuccessful.setPositiveButton("thanks") { dialog, _ ->
+                            // migrate to the home products
+                            startActivity(Intent(requireActivity(), ProductsHome::class.java))
                             //dismiss the dialog and the modal
                             dialog.dismiss()
-                            //
                         }
                         alertPostSuccessful.create()
                         alertPostSuccessful.show()
@@ -1406,39 +1408,16 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
 
 
                 } else if (!it.isSuccessful) {
-                    //dismiss the progD
+                    //dismiss the progressD
                     progressDialogPost.dismiss()
-                    //
                     //did not post successfully
                     Toast.makeText(requireActivity(), "something went wrong!", Toast.LENGTH_SHORT)
                         .show()
-                    //
                     return@addOnCompleteListener
                     //
                 }
             }
         //code end
-    }
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private fun funAlertFailureDialog(task: Task<UploadTask.TaskSnapshot>) {
-        //code begins
-        val alertFailurePost = MaterialAlertDialogBuilder(requireActivity())
-        alertFailurePost.apply {
-            setTitle("Posting Failed")
-            setMessage(task.exception?.message)
-            setCancelable(false)
-            background = resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
-            setPositiveButton("retry") { dialog, _ ->
-
-                //dimiss
-                dialog.dismiss()
-                //
-            }
-            create()
-            show()
-        }
-        //code ends
     }
 
     private fun funImageItemPost() {
@@ -1499,7 +1478,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
     }
 
     private fun animLinearParentPartA() {
-        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+        Handler(Looper.getMainLooper()).postDelayed({
             //
             val layoutAnimationController = LayoutAnimationController(
                 AnimationUtils.loadAnimation(

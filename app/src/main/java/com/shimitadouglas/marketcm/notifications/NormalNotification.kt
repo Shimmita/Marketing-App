@@ -9,6 +9,8 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import kotlinx.coroutines.DelicateCoroutinesApi
 
+
+@Suppress("Deprecation")
 class NormalNotification(
     var context: Context,
     var title: String,
@@ -19,13 +21,12 @@ class NormalNotification(
     override fun onCreate() {
         super.onCreate()
         funCreateNotification()
-        //
     }
 
     fun funCreateNotification() {
         //code begins
-        var notChannelID = "CHANNEL_ID_MARKET_CM"
-        var notChannelName = "MARKET_CM_CHANNEL"
+        val notChannelID = "CHANNEL_ID_MARKET_CM"
+        val notChannelName = "MARKET_CM_CHANNEL"
         val notImportance = NotificationManager.IMPORTANCE_HIGH
         //check if the version of the OS is Oreo and above and evaluate accordingly
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -37,7 +38,6 @@ class NormalNotification(
                 .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(Notification.PRIORITY_DEFAULT)
-            //
             //creating a notification manager to manage creating notify channel and notify
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -61,9 +61,7 @@ class NormalNotification(
             //notification channel creation
             notificationManager.notify(0, notBuilderBelowOreo.build())
             //
-            //
         }
-        //
         //code ends
     }
 }
