@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="5dp"
+    android:background="@color/tooltip_background_light"
     android:orientation="vertical">
 
     <LinearLayout
@@ -22,8 +23,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/color_beautiful_one"
-                android:padding="20dp">
+                android:background="@color/color_beautiful_one">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/cirImagePostNow"
@@ -62,13 +62,13 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/color_beautiful_one"
-                android:padding="20dp">
+                android:background="@color/color_beautiful_one">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/cirImageRecentPost"
                     android:layout_width="90dp"
                     android:layout_height="90dp"
+                    android:layout_centerInParent="true"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
                     android:src="@drawable/recent_one"
@@ -103,13 +103,13 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/color_beautiful_one"
-                android:padding="20dp">
+                android:background="@color/color_beautiful_one">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/circleImageUpdate"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
+                    android:layout_centerInParent="true"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
                     android:src="@drawable/upload_bluee"
@@ -143,13 +143,13 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/color_beautiful_one"
-                android:padding="20dp">
+                android:background="@color/color_beautiful_one">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/circleImageDeletePost"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
+                    android:layout_centerInParent="true"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
                     android:src="@drawable/delete_red"

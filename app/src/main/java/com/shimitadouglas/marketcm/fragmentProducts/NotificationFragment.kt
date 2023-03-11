@@ -18,8 +18,6 @@ class NotificationFragment : Fragment() {
 
     //init of the globals
     lateinit var viewNotification: View
-    lateinit var recyclerViewNorm: RecyclerView
-    lateinit var recyclerViewBig: RecyclerView
     lateinit var recyclerViewEnquiries: RecyclerView
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,7 +44,6 @@ class NotificationFragment : Fragment() {
         //code begins
         //val uniqueUID
         val uniqueUID = FirebaseAuth.getInstance().uid
-        //
         val storeEnquiries = FirebaseFirestore.getInstance()
         if (uniqueUID != null) {
             storeEnquiries.collection(uniqueUID).get().addOnSuccessListener {
@@ -54,7 +51,6 @@ class NotificationFragment : Fragment() {
                     //creating an arraylist of enquiry class
                     val arraylistEnquiries = arrayListOf<DataClassEnquiryNotifications>()
                     arraylistEnquiries.clear()
-                    //
                     //data present(enquiries)
                     for (enquiry in it.documents) {
                         val enquiriesClass: DataClassEnquiryNotifications? =
@@ -86,8 +82,6 @@ class NotificationFragment : Fragment() {
 
     private fun funInitGlobals() {
         //code begins
-        recyclerViewNorm = viewNotification.findViewById(R.id.rvNormalNotificationUserAccount)
-        recyclerViewBig = viewNotification.findViewById(R.id.rvBigNotificationUserAccount)
         recyclerViewEnquiries = viewNotification.findViewById(R.id.rvEnquiriesNotification)
         //code ends
     }

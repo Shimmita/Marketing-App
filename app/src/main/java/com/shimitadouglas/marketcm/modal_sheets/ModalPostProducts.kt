@@ -1198,7 +1198,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
     ) {
         //code begins
         //generate a unique Product key on each item
-        val productUniqueID = ProductIDGenerator.generateProductIDNow(20, true, true, true)
+        val productUniqueID = ProductIDGenerator.generateProductIDNow(25, true, true, true)
         val uniqueUID = FirebaseAuth.getInstance().uid
         //declaring the keys for the hashMap
         val keyImagePost = "imageProduct"

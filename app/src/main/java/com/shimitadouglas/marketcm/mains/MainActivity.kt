@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
 import android.view.View
-import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import android.widget.*
@@ -49,7 +48,8 @@ class MainActivity : AppCompatActivity() {
         //clear sign out the current user
         FirebaseAuth.getInstance().signOut()
         //clear all the data saved in the shared preference
-        val sharedPreferences = getSharedPreferences(ProductsHome.sharedPreferenceName, Context.MODE_PRIVATE)
+        val sharedPreferences =
+            getSharedPreferences(ProductsHome.sharedPreferenceName, Context.MODE_PRIVATE)
         sharedPreferences.edit().clear().apply()
 
 
@@ -214,10 +214,10 @@ class MainActivity : AppCompatActivity() {
                     //dismiss the progress
                     progressD.dismiss()
                     //intent migration to the activity products
-                    Toasty.custom(
+                    Toasty.success(
                         this@MainActivity,
-                        "Login Successful",
-                        R.drawable.ic_nike_done, R.color.colorWhite, Toasty.LENGTH_LONG, true, false
+                        "successful",
+                        Toasty.LENGTH_LONG
                     ).show()
                     //intent migration here
                     val intentProductsHome = Intent(this@MainActivity, ProductsHome::class.java)

@@ -78,8 +78,10 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         //shared prefs for storing the states of some data to avoid constants reloads
         var sharedPreferenceName: String = "MarketCmSharedPreference"
+
         //
         private const val TAG = "ProductsHome"
+
         //
         const val CollectionAppController = "AppController"
         const val documentAppController = "market_cm"
@@ -147,8 +149,55 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             funUpdateAccount()
             //
         }
-        //
+
+
+        //fun to manage the number of notification counts for the bottom nav fragment notification
+        funManageNumberNotification()
         //code ends
+    }
+
+    private fun funManageNumberNotification() {
+        //code begins
+        //fetch notification from the repo (UID)
+        val uniqueUIDCurrentlyLoggedIn = FirebaseAuth.getInstance().currentUser?.uid
+        val storeFetchNotifications = FirebaseFirestore.getInstance()
+        if (uniqueUIDCurrentlyLoggedIn != null) {
+            storeFetchNotifications.collection(uniqueUIDCurrentlyLoggedIn).get()
+                .addOnCompleteListener {
+
+                    if (it.isSuccessful) {
+                        //code
+                        val documents = it.result
+                        var numberOfNotifications = 0
+                        //from the documents exclude doc in a loop that does not contain UID since thay be pointing to
+                        //the user private repo posts rather than the notifications whose doc value is only pure timer in millis
+                        for (doc in documents) {
+                            if (!doc.id.contains(uniqueUIDCurrentlyLoggedIn)) {
+                                //increment their value since they are docs not containing UID thus are notifications
+                                numberOfNotifications++
+
+                                //using the create notification fun to pass the size of the notifications
+                                val idIconNotification = R.id.notification
+                                createNotificationAlertBadges(
+                                    idIconNotification,
+                                    numberOfNotifications
+                                )
+                            }
+                        }
+
+                        //code ends
+                    } else if (!it.isSuccessful) {
+                        //code begins
+                        funToastyFail("detected an error!")
+                        return@addOnCompleteListener
+                        //code ends
+                    }
+                }
+
+        } else {
+            funToastyFail("something went wrong")
+        }
+        //code begins
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -938,7 +987,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val postFragment = PostFragment()
                     val stringPostFragment = "postFragment"
                     fragmentInit(postFragment, stringPostFragment)
-
                     //
 
                 }
@@ -2693,5 +2741,18 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         ).show()
     }
 
+    private fun createNotificationAlertBadges(id: Int, number_badges: Int) {
+        val badge = bottomNav.getOrCreateBadge(id)
+        if (number_badges == 0) {
+            //invisible the badge since no notifications are present
+            badge.isVisible = false
+        } else {
+            //number of notifications are greater than zero thus let the badge become visible
+            badge.isVisible = true
+            badge.backgroundColor = resources.getColor(R.color.transparrent)
+            badge.badgeTextColor = resources.getColor(R.color.purple_500)
+            badge.number = number_badges
+        }
+    }
 
 }

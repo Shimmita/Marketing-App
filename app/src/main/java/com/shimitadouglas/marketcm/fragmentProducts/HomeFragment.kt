@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -34,12 +33,8 @@ import com.shimitadouglas.marketcm.mains.ProductsHome
 import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
 import com.shimitadouglas.marketcm.modal_data_slide_model.DataClassSlideModal
 import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
-import com.shimitadouglas.marketcm.notifications.BigPictureNotificationMostLogin
 import es.dmoral.toasty.Toasty
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -96,26 +91,17 @@ class HomeFragment : Fragment() {
         floatingActionButtonHome.setOnClickListener {
             funFabClicked()
         }
+
+        //slide models run to run in the background
+        funArrayListSlideModels()
         //
-        //init the array list slide models in fun run in a thread /coroutine
-        GlobalScope.launch(Dispatchers.Default) {
-            //slide models run to run in the background
-            funArrayListSlideModels()
-            //
-        }
 
-        //init recyclerview ina fun on a separate thread
-        GlobalScope.launch(Dispatchers.Default) {
-            funRecyclerOperationsAndPostDataLoading()
-
-        }
+        //init recycler
+        funRecyclerOperationsAndPostDataLoading()
         //
 
         //fun toolbarOperations
         funToolbarOperations()
-        //testing notification
-        //funCheckNotification()
-
 
         //code ends
         return viewHome
@@ -138,21 +124,6 @@ class HomeFragment : Fragment() {
         //code ends
     }
 
-    private fun funCheckNotification() {
-        //code begins
-        val icon = BitmapFactory.decodeResource(resources, R.drawable.ssd)
-        val bigPicture = BigPictureNotificationMostLogin(
-            requireActivity(),
-            icon,
-            "Market CM",
-            "hey, Welcome",
-            R.drawable.ic_cart,
-            "BY:Shimmita",
-            "Market CM"
-        )
-        bigPicture.funCreateBigPictureNotification()
-        //code ends
-    }
 
     private fun funToolbarOperations() {
         //code begins
