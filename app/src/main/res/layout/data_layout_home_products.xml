@@ -54,7 +54,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/imageCard"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="280dp"
                 android:layout_margin="2dp"
                 app:cardCornerRadius="30dp"
                 app:contentPadding="5dp"
@@ -66,9 +66,11 @@
                     android:id="@+id/imgProduct"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:adjustViewBounds="true"
                     android:contentDescription="@string/by_shimmita_douglas"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/laptop" />
+                    android:cropToPadding="true"
+                    android:scaleType="fitXY"
+                    app:srcCompat="@drawable/lap" />
 
             </androidx.cardview.widget.CardView>
 

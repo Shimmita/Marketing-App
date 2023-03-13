@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardEnquiries"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
@@ -43,15 +44,16 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="2dp"
+                android:elevation="5dp"
                 app:cardCornerRadius="10dp"
                 app:contentPadding="5dp">
 
                 <ImageView
                     android:id="@+id/imageProductEnquired"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:scaleType="centerCrop"
+                    android:layout_height="250dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitXY"
                     android:src="@drawable/flash" />
 
             </androidx.cardview.widget.CardView>

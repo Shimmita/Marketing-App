@@ -19,8 +19,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_cart_round"
         android:supportsRtl="true"
-        tools:replace="android:icon"
         android:theme="@style/Theme.MarketCM"
+        tools:replace="android:icon"
         tools:targetApi="31">
 
         <activity
@@ -48,10 +48,11 @@
         <activity
             android:name=".mains.ProductsHome"
             android:exported="true">
-         <!--   <intent-filter>
+
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -60,10 +61,10 @@
             android:name=".mains.SplashScreenIndex"
             android:exported="true">
 
-            <intent-filter>
+           <!-- <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
 
             <meta-data
                 android:name="android.app.lib_name"

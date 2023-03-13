@@ -282,5 +282,6 @@
     <string name="price_of_the_product_in_ksh">price of the product in ksh</string>
     <string name="description_of_the_product_here_brief">description of the product here (brief)</string>
     <string name="verify_account">verify account</string>
+    <string name="category">category</string>
 
 </resources>

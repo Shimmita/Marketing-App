@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -77,10 +78,35 @@ class MyAdapterEnquiriesNotification(
                         R.anim.slide_in_left
                     )
                 )
-                val uniqueUIDUser = FirebaseAuth.getInstance().uid //is the name of the collection
-                val timerDocumentPath = arrayList[position].uniqueTimer
-                funDeleteEnquiry(uniqueUIDUser, timerDocumentPath)
-                //
+
+                //delay for 2sec and warn user  that if he continues the operation is irreversible
+                buttonDeleteNotification.postDelayed({
+                    val sweetAlertDialogWarning =
+                        SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                    sweetAlertDialogWarning.titleText = "Delete"
+                    sweetAlertDialogWarning.contentText =
+                        "delete the notification?"
+                    sweetAlertDialogWarning.setCancelable(false)
+                    sweetAlertDialogWarning.cancelText = "no"
+                    sweetAlertDialogWarning.setConfirmClickListener {
+                        //call the delete function here since user accepted the risk
+                        val uniqueUIDUser = FirebaseAuth.getInstance().uid
+                        val timerDocumentPath = arrayList[position].uniqueTimer
+
+                        funDeleteEnquiry(uniqueUIDUser, timerDocumentPath)
+                        //dismiss the dialog
+                        it.dismiss()
+
+                    }
+                    sweetAlertDialogWarning.setCancelClickListener {
+                        //dismiss the dialog
+                        it.dismiss()
+
+                    }
+                    sweetAlertDialogWarning.create()
+                    sweetAlertDialogWarning.show()
+
+                }, 1000)
             }
         }
 

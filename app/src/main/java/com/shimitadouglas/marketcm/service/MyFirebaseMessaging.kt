@@ -41,6 +41,7 @@ class MyFirebaseMessaging : FirebaseMessagingService() {
         } catch (e: Exception) {
             Log.d(TAG, "onMessageReceived: error occurred->trigger BigTextGenNotification")
             //the error is mainly missing image thus trigger showing of the bigTextNotificationGen with long text of description
+            //because the empty imageUri cannot be converted into a bitmap thus exception encountered
             funShowBigTextNotificationGen(title, body)
             //
         }
