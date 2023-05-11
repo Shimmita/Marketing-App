@@ -10,7 +10,8 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
-import android.os.Build.VERSION_CODES.R
+import android.os.Build
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
@@ -22,11 +23,13 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
-import android.widget.*
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -56,11 +59,10 @@ import com.shimitadouglas.marketcm.control_panel_admin.Administration
 import com.shimitadouglas.marketcm.fragmentProducts.HomeFragment
 import com.shimitadouglas.marketcm.fragmentProducts.NotificationFragment
 import com.shimitadouglas.marketcm.fragmentProducts.PostFragment
-import com.shimitadouglas.marketcm.mains.Registration.Companion.ComradeUser
 import com.shimitadouglas.marketcm.modal_data_admin_fetch.DataAdmin
 import com.shimitadouglas.marketcm.modal_data_posts.DataClassProductsData
 import com.shimitadouglas.marketcm.modal_data_profile.DataProfile
-import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
+import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts
 import com.shimitadouglas.marketcm.modal_sheets.ModalPrivacyMarket
 import com.shimitadouglas.marketcm.notifications.BigTextNotificationEmail
 import com.shimitadouglas.marketcm.notifications.BigTextNotificationGen
@@ -69,10 +71,10 @@ import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.util.*
+import java.util.Calendar
+import java.util.HashMap
 
-@Suppress("Deprecation")
-class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class ProductsHome : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
     companion object {
         //Declaration Globals
         const val CollectionCounterfeit = "Counterfeit Reports"
@@ -90,6 +92,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         const val documentAdmin = "admin"
         //
     }
+
 
     //declaration of the globals
     private lateinit var drawerToggle: ActionBarDrawerToggle
@@ -110,11 +113,12 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var headerButtonUpdate: AppCompatButton
     private lateinit var headerButtonVerifyEmail: AppCompatButton
     //
-
-
+    
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_products_home)
+
         //functionInitGlobals and drawers
         funInitGlobals()
         //call function to handle navView Clicking and in it we link the header of it
@@ -518,7 +522,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //fetch user data from the cloud
         val storeUsersData = FirebaseFirestore.getInstance()
         if (uniqueID != null) {
-            storeUsersData.collection(ComradeUser).document(uniqueID).get().addOnCompleteListener {
+            storeUsersData.collection(Registration.ComradeUser).document(uniqueID).get().addOnCompleteListener {
 
                 if (it.isSuccessful) {
                     //log data
@@ -785,7 +789,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val backendStoreCloud = FirebaseFirestore.getInstance()
         //beginning the process of obtaining the data from the cloud path(comrade user/uniqueID)
         if (uniqueUID != null) {
-            backendStoreCloud.collection(ComradeUser).document(uniqueUID).get()
+            backendStoreCloud.collection(Registration.ComradeUser).document(uniqueUID).get()
                 .addOnSuccessListener {
                     //check  if the snapshot exits
                     if (it.exists()) {
@@ -1257,7 +1261,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val mapUpdatePassword = hashMapOf(keyPassword to textPasswordChange)
         //beginning the process of updating the password
         if (currentUID != null) {
-            fStoreUsers.collection(ComradeUser).document(currentUID)
+            fStoreUsers.collection(Registration.ComradeUser).document(currentUID)
                 .update(mapUpdatePassword as Map<String, String>).addOnCompleteListener {
                     //password update successful
                     if (it.isSuccessful) {
@@ -1376,7 +1380,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val userIDCurrent = FirebaseAuth.getInstance().currentUser?.uid
         //
         val fStore = userIDCurrent?.let {
-            FirebaseFirestore.getInstance().collection(ComradeUser).document(
+            FirebaseFirestore.getInstance().collection(Registration.ComradeUser).document(
                 it
             ).update(mapUpdateNumber as Map<String, Any>).addOnCompleteListener {
                 //code begins
@@ -1416,14 +1420,14 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val mapData = hashMapOf(keyPhone to textPhoneEntered)
         val currentUserID = FirebaseAuth.getInstance().currentUser?.uid
         val storePublicRepoPosts = FirebaseFirestore.getInstance()
-        storePublicRepoPosts.collection(CollectionPost).get().addOnCompleteListener {
+        storePublicRepoPosts.collection(ModalPostProducts.CollectionPost).get().addOnCompleteListener {
             if (it.isSuccessful) {
                 if (currentUserID != null) {
                     val documents = it.result
                     for (doc in documents) {
                         var documentIDs = doc.id
                         if (documentIDs.contains(currentUserID)) {
-                            storePublicRepoPosts.collection(CollectionPost).document(documentIDs)
+                            storePublicRepoPosts.collection(ModalPostProducts.CollectionPost).document(documentIDs)
                                 .update(mapData as Map<String, Any>).addOnCompleteListener {
                                     if (it.isSuccessful) {
                                         //dismiss the progressDialog
@@ -1542,7 +1546,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val userIDLogged = FirebaseAuth.getInstance().currentUser?.uid
 
         //init of fStore and begin update of username
-        val fStore = FirebaseFirestore.getInstance().collection(ComradeUser)
+        val fStore = FirebaseFirestore.getInstance().collection(Registration.ComradeUser)
         //
         //begin update of the user
 
@@ -1592,7 +1596,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val fullName = "$firstName $lastName"
         //init of the storage
         val storeProductsPosted = FirebaseFirestore.getInstance()
-        storeProductsPosted.collection(CollectionPost).get().addOnCompleteListener {
+        storeProductsPosted.collection(ModalPostProducts.CollectionPost).get().addOnCompleteListener {
             if (it.isSuccessful) {
                 //update the message of the progressDialog
                 val documents = it.result
@@ -1641,7 +1645,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val keyName = "Owner"
         val mapData = hashMapOf(keyName to fullName)
         val storePostPublicRepo = FirebaseFirestore.getInstance()
-        storePostPublicRepo.collection(CollectionPost).document(documentsID)
+        storePostPublicRepo.collection(ModalPostProducts.CollectionPost).document(documentsID)
             .update(mapData as Map<String, Any>).addOnCompleteListener {
                 if (it.isSuccessful) {
                     //code begins
@@ -1980,7 +1984,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //code begins
         //fetch all data from the store to check the existence of this product code
         val store = FirebaseFirestore.getInstance()
-        store.collection(CollectionPost).get().addOnCompleteListener { it ->
+        store.collection(ModalPostProducts.CollectionPost).get().addOnCompleteListener { it ->
             if (it.isSuccessful) {
                 for (data in it.result.documents) {
                     val dataFilter: DataClassProductsData? =
@@ -2279,7 +2283,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             //
                         }
                         alertUserPictureUpdating.setNegativeButton("no"){
-                            dialog,_->
+                                dialog,_->
                             //dismiss the dialog
                             dialog.dismiss()
                         }
@@ -2337,7 +2341,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (currentUID != null) {
                 if (uriDataUpdatePic != null) {
                     if (fabUserEmail != null) {
-                        fabStorageInt.child(ComradeUser).child(currentUID).child(fabUserEmail)
+                        fabStorageInt.child(Registration.ComradeUser).child(currentUID).child(fabUserEmail)
                             .putBytes(byteArrayImageToUpdate).addOnCompleteListener {
                                 //code begins
                                 //successfully obtained download uri
@@ -2415,7 +2419,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val fStoreUsers = FirebaseFirestore.getInstance()
 
         if (currentUID != null) {
-            fStoreUsers.collection(ComradeUser).document(currentUID)
+            fStoreUsers.collection(Registration.ComradeUser).document(currentUID)
                 .update(mapData as Map<String, String>).addOnCompleteListener {
 
                     if (it.isSuccessful) {
@@ -2451,7 +2455,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //code begins
         //update the image of the items that are related to the current user
         val storeProductsPublicRepo = FirebaseFirestore.getInstance()
-        storeProductsPublicRepo.collection(CollectionPost).get().addOnCompleteListener {
+        storeProductsPublicRepo.collection(ModalPostProducts.CollectionPost).get().addOnCompleteListener {
             if (it.isSuccessful) {
                 progressDg.setMessage("finishing")
                 //code begins
@@ -2505,7 +2509,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val keyImageUriOwner = "imageOwner"
         //mapping the the data on the hashMap
         val mapData = hashMapOf(keyImageUriOwner to urlDownloadUrlString)
-        storeProductsPublicRepo.collection(CollectionPost).document(dataIds)
+        storeProductsPublicRepo.collection(ModalPostProducts.CollectionPost).document(dataIds)
             .update(mapData as Map<String, Any>).addOnCompleteListener {
 
                 if (it.isSuccessful) {
@@ -2619,5 +2623,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             badge.number = number_badges
         }
     }
-
+    
+    
+    
 }
