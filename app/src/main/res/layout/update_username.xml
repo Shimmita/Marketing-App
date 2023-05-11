@@ -4,44 +4,25 @@
     android:id="@+id/parent_linear_change_username"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="2dp"
     android:orientation="vertical">
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:orientation="horizontal"
-        android:padding="10dp">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginStart="30dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/cart"
-            app:civ_border_color="@color/abc_search_url_text_selected"
-            app:civ_border_width="1dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/shaper_2"
-            android:fontFamily="sans-serif-condensed-light"
-            android:padding="10dp"
-            android:text="update username"
-            android:textAllCaps="true"
-            android:textColor="@color/colorButtonQuiz"
-            android:textStyle="bold" />
-    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/text_bg"
+        android:background="@drawable/material_15"
+        android:elevation="2dp"
         android:orientation="vertical">
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/cart"
+            app:civ_border_color="@color/abc_search_url_text_selected"
+            app:civ_border_width="1dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
@@ -60,6 +41,7 @@
                 android:layout_marginStart="10dp"
                 android:background="@drawable/general_alert_dg"
                 android:clickable="true"
+                android:textColor="@color/ratingYellow"
                 android:elevation="10dp"
                 android:hint="firstName"
                 android:inputType="textPersonName"
@@ -86,6 +68,7 @@
                 android:background="@drawable/general_alert_dg"
                 android:clickable="true"
                 android:elevation="10dp"
+                android:textColor="@color/ratingYellow"
                 android:hint="last name"
                 android:inputType="textPersonName"
                 android:padding="20dp"

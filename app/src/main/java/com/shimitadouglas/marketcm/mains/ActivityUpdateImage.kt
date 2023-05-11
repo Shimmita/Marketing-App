@@ -3,8 +3,10 @@ package com.shimitadouglas.marketcm.mains
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
@@ -22,9 +24,16 @@ import com.shimitadouglas.marketcm.R
 import com.shimitadouglas.marketcm.modal_sheets.ModalPostProducts.Companion.CollectionPost
 import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
 import es.dmoral.toasty.Toasty
+import java.io.ByteArrayOutputStream
 
 @Suppress("Deprecation")
 class ActivityUpdateImage : AppCompatActivity() {
+    companion object {
+        const val QUALITY_CONSTANT: Int = 25
+        private const val TAG = "ActivityUpdateImage"
+    }
+
+
     lateinit var timerStampControllerValue: String
     lateinit var oldImageFetched: String
     lateinit var btnUpdateImage: AppCompatButton
@@ -118,17 +127,17 @@ class ActivityUpdateImage : AppCompatActivity() {
                     val fileSize = FileSizeDeterminant(this@ActivityUpdateImage)
                     val returnedSize = fileSize.funGetSize(data)
                     val converter = 1024f
-                    val maxSize = 2500
-                    val size = returnedSize / converter
+                    val maxSize = 3500
+                    val sizeOfTheImage = returnedSize / converter
                     //limit the size of the image to be posted as always be 2.5MB or Below
-                    if (size > 2500) {
+                    if (sizeOfTheImage > maxSize) {
                         textViewDescription.text =
                             "size of the image of your product is larger than the recommended !" +
                                     "\n\nImage size of your product:" +
-                                    "\n\n${size}KB  -> ${size / converter}MB" +
-                                    "\n\nRecommended size of image:\n\n2500KB -> ${maxSize / 1000f}MB" +
+                                    "\n\n${sizeOfTheImage}KB  -> ${sizeOfTheImage / converter}MB" +
+                                    "\n\nRecommended size of image:\n\n3500KB -> ${maxSize / 1000f}MB" +
                                     "\n\nImage exceeded limit by:" +
-                                    "\n\n${(size - maxSize) / converter}MB" +
+                                    "\n\n${(sizeOfTheImage - maxSize) / converter}MB" +
                                     "\n\nConclusion:\n\nprovide an image less than ${maxSize / 1000f}MB"
                     } else {
                         //disable the button so that the user cannot interact with it
@@ -149,7 +158,7 @@ class ActivityUpdateImage : AppCompatActivity() {
                         imageView.postDelayed({
                             val alertUserAcceptImage =
                                 MaterialAlertDialogBuilder(this@ActivityUpdateImage)
-                            alertUserAcceptImage.setIcon(R.drawable.ic_question)
+                            alertUserAcceptImage.setIcon(R.drawable.ic_photo_placeholder)
                             alertUserAcceptImage.setTitle("image")
                             alertUserAcceptImage.setCancelable(false)
                             alertUserAcceptImage.background =
@@ -171,7 +180,7 @@ class ActivityUpdateImage : AppCompatActivity() {
                                 //
                             }
                             alertUserAcceptImage.create().show()
-                        }, 2000)
+                        }, 1250)
                     }
                 }
 
@@ -185,7 +194,7 @@ class ActivityUpdateImage : AppCompatActivity() {
         //show the progress dialog here
         progressDialog.create()
         progressDialog.show()
-        //
+
 
         //code begins
         if (oldImageFetched.isEmpty() or (timerStampControllerValue.isEmpty())) {
@@ -207,60 +216,90 @@ class ActivityUpdateImage : AppCompatActivity() {
             val storageUpdateImage =
                 FirebaseStorage.getInstance().getReferenceFromUrl(oldImageFetched)
 
-            storageUpdateImage.putFile(data).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    //obtain the result and get downloadUri of new image
-                    it.result.storage.downloadUrl.addOnCompleteListener {
-                        if (it.isSuccessful) {
+            //perform the compression of the image before uploading it to the storage for ease in data retrieval
+            try {
+                val bitmapOfTheImageUri:Bitmap = MediaStore.Images.Media.getBitmap(
+                    contentResolver,
+                    data
+                )
 
-                            //obtain a result in uri to string then proceed to update the private repo image value
-                            val currentImagePath = it.result.toString()
-                            funUpdatePrivateRepoImagePath(currentImagePath)
-                            //
+                //converting the image into an compressed format after init of the BAOS
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                //compressing the image using factor 25
+                bitmapOfTheImageUri.compress(
+                    Bitmap.CompressFormat.JPEG,
+                    QUALITY_CONSTANT,
+                    byteArrayOutputStream
+                )
+                //converting the BAO'S INTO byteArrayOf Image which we will use to uploading since it will be
+                val baosImageInByteArray: ByteArray = byteArrayOutputStream.toByteArray()
 
-                        } else if (!it.isSuccessful) {
-                            //toast the error and make the user returned home immediately
-                            Toasty.error(
-                                this@ActivityUpdateImage,
-                                "operation failed try again",
-                                Toasty.LENGTH_SHORT
-                            ).show()
-                            //dismiss the progressD and return home
-                            progressDialog.dismiss()
-                            val intentHomeProducts =
-                                Intent(this@ActivityUpdateImage, ProductsHome::class.java)
-                            startActivity(intentHomeProducts)
-                            this@ActivityUpdateImage.finishAffinity()
-                            //
+                //having less size than the original uri
+                storageUpdateImage.putBytes(baosImageInByteArray).addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        //obtain the result and get downloadUri of new image
+                        it.result.storage.downloadUrl.addOnCompleteListener {
+                            if (it.isSuccessful) {
+
+                                //obtain a result in uri to string then proceed to update the private repo image value
+                                val currentImagePath = it.result.toString()
+                                funUpdatePrivateRepoImagePath(currentImagePath)
+                                //
+
+                            } else if (!it.isSuccessful) {
+                                //toast the error and make the user returned home immediately
+                                Toasty.error(
+                                    this@ActivityUpdateImage,
+                                    "operation failed try again",
+                                    Toasty.LENGTH_SHORT
+                                ).show()
+                                //dismiss the progressD and return home
+                                progressDialog.dismiss()
+                                val intentHomeProducts =
+                                    Intent(this@ActivityUpdateImage, ProductsHome::class.java)
+                                startActivity(intentHomeProducts)
+                                this@ActivityUpdateImage.finishAffinity()
+                                //
+                            }
+
                         }
+                        //
+                    } else if (!it.isSuccessful) {
+                        //toast the error to the user and return
+                        Toasty.error(
+                            this@ActivityUpdateImage,
+                            "operation failed try again",
+                            Toasty.LENGTH_SHORT
+                        ).show()
+
+                        //dismiss the progressD and return home
+                        progressDialog.dismiss()
+                        val intentHomeProducts =
+                            Intent(this@ActivityUpdateImage, ProductsHome::class.java)
+                        startActivity(intentHomeProducts)
+                        this@ActivityUpdateImage.finishAffinity()
+                        //
+
+                        return@addOnCompleteListener
+                        //
+
 
                     }
-                    //
-                } else if (!it.isSuccessful) {
-                    //toast the error to the user and return
-                    Toasty.error(
-                        this@ActivityUpdateImage,
-                        "operation failed try again",
-                        Toasty.LENGTH_SHORT
-                    ).show()
-
-                    //dismiss the progressD and return home
-                    progressDialog.dismiss()
-                    val intentHomeProducts =
-                        Intent(this@ActivityUpdateImage, ProductsHome::class.java)
-                    startActivity(intentHomeProducts)
-                    this@ActivityUpdateImage.finishAffinity()
-                    //
-
-                    return@addOnCompleteListener
-                    //
-
-
                 }
+                //
+            } catch (e: java.lang.Exception) {
+                //toast something went wrong in the process of compressing the image
+                Toasty.error(this@ActivityUpdateImage, "something went wrong", Toasty.LENGTH_SHORT)
+                    .show()
+
+                //dismiss the progressD and return home
+                progressDialog.dismiss()
+                val intentHomeProducts = Intent(this@ActivityUpdateImage, ProductsHome::class.java)
+                startActivity(intentHomeProducts)
+                this@ActivityUpdateImage.finishAffinity()
+                //
             }
-            //
         }
-        //
     }
 
     private fun funUpdatePrivateRepoImagePath(currentImagePath: String) {

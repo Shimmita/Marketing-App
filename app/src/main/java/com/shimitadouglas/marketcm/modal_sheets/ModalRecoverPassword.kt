@@ -58,7 +58,6 @@ class ModalRecoverPassword : BottomSheetDialogFragment() {
         }
         //call func animate the parent
         funAnimateParent()
-        //
         //funInit progressD
         funInitProgressD()
         //
@@ -133,8 +132,6 @@ class ModalRecoverPassword : BottomSheetDialogFragment() {
                     R.drawable.cart
                 )
                 normalNotification.funCreateNotification()
-                //
-
                 //dismiss the dialog
                 dialog.dismiss()
                 //
@@ -166,14 +163,10 @@ class ModalRecoverPassword : BottomSheetDialogFragment() {
 
     //function Toasty Fail
     private fun funToastyFail(message: String) {
-        Toasty.custom(
+        Toasty.error(
             requireActivity(),
             message,
-            R.drawable.ic_warning,
-            R.color.androidx_core_secondary_text_default_material_light,
             Toasty.LENGTH_SHORT,
-            true,
-            false
         ).show()
     }
 

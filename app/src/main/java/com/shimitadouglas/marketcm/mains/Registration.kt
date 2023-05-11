@@ -5,15 +5,16 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import android.widget.*
@@ -40,10 +41,12 @@ import com.shimitadouglas.marketcm.notifications.BigPictureNotificationMostLogin
 import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
+import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
+@Suppress("DEPRECATION")
 class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     companion object {
@@ -72,9 +75,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     //val holding the spinner
     private lateinit var spinnerReturned: String
-    //
 
-    //
     private lateinit var stringArrayAdapter: ArrayAdapter<String>
     //
 
@@ -85,8 +86,6 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         funInitGlobals()
         //animate parent
         funAnimParent()
-        //
-
         //setting onclick listener on the imageview and button login
         btnRegistration.setOnClickListener {
 
@@ -145,7 +144,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     " grant the permissions to use the application"
         )
         alertPermissionRationale.background =
-            resources.getDrawable(R.drawable.material_six, theme)
+            resources.getDrawable(R.drawable.general_alert_dg, theme)
         alertPermissionRationale.setCancelable(false)
         alertPermissionRationale.setPositiveButton("do") { dialog, _ ->
             //start the intent of launching the settings for app info
@@ -229,7 +228,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             val alertUSerTermsAndConditions = MaterialAlertDialogBuilder(this@Registration)
             alertUSerTermsAndConditions.setIcon(R.drawable.cart)
             alertUSerTermsAndConditions.background =
-                resources.getDrawable(R.drawable.material_11, theme)
+                resources.getDrawable(R.drawable.general_alert_dg, theme)
             alertUSerTermsAndConditions.setTitle("Terms And Conditions")
             alertUSerTermsAndConditions.setSingleChoiceItems(arrayOfTerms, 2) { _, which ->
                 selected = arrayOfTerms[which]
@@ -305,7 +304,7 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         //creating a progress dialog to sho progression of registration
         val createNewUserProgressDialog = ProgressDialog(this@Registration)
         createNewUserProgressDialog.setTitle("Registering $dataFirstName")
-        createNewUserProgressDialog.setMessage("starting registration...")
+        createNewUserProgressDialog.setMessage("starting registration")
         createNewUserProgressDialog.setCancelable(false)
         createNewUserProgressDialog.show()
         createNewUserProgressDialog.create()
@@ -315,12 +314,10 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             //if user is created successfully
             if (it.isSuccessful) {
                 //updating the details of progressDialog
-                createNewUserProgressDialog.setMessage("data uploading...")
-                //
+                createNewUserProgressDialog.setMessage("uploading details")
                 //create function storing the data to fireStore then image cloudStore
                 funStoreDataFireStore(
                     emailData,
-                    passwordData,
                     dataFirstName,
                     lasNameData,
                     phoneData,
@@ -334,17 +331,11 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             else if (!it.isSuccessful) {
                 //dismiss the progress dialog
                 createNewUserProgressDialog.dismiss()
-                //
                 //call function show failure of registration
                 funFailRegistrationAlert(it, dataFirstName)
                 //
             }
-
-            //
-
         }
-        //
-        //
         //code ends
 
     }
@@ -352,7 +343,6 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     @SuppressLint("SimpleDateFormat")
     private fun funStoreDataFireStore(
         emailData: String,
-        passwordData: String,
         dataFirstName: String,
         lasNameData: String,
         phoneData: String,
@@ -366,7 +356,6 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val dateFormat = SimpleDateFormat("dd-MM-yyyy")
         val formattedTime = dateFormat.format(timeUsingCalendar)
         //
-
         //creating a firebase instance then acquiring a uniqueUID for differentiation of users Under One Collection Of Document ComradeUsers
         val fabInstanceFireStore = FirebaseAuth.getInstance()
         val currentUID = fabInstanceFireStore.currentUser?.uid
@@ -383,17 +372,17 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val keyImageUri = "ImagePath"
         val keyRegistrationDate = "registrationDate"
         val keyCanPost = "canPost"
-        //
-
         //separate declaration of can post to the market is yes
         val dataCanPost = "true"
+        //data passHolder that is a holder
+        val dataPassword = ""
         //
 
         //creating the hashmap for the data be stored in fireStore
         val mapUserData = hashMapOf(
             keyEmail to emailData,
-            keyPassword to passwordData,
             keyFirstName to dataFirstName,
+            keyPassword to dataPassword,
             keyLastName to lasNameData,
             keyPhone to phoneData,
             keyUniversity to spinnerDataUniversity,
@@ -422,15 +411,12 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             else if (!it.isSuccessful) {
                 //dismiss the progressDialog
                 createNewUserProgressDialog.dismiss()
-                //
                 //alertUser of Data Entry Failure Using the SnackBar
                 funSnackBarAlertFail()
                 //
-
             }
 
         }
-        //
         //code ends
     }
 
@@ -448,80 +434,96 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     it
                 )
             }
-        //putting the uri path to the fabStorage
-        if (fabStorageInt != null) {
-            uriPath?.let {
-                fabStorageInt.putFile(it).addOnCompleteListener(
-                    this@Registration
-                ) { it ->
-                    if (it.isSuccessful) {
-                        //task is successful thus update the message of the progressDialog
-                        createNewUserProgressDialog.setMessage("finalising...")
-                        //
-                        //get the download uri of the saved image then update the fStore uri path
-                        fabStorageInt.downloadUrl.addOnSuccessListener {
-                            //update the status of the progress dialog
-                            createNewUserProgressDialog.setMessage("almost done...")
-                            //create a function to update the fStore Path With this new URi downloadable
-                            val uriDownLoadAble = it.toString()
-                            funUpdateFStore(
-                                uriDownLoadAble,
-                                keyImageUri,
-                                createNewUserProgressDialog
-                            )
-                            //
-                            //
 
-                        }.addOnFailureListener {
-
-                            //dismiss the progress dialog
-                            createNewUserProgressDialog.dismiss()
-                            //
-
-                            //failed to obtain the download Uri alert
-                            val alertUriFailure = MaterialAlertDialogBuilder(this@Registration)
-                            alertUriFailure.setMessage("we encountered an error while completing your registration please try again later thank you")
-                            alertUriFailure.setIcon(
-                                resources.getDrawable(
-                                    R.drawable.android,
-                                    theme
+        //use a try catch that will help in preventing the app from crushing during the process of converting the uri into a bitmap
+        try {
+            //compress the image the image so that a reasonable image is uploaded to the storage
+            val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uriPath)
+            //init the the baos
+            val byteArrayOutputStream: ByteArrayOutputStream = ByteArrayOutputStream()
+            //compress the image using the factor 25
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 25, byteArrayOutputStream)
+            //convert the compressed image into a byteArray that will be uploaded
+            val byteArrayImageToUpload: ByteArray = byteArrayOutputStream.toByteArray()
+            //
+            //putting the uri path to the fabStorage
+            if (fabStorageInt != null) {
+                byteArrayImageToUpload.let {
+                    fabStorageInt.putBytes(it).addOnCompleteListener(
+                        this@Registration
+                    ) { it ->
+                        if (it.isSuccessful) {
+                            //task is successful thus update the message of the progressDialog
+                            createNewUserProgressDialog.setMessage("finalising...")
+                            //get the download uri of the saved image then update the fStore uri path
+                            fabStorageInt.downloadUrl.addOnSuccessListener {
+                                //update the status of the progress dialog
+                                createNewUserProgressDialog.setMessage("almost done...")
+                                //create a function to update the fStore Path With this new URi downloadable
+                                val uriDownLoadAble = it.toString()
+                                funUpdateFStore(
+                                    uriDownLoadAble,
+                                    keyImageUri,
+                                    createNewUserProgressDialog
                                 )
-                            )
-                            alertUriFailure.show()
-                            alertUriFailure.create()
+                                //
+
+                            }.addOnFailureListener {
+
+                                //dismiss the progress dialog
+                                createNewUserProgressDialog.dismiss()
+                                //failed to obtain the download Uri alert
+                                val alertUriFailure = MaterialAlertDialogBuilder(this@Registration)
+                                alertUriFailure.setMessage("we encountered an error while completing your registration please try again later thank you")
+                                alertUriFailure.setIcon(
+                                    resources.getDrawable(
+                                        R.drawable.android,
+                                        theme
+                                    )
+                                )
+                                alertUriFailure.show()
+                                alertUriFailure.create()
+                                //
+                            }
                             //
                         }
-                        //
-                        //
-
-                    }
-                    //failed to upload the image to the fabStorage
-                    else {
-                        //dismiss progressDialog
-                        createNewUserProgressDialog.dismiss()
-                        //
-                        //show snackBar Of this error
-                        Snackbar.make(
-                            linearLayoutParentRegistration,
-                            "we encountered an error while uploading the data!",
-                            Snackbar.LENGTH_INDEFINITE
-                        ).setAction("what then?") {
+                        //failed to upload the image to the fabStorage
+                        else {
+                            //dismiss progressDialog
+                            createNewUserProgressDialog.dismiss()
+                            //
+                            //show snackBar Of this error
                             Snackbar.make(
                                 linearLayoutParentRegistration,
-                                "check your internet connection",
-                                Snackbar.LENGTH_SHORT
-                            ).show()
-                        }.show()
-                        //
+                                "we encountered an error while uploading the data!",
+                                Snackbar.LENGTH_INDEFINITE
+                            ).setAction("what then?") {
+                                Snackbar.make(
+                                    linearLayoutParentRegistration,
+                                    "check your internet connection",
+                                    Snackbar.LENGTH_SHORT
+                                ).show()
+                            }.show()
+                            //
+
+                        }
 
                     }
-
                 }
             }
+
+        } catch (e: Exception) {
+            //dismiss the progress Dialog
+            createNewUserProgressDialog.dismiss()
+            //toast error
+            funToastyFail("something went wrong try again")
+            //start an activity to main activity of login
+            startActivity(Intent(this@Registration, MainActivity::class.java))
+
         }
-        //
         //code ends
     }
+
 
     private fun funUpdateFStore(
         uriDownLoadAble: String,
@@ -717,12 +719,12 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     val imageSizeBytes = initClassSize.funGetSize(uriPath)
                     val converter = 1024f
                     val imageSizeKB = imageSizeBytes / converter
-                    val limitKB = 2500
+                    val limitKB = 3500
                     if (imageSizeKB > limitKB) {
                         //alert user file size too big
                         Toasty.custom(
                             this@Registration,
-                            "pick an image less than 2.5MB\n" +
+                            "pick an image less than 3.5MB\n" +
                                     "Your image is ${imageSizeKB / converter}MB !",
                             R.drawable.ic_info,
                             R.color.colorWhite,
@@ -758,14 +760,9 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                                 }
                                 //
                             }.show()
-                        //
 
-
-                        //
                         //code ends
                     }
-                    //
-
                 }
                 if (it.resultCode == RESULT_CANCELED) {
 
@@ -836,7 +833,6 @@ class Registration : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
 
     }
-
 
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {

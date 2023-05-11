@@ -41,6 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="15dp"
+                    android:fontFamily="@font/rajdhani_bold"
                     android:text="@string/comrade_market"
                     android:textColor="@color/accent_material_light"
                     android:textStyle="bold" />
@@ -55,9 +56,8 @@
                 android:layout_marginTop="20dp"
                 android:autoLink="email|phone"
                 android:fontFamily="@font/rajdhani_semi_bold"
-                android:textColor="#0D8012"
-                android:textColorLink="@color/purple_500"
-                />
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textColorLink="@color/purple_500" />
 
         </LinearLayout>
 

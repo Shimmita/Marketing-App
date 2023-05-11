@@ -56,8 +56,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="280dp"
                 android:layout_margin="2dp"
-                app:cardCornerRadius="30dp"
-                app:contentPadding="5dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -70,7 +70,7 @@
                     android:contentDescription="@string/by_shimmita_douglas"
                     android:cropToPadding="true"
                     android:scaleType="fitXY"
-                    app:srcCompat="@drawable/lap" />
+                    app:srcCompat="@drawable/lapsz" />
 
             </androidx.cardview.widget.CardView>
 

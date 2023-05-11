@@ -63,11 +63,6 @@
 
     <item android:title="@string/tools">
         <menu>
-            <item
-                android:id="@+id/checkUpdate"
-                android:icon="@drawable/ic_update"
-                android:title="@string/check_for_updates"
-                app:showAsAction="ifRoom" />
 
             <item
                 android:id="@+id/shareApplication"

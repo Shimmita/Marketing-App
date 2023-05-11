@@ -7,7 +7,7 @@
 
     <string name="drawerOpen">open</string>
     <string name="drawerClose">close</string>
-    <string name="email_warn">please verify your email address within 2 days to avoid account closure!</string>
+    <string name="email_warn">please verify your email address to access more account privileges provided by the Market CM!</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="any"></string>
@@ -60,8 +60,8 @@
     <string name="my_posted_products">My Posted Products</string>
     <string name="product_id_stamp">productIDStamp</string>
     <string name="update_image">update image</string>
-    <string name="enter_the_new_phone_number">enter the new phone number</string>
-    <string name="enter_new_place_where_the_product_is_located">enter new place where the product is located</string>
+    <string name="enter_the_new_phone_number">enter new phone number</string>
+    <string name="enter_new_place_where_the_product_is_located">enter place name</string>
     <string name="price_details">new price i.e (5,000)</string>
     <string name="type_here_to_search">search product here </string>
     <string name="file_size_description"></string>
@@ -80,9 +80,9 @@
     <string name="check_for_updates">check for updates</string>
     <string name="report_scanner_option">report scanner option</string>
     <string name="scammer_option"></string>
-    <string name="write_your_message_here">enter your message here</string>
-    <string name="product_code_i_e_hxc4fyt">enter product code here</string>
-    <string name="about_market">market cM (comrade market) is a mobile trading application built to facilitate quick marketing of products for its members on a click of a button.\n\nTo use the application:\n\ni)members have to create a new account as required by the application during the registration process.\nii)members must verify their email address to own genuine accounts.\n\niii)members with genuine accounts gain the freedom of posting their products to the market for free.\n\niv)members with genuine accounts get notified whenever other user(s) enquires for their products hence can perform their business transactions in an easy-peasy way.\n\ndesigned and developed by:\n\nEmail:  shimitadouglas@gmail.com\n\nEmail:  douglasshimita3@gmail.com\n\nPhone: 0757450727\n\nStudent @Maseno University out 2024\nSchool Of Computing and Informatics
+    <string name="write_your_message_here">why reporting this product</string>
+    <string name="product_code">paste product code here</string>
+    <string name="about_market">Market CM (comrade market) is a mobile trading application built to facilitate quick marketing of products for its members on a click of a button.\n\nTo use the application:\n\ni)members have to create a new account as required by the application during the registration process.\nii)members must verify their email address to own genuine accounts.\n\niii)members with genuine accounts gain the freedom of posting their products to the market for free.\n\niv)members with genuine accounts get notified whenever other user(s) enquires for their products hence can perform their business transactions in an easy-peasy way.\n\ndesigned and developed by:\n\nEmail:  shimitadouglas@gmail.com\n\nEmail:  douglasshimita3@gmail.com\n\nPhone: 0757450727\n\nStudent @Maseno University out 2024\nSchool Of Computing and Informatics
     </string>
     <string name="post_to_the_market">post to the market</string>
     <string name="counterfeit_claim">Counterfeit Claim</string>
@@ -221,7 +221,7 @@
         <item>Management University of Africa</item>
     </string-array>
 
-    <string name="privacy_policy_terms">shimita douglas built market cm (comrade market) app as a free marketing app for comrades.\nThis service is provided by him with/without cost and is intended for use as is.\n\n
+    <string name="privacy_policy_terms">I built Market CM (comrade market) app as a free marketing app for comrades.\nThis service is provided by him with/without cost and is intended for use as is.\n\n
     This page informs visitors regarding my policies with the collection,use and disclosure of personal information if anyone decides to use my service.\n
     If chosen to use my service,then you agree to the collection and use of information in relation to this policy.\n\n
     The personal information that I collect is used for providing and improving the service.\n\n
@@ -238,10 +238,11 @@
         Any update or changes made will be reflected to the user through notifications or on this page.\n\n
         It is thus advisable for the user to grant notification request to this application in order for him/her to receive such changes via notifications.\n\n
         Finally the user is reminded to keep his/her login information confidential in conjunction with the use of strong password techniques.\n\n
-        Any ignorance made in relation to aforementioned statements will literally mean user is responsible for any repercussions.\n\n
+        Any ignorance made in relation to aforementioned statements will literally mean user is responsible from any resulting repercussions.\n\n
         email: shimitadouglas@gmail.com\n
         email: douglasshimita3@gmail.com\n
-        phone: 0757450727\n
+        phone: 0757450727\n\n
+        developer: Douglas Shimita Oundo\n
     </string>
     <string name="comrade_market">COMRADE MARKET</string>
     <string name="password_recovery_click_here">recover forgotten password</string>
@@ -283,5 +284,8 @@
     <string name="description_of_the_product_here_brief">description of the product here (brief)</string>
     <string name="verify_account">verify account</string>
     <string name="category">category</string>
+    <string name="enter_new_password">enter new password</string>
+    <string name="phone_number_change">phone Number</string>
+    <string name="show_password">show password</string>
 
 </resources>

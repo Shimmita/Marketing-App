@@ -10,5 +10,4 @@ data class DataProfile(
     var Password: String? = null,
     var registrationDate: String? = null,
     var canPost: String? = null,
-    var suspend: String? = null
 )

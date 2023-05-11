@@ -37,6 +37,7 @@ import es.dmoral.toasty.Toasty
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 
+@Suppress("DEPRECATION")
 class HomeFragment : Fragment() {
     //string for holding selected uni for sorting products
     private var selected: String = ""
@@ -60,7 +61,6 @@ class HomeFragment : Fragment() {
 
     //recycler for Products hold
     lateinit var recyclerViewProducts: RecyclerView
-    //
 
     // Declaration arrayList(ProductData) Adapter(MyAdapterProducts)
     lateinit var arrayListProducts: ArrayList<DataClassProductsData>
@@ -73,8 +73,6 @@ class HomeFragment : Fragment() {
 
     //init of globals
     private var universitiesForSort = arrayOf<String>()
-    //
-
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreateView(
@@ -366,14 +364,11 @@ class HomeFragment : Fragment() {
         //init the arrayUniversity from the resource arrayStrings and sort em
         universitiesForSort = resources.getStringArray(R.array.universities_ke)
         universitiesForSort.sort()
-        //
 
         //initialise the view progression w/c is used in place of progressD will be shown in an alertD when data is no fetched from
         //the store public repo
         viewProgression = LayoutInflater.from(requireActivity())
             .inflate(R.layout.general_progress_dialog_view, null, false)
-        //
-
         //init the material alert dialog
         progressDialogMain = ProgressDialog(requireActivity())
         progressDialogMain.apply {

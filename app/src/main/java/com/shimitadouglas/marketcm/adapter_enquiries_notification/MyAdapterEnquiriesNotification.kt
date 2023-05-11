@@ -10,6 +10,7 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.bumptech.glide.Glide
@@ -32,6 +33,7 @@ class MyAdapterEnquiriesNotification(
         var textViewEnquirerEmail: TextView
         var textViewEnquirerPlace: TextView
         var textViewEnquirerPhone: TextView
+        var cardViewEnquiry: CardView
         var buttonDeleteNotification: AppCompatButton
 
         init {
@@ -43,6 +45,7 @@ class MyAdapterEnquiriesNotification(
             textViewProductEnquiredTitle = itemView.findViewById(R.id.enquiredProductName)
             textViewEnquirerPhone = itemView.findViewById(R.id.phoneEnquirer)
             buttonDeleteNotification = itemView.findViewById(R.id.btnDeleteEnquiry)
+            cardViewEnquiry = itemView.findViewById(R.id.cardEnquiries)
 
         }
     }
@@ -57,56 +60,73 @@ class MyAdapterEnquiriesNotification(
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.apply {
-            textViewProductEnquiredTitle.text = arrayList[position].productName
-            textViewEnquirerDate.text = "Date:   " + arrayList[position].enquiredDate
-            textViewEnquirerPhone.text = "email:   " + arrayList[position].enquirerEmail
-            textViewEnquirerEmail.text = "phone:   " + arrayList[position].enquirerPhone
-            textViewEnquirerPlace.text = "place:  " + arrayList[position].enquirerPlace
-            textViewEnquirerName.text = "enquirer: " + arrayList[position].enquirerName
+        //check if there is a null data in the arrayList Of DataClass enquiries
+        //if so continue to the next item leaving behind the null ones
+        val enquiryObject = arrayList[position]
+        if (enquiryObject.enquirerName == null || enquiryObject.enquirerEmail == null ||
+            enquiryObject.enquirerPhone == null || enquiryObject.enquiredDate == null
+        ) {
+            holder.apply {
+                //disable the visibility of the card since it's irrelevant to display it when it is null content
+                cardViewEnquiry.visibility = View.GONE
+            }
+        } else {
+            holder.apply {
+                //visible the card since it contains contents that are not null
+                cardViewEnquiry.visibility = View.VISIBLE
 
-            //using the glide library to load the image onto the imageview
-            Glide.with(context).load(arrayList[position].imageProduct)
-                .into(imageViewProductEnquired)
-            //
-            //setting listener on to the button for deleting the enquiry
-            buttonDeleteNotification.setOnClickListener {
-                //call fun delete from the store
-                buttonDeleteNotification.startAnimation(
-                    AnimationUtils.loadAnimation(
-                        context,
-                        R.anim.slide_in_left
+
+                //begin assigning the data to the views accordingly
+                textViewProductEnquiredTitle.text = arrayList[position].productName
+                textViewEnquirerDate.text = "Date:   " + arrayList[position].enquiredDate
+                textViewEnquirerPhone.text = "email:   " + arrayList[position].enquirerEmail
+                textViewEnquirerEmail.text = "phone:   " + arrayList[position].enquirerPhone
+                textViewEnquirerPlace.text = "place:  " + arrayList[position].enquirerPlace
+                textViewEnquirerName.text = "enquirer: " + arrayList[position].enquirerName
+
+                //using the glide library to load the image onto the imageview
+                Glide.with(context).load(arrayList[position].imageProduct)
+                    .into(imageViewProductEnquired)
+                //
+                //setting listener on to the button for deleting the enquiry
+                buttonDeleteNotification.setOnClickListener {
+                    //call fun delete from the store
+                    buttonDeleteNotification.startAnimation(
+                        AnimationUtils.loadAnimation(
+                            context,
+                            R.anim.slide_in_left
+                        )
                     )
-                )
 
-                //delay for 2sec and warn user  that if he continues the operation is irreversible
-                buttonDeleteNotification.postDelayed({
-                    val sweetAlertDialogWarning =
-                        SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
-                    sweetAlertDialogWarning.titleText = "Delete"
-                    sweetAlertDialogWarning.contentText =
-                        "delete the notification?"
-                    sweetAlertDialogWarning.setCancelable(false)
-                    sweetAlertDialogWarning.cancelText = "no"
-                    sweetAlertDialogWarning.setConfirmClickListener {
-                        //call the delete function here since user accepted the risk
-                        val uniqueUIDUser = FirebaseAuth.getInstance().uid
-                        val timerDocumentPath = arrayList[position].uniqueTimer
+                    //delay for 2sec and warn user  that if he continues the operation is irreversible
+                    buttonDeleteNotification.postDelayed({
+                        val sweetAlertDialogWarning =
+                            SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                        sweetAlertDialogWarning.titleText = "Delete"
+                        sweetAlertDialogWarning.contentText =
+                            "delete the notification?"
+                        sweetAlertDialogWarning.setCancelable(false)
+                        sweetAlertDialogWarning.cancelText = "no"
+                        sweetAlertDialogWarning.setConfirmClickListener {
+                            //call the delete function here since user accepted the risk
+                            val uniqueUIDUser = FirebaseAuth.getInstance().uid
+                            val timerDocumentPath = arrayList[position].uniqueTimer
 
-                        funDeleteEnquiry(uniqueUIDUser, timerDocumentPath)
-                        //dismiss the dialog
-                        it.dismiss()
+                            funDeleteEnquiry(uniqueUIDUser, timerDocumentPath)
+                            //dismiss the dialog
+                            it.dismiss()
 
-                    }
-                    sweetAlertDialogWarning.setCancelClickListener {
-                        //dismiss the dialog
-                        it.dismiss()
+                        }
+                        sweetAlertDialogWarning.setCancelClickListener {
+                            //dismiss the dialog
+                            it.dismiss()
 
-                    }
-                    sweetAlertDialogWarning.create()
-                    sweetAlertDialogWarning.show()
+                        }
+                        sweetAlertDialogWarning.create()
+                        sweetAlertDialogWarning.show()
 
-                }, 1000)
+                    }, 1000)
+                }
             }
         }
 

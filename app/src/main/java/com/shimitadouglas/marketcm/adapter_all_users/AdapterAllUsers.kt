@@ -24,7 +24,6 @@ class AdapterAllUsers(var context: Context, var arrayList: ArrayList<DataProfile
             textViewEmail.text = "email: " + user.Email
             textViewPhoneNumber.text = "email: " + user.PhoneNumber
             textViewCanPost.text = "post: " + user.canPost
-            textViewSuspendd.text = "pended: " + user.suspend
             textViewRegistrationDate.text = "date: " + user.registrationDate
             textViewUniversity.text = "place: " + user.University
             //using the glide library to load the image onto the circle mageView
@@ -55,7 +54,6 @@ class AdapterAllUsers(var context: Context, var arrayList: ArrayList<DataProfile
         val textViewPhoneNumber: TextView
         val textViewUniversity: TextView
         val textViewRegistrationDate: TextView
-        val textViewSuspendd: TextView
         val textViewCanPost: TextView
 
         init {
@@ -66,8 +64,6 @@ class AdapterAllUsers(var context: Context, var arrayList: ArrayList<DataProfile
             textViewUniversity = itemView.findViewById(R.id.tvUniversityUser)
             textViewRegistrationDate = itemView.findViewById(R.id.tvUserRegistrationDate)
             textViewCanPost = itemView.findViewById(R.id.tvUserCanPost)
-            textViewSuspendd = itemView.findViewById(R.id.tvUserSuspended)
-
         }
     }
 }

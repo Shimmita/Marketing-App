@@ -49,7 +49,7 @@ class SplashScreenIndex : AppCompatActivity() {
             startActivity(intentMain)
             finishAffinity()
 
-        }, 1100)
+        }, 1150)
 
         //code end
     }
@@ -68,6 +68,5 @@ class SplashScreenIndex : AppCompatActivity() {
             )
         )
         //
-
     }
 }

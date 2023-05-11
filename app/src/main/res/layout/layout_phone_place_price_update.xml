@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="5dp"
+        app:cardBackgroundColor="@color/bright_foreground_disabled_material_dark"
         app:cardCornerRadius="20dp"
         app:contentPadding="20dp">
 
@@ -27,6 +28,8 @@
                 android:layout_marginTop="10dp"
                 android:hint="@string/enter_the_new_phone_number"
                 android:inputType="numberDecimal|number"
+                android:textColor="@color/ratingYellow"
+                android:textColorHint="@color/green"
                 android:visibility="gone"
                 tools:ignore="TextFields" />
 
@@ -37,6 +40,8 @@
                 android:layout_marginTop="10dp"
                 android:hint="@string/enter_new_place_where_the_product_is_located"
                 android:inputType="text"
+                android:textColor="@color/ratingYellow"
+                android:textColorHint="@color/green"
                 android:visibility="gone" />
 
             <EditText
@@ -44,6 +49,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/price_details"
+                android:textColor="@color/ratingYellow"
+                android:textColorHint="@color/green"
                 android:visibility="gone" />
 
         </LinearLayout>

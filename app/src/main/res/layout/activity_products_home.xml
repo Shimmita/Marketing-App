@@ -18,9 +18,11 @@
             android:id="@+id/toolbarProducts"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:layout_collapseMode="pin"
             app:navigationIcon="@drawable/ic_menu"
-            app:popupTheme="@style/Theme.Design.Light.NoActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:titleTextColor="@color/accent_material_light" />
 
         <FrameLayout
@@ -35,8 +37,8 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:layout_alignParentBottom="true"
-            app:elevation="15dp"
             android:background="@color/color_beautiful_one"
+            app:elevation="15dp"
             app:itemBackground="@color/transparrent"
             app:itemIconTint="@color/state_bottom_nav"
             app:itemTextColor="@color/button_material_dark"

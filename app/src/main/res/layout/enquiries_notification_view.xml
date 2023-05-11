@@ -44,9 +44,9 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="5dp"
-                app:cardCornerRadius="10dp"
-                app:contentPadding="5dp">
+                android:layout_margin="2dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="5dp">
 
                 <ImageView
                     android:id="@+id/imageProductEnquired"

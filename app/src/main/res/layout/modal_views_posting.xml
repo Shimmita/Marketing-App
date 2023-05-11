@@ -37,7 +37,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:backgroundTint="@color/bright_foreground_disabled_material_dark"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/material_13"
+                android:backgroundTint="@color/abc_decor_view_status_guard_light"
                 android:drawableStart="@drawable/ic_touch"
                 android:text="@string/provide_an_image_of_the_product_from_gallery"
                 android:textAllCaps="false"
@@ -49,12 +51,11 @@
                 android:id="@+id/cardProvideImageProduct"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_margin="2dp"
                 android:layout_marginBottom="10dp"
-                android:visibility="visible"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="5dp"
-                app:contentPadding="10dp">
+                android:visibility="gone"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="5dp">
 
                 <ImageView
                     android:id="@+id/imgProvideImagePost"
@@ -71,13 +72,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:background="@drawable/material_13"
                 android:backgroundTint="@color/bright_foreground_disabled_material_dark"
                 android:drawableStart="@drawable/ic_touch"
                 android:drawablePadding="5dp"
                 android:padding="5dp"
                 android:text="@string/use_suggestion"
                 android:textAllCaps="false"
-                android:textColor="#786C08"
+                android:textColor="#03A9F4"
                 android:textStyle="italic"
                 android:visibility="gone" />
 

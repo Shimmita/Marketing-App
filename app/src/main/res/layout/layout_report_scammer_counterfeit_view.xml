@@ -4,11 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    app:cardCornerRadius="10dp">
+    app:cardBackgroundColor="@color/color_beautiful_one"
+    app:cardCornerRadius="10dp"
+    app:contentPadding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="10dp"
         android:orientation="vertical"
         android:padding="10dp">
@@ -16,27 +18,27 @@
 
         <EditText
             android:id="@+id/edtReportScammerOptionCounterfeitCode"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
-            android:background="@drawable/material_16"
-            android:hint="@string/product_code_i_e_hxc4fyt"
+            android:hint="@string/product_code"
             android:padding="10dp"
             android:textColor="@color/abc_search_url_text_normal"
+            android:textColorHint="@color/colorAccent"
             android:textStyle="italic" />
 
 
         <EditText
             android:id="@+id/edtReportScammerOptionCounterfeitMessage"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
-            android:background="@drawable/material_16"
             android:hint="@string/write_your_message_here"
             android:padding="10dp"
             android:textColor="@color/abc_search_url_text_normal"
+            android:textColorHint="@color/colorAccent"
             android:textStyle="italic" />
 
 

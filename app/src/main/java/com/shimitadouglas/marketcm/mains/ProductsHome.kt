@@ -5,12 +5,15 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
+import android.os.Build.VERSION_CODES.R
 import android.os.Bundle
 import android.os.Handler
+import android.provider.MediaStore
 import android.text.TextUtils
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
@@ -19,10 +22,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
@@ -67,6 +67,7 @@ import com.shimitadouglas.marketcm.notifications.BigTextNotificationGen
 import com.shimitadouglas.marketcm.notifications.NormalNotification
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
 
@@ -118,16 +119,12 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         funInitGlobals()
         //call function to handle navView Clicking and in it we link the header of it
         funHandleNavViewProducts()
-        //
         //functionInit header
         funInitNavHeaderContent()
-        //
         //call function to handle bottom Nav Click of items
         funHandleBottomNavProducts()
-        //
         //funCheckEmailVerification
         funEmailCheck()
-        //
         //fun load the data from the fStore
         funFetchProfileDataBackend()
 
@@ -179,8 +176,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 //using the create notification fun to pass the size of the notifications
                                 val idIconNotification = R.id.notification
                                 createNotificationAlertBadges(
-                                    idIconNotification,
-                                    numberOfNotifications
+                                    idIconNotification, numberOfNotifications
                                 )
                             }
                         }
@@ -207,22 +203,19 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerLayout.closeDrawer(GravityCompat.START, true)
         //
         //create single choice dialog and from thence update the selected option
-        val arrayOptionsUpdate =
-            arrayOf(
-                "update username",
-                "update profile picture",
-                "update phone number",
-                "update account password"
-            )
+        val arrayOptionsUpdate = arrayOf(
+            "update username",
+            "update profile picture",
+            "update phone number",
+            "update account password"
+        )
         val itemSelected = 4
         val alertOptionsUpdate = MaterialAlertDialogBuilder(this@ProductsHome)
         alertOptionsUpdate.setTitle("select option")
-        alertOptionsUpdate.background =
-            resources.getDrawable(R.drawable.general_alert_dg, theme)
-        alertOptionsUpdate.setIcon(R.drawable.ic_question)
+        alertOptionsUpdate.background = resources.getDrawable(R.drawable.general_alert_dg, theme)
+        alertOptionsUpdate.setIcon(R.drawable.cart)
         alertOptionsUpdate.setSingleChoiceItems(
-            arrayOptionsUpdate,
-            itemSelected
+            arrayOptionsUpdate, itemSelected
         ) { dialog, which ->
             //code begins
             when (which) {
@@ -273,9 +266,9 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerLayout.closeDrawer(GravityCompat.START, true)
         //Progress Dialog
         val progressD = ProgressDialog(this@ProductsHome)
-        progressD.setTitle("Email Verification")
+        progressD.setTitle("email verification")
         progressD.setCancelable(false)
-        progressD.setMessage("processing request...")
+        progressD.setMessage("processing ")
         progressD.show()
         progressD.create()
 
@@ -285,53 +278,42 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (it.isSuccessful) {
                 //dismiss the pgD
                 progressD.dismiss()
-                //sign out the current user
-                FirebaseAuth.getInstance().signOut()
                 //creating alertFor notify email verification sent
                 val alertShowHowToVerify = MaterialAlertDialogBuilder(this@ProductsHome)
                 alertShowHowToVerify.setCancelable(false)
                 alertShowHowToVerify.setIcon(R.drawable.ic_info)
                 alertShowHowToVerify.background =
-                    resources.getDrawable(R.drawable.material_seven, theme)
+                    resources.getDrawable(R.drawable.general_alert_dg, theme)
                 alertShowHowToVerify.setTitle("Email Verification")
                 alertShowHowToVerify.setMessage(
-                    "email verification link has been sent to (${fabAuth.currentUser!!.email})\n" +
-                            "\nopen your email inbox and click the email link to verify\n" +
-                            "\nif this is not the case check it in the spam and do the verification"
+                    "email verification link has been sent to (${fabAuth.currentUser!!.email})\n" + "\nopen your email inbox and click the email link to verify\n" + "\nIf the email verification link is not present in the email inbox folder then do check it in the spam folder and do the verification"
                 )
                 alertShowHowToVerify.setPositiveButton("Ok") { dialog, _ ->
                     //show notification of email verification
-                    val normalNotification = NormalNotification(
+                    NormalNotification(
                         this@ProductsHome,
                         "Email Verification",
-                        "email verification link sent",
+                        "verification link sent successfully",
                         R.drawable.cart
-                    )
-                    normalNotification.funCreateNotification()
-                    //
+                    ).funCreateNotification()
                     //sign out the user
                     val currentUser = FirebaseAuth.getInstance().currentUser
                     if (currentUser != null) {
                         FirebaseAuth.getInstance().signOut()
                         dialog.dismiss()
                         finish()
-                    } else {
-                        finish()
                     }
                 }
-                alertShowHowToVerify.show()
                 alertShowHowToVerify.create()
+                alertShowHowToVerify.show()
                 //code ends
             } else if (!it.isSuccessful) {
                 //code begins
                 //dismiss the pgD
                 progressD.dismiss()
                 //failed to send an email verification link
-                AlertDialog.Builder(this@ProductsHome)
-                    .setMessage(it.exception?.message)
-                    .setIcon(R.drawable.ic_warning)
-                    .show()
-                    .create()
+                AlertDialog.Builder(this@ProductsHome).setMessage(it.exception?.message)
+                    .setIcon(R.drawable.ic_warning).show().create()
                 //code ends
             }
         }
@@ -373,8 +355,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     if (classDataFilter != null) {
                         //log data
                         Log.d(
-                            TAG,
-                            "funControlApp: dataClassAppController its class filter not null"
+                            TAG, "funControlApp: dataClassAppController its class filter not null"
                         )
 
                         val runA = classDataFilter.runA
@@ -477,11 +458,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                     //call the fun to necessitate the equality current user with admin data
                     funFetchCurrentUserDataForComparison(
-                        adminEmail,
-                        adminEmailB,
-                        adminPhone,
-                        adminPassCode,
-                        progressServerStatus
+                        adminEmail, adminEmailB, adminPhone, adminPassCode, progressServerStatus
                     )
                     //
 
@@ -546,8 +523,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (it.isSuccessful) {
                     //log data
                     Log.d(
-                        TAG,
-                        "funFetchCurrentUserDataForComparison:fetching the user data was yes"
+                        TAG, "funFetchCurrentUserDataForComparison:fetching the user data was yes"
                     )
                     //
 
@@ -563,8 +539,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         if (passcodeUser == adminPassCode && phoneUser == adminPhone && emailUser == adminEmail) {
                             //log data
                             Log.d(
-                                TAG,
-                                "funFetchCurrentUserDataForComparison: user is admin match A"
+                                TAG, "funFetchCurrentUserDataForComparison: user is admin match A"
                             )
                             //
 
@@ -576,8 +551,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         } else if (passcodeUser == adminPassCode && phoneUser == adminPhone && emailUser == adminEmailB) {
                             //log data
                             Log.d(
-                                TAG,
-                                "funFetchCurrentUserDataForComparison: user is admin  match B"
+                                TAG, "funFetchCurrentUserDataForComparison: user is admin  match B"
                             )
                             //continue the app user is admin despite app failure admin accesses it freely
                             //call function to perform default fragment addition
@@ -586,8 +560,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         } else {
                             //log data
                             Log.d(
-                                TAG,
-                                "funFetchCurrentUserDataForComparison: user no admin stop app"
+                                TAG, "funFetchCurrentUserDataForComparison: user no admin stop app"
                             )
                             //dismiss progressD
                             progressServerStatus.dismiss()
@@ -656,10 +629,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         //show the notification(BigTextNotifyGen)
                         val bigTitle = "Attention"
                         val bigMessage =
-                            "Sasa $firstName $lastName currently the application is undergoing maintenance.\n" +
-                                    "Services will be fully restored after maintenance is over.\n" +
-                                    "Kindly be patient as the software team resolve some issues.\n " +
-                                    "Thank you."
+                            "Sasa $firstName $lastName currently the application is undergoing maintenance.\n" + "Services will be fully restored after maintenance is over.\n" + "Kindly be patient as the software team resolve some issues.\n " + "Thank you."
                         val smallMessage = "application is under maintenance"
                         val byMessage = getString(R.string.by_me)
                         val bitmapImage = BitmapFactory.decodeResource(resources, R.drawable.cart)
@@ -676,8 +646,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             bitmapImage,
                             R.drawable.ic_cart,
                             byMessage
-                        )
-                            .funCreateBigTextNotification()
+                        ).funCreateBigTextNotification()
                         //
                         val currentUser = FirebaseAuth.getInstance().currentUser
                         if (currentUser != null) {
@@ -711,10 +680,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //show the notification(BigTextNotifyGen)
                 val bigTitle = "Attention"
                 val bigMessage =
-                    "Sasa, the application is undergoing maintenance" +
-                            "services will be fully restored after maintenance is over " +
-                            "kindly be patient as the software team resolve some issues " +
-                            "thank you."
+                    "Sasa, the application is undergoing maintenance" + "services will be fully restored after maintenance is over " + "kindly be patient as the software team resolve some issues " + "thank you."
                 val smallMessage = "application is under maintenance"
                 val byMessage = getString(R.string.by_me)
                 val bitmapImage = BitmapFactory.decodeResource(resources, R.drawable.cart)
@@ -731,8 +697,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     bitmapImage,
                     R.drawable.ic_cart,
                     byMessage
-                )
-                    .funCreateBigTextNotification()
+                ).funCreateBigTextNotification()
                 //
 
 
@@ -852,23 +817,14 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 val registrationDateInSharedPref = getString("date", "")
 
                                 //compare the data present if is the same from the one being fetched
-                                if (imageInSharedPref != image ||
-                                    phoneInSharedPref != phone ||
-                                    universityInSharedPref != university
-                                    || emailInSharedPref != email
-                                    || firstNameInSharedPref != fName ||
-                                    lastnameInSharedPref != lName ||
-                                    registrationDateInSharedPref != registrationDate
-                                ) {
+                                if (imageInSharedPref != image || phoneInSharedPref != phone || universityInSharedPref != university || emailInSharedPref != email || firstNameInSharedPref != fName || lastnameInSharedPref != lName || registrationDateInSharedPref != registrationDate) {
                                     //something is wrong with the data present in the shared prefs thus we should load the data being fetched to be legit into
                                     //the shared prefs
 
                                     //saving the data into the shared prefs
-                                    val sharedPreferences =
-                                        getSharedPreferences(
-                                            sharedPreferenceName,
-                                            Context.MODE_PRIVATE
-                                        )
+                                    val sharedPreferences = getSharedPreferences(
+                                        sharedPreferenceName, Context.MODE_PRIVATE
+                                    )
                                     sharedPreferences.edit().apply {
                                         putString("email", email)
                                         putString("firstname", fName)
@@ -924,13 +880,10 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         ).show()
                         //
                     }
-                }
-                .addOnFailureListener {
+                }.addOnFailureListener {
                     //data fetch was a failure
-                    AlertDialog.Builder(this@ProductsHome)
-                        .setTitle("Data Fetching Failed")
-                        .setIcon(R.drawable.ic_warning)
-                        .setCancelable(false)
+                    AlertDialog.Builder(this@ProductsHome).setTitle("Data Fetching Failed")
+                        .setIcon(R.drawable.ic_warning).setCancelable(false)
                         .setMessage("application encountered an error while loading the data from the server.\nReason:\n(${it.message.toString()})")
                     //
                     return@addOnFailureListener
@@ -957,8 +910,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //animate bottom nav
         val layoutAnimationController = LayoutAnimationController(
             AnimationUtils.loadAnimation(
-                this@ProductsHome,
-                R.anim.bottom_up
+                this@ProductsHome, R.anim.bottom_up
             )
         )
         layoutAnimationController.order = LayoutAnimationController.ORDER_REVERSE
@@ -1005,23 +957,18 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     Snackbar.make(bottomNav, "you are going to log out", Snackbar.LENGTH_LONG)
                         .setBackgroundTint(
                             resources.getColor(
-                                R.color.cardview_dark_background,
-                                theme
+                                R.color.cardview_dark_background, theme
                             )
-                        )
-                        .setActionTextColor(
+                        ).setActionTextColor(
                             resources.getColor(
-                                R.color.accent_material_light,
-                                theme
+                                R.color.accent_material_light, theme
                             )
-                        )
-                        .setAction("sure") {
+                        ).setAction("sure") {
                             //code begins
                             //call functionLogout
                             funLogoutConfirmation()
                             //code ends
-                        }
-                        .show()
+                        }.show()
                     //
                 }
 
@@ -1075,56 +1022,43 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val alertD = MaterialAlertDialogBuilder(this@ProductsHome)
                 alertD.setTitle("Email Verification")
 
-                alertD.background =
-                    resources.getDrawable(R.drawable.material_six, theme)
+                alertD.background = resources.getDrawable(R.drawable.general_alert_dg, theme)
                 alertD.setCancelable(false)
                 alertD.setMessage(
-                    "(${userCurrent.email})" +
-                            "\nneeds to be verified within 2 days in order" +
-                            " to avoid your account from becoming inactive.\n" +
-                            "\naccounts created with non verified email addresses are deemed to be corrupt accounts " +
-                            " to avoid this situation kindly verify your email within the stipulated period of time."
+                    "(${userCurrent.email})" + "\nneeds to be verified for your account to become approved officially"
                 )
                 alertD.setIcon(R.drawable.ic_info)
                 alertD.setPositiveButton("verifyNow") { dialog, _ ->
                     //open drawer
                     drawerLayout.openDrawer(GravityCompat.START)
-                    //
                     //disable the verify email address until user accepts at snackBar
                     headerButtonVerifyEmail.isEnabled = false
                     //
 
                     //Snack to show user how to go about
                     Snackbar.make(
-                        drawerLayout,
-                        "click verify email button",
-                        Snackbar.LENGTH_INDEFINITE
-                    )
-                        .setBackgroundTint(
-                            resources.getColor(
-                                R.color.design_dark_default_color_primary,
-                                theme
-                            )
-                        ).setAction("Ok") {
-                            //enable the button verify email and visible
-                            headerButtonVerifyEmail.apply {
-                                isEnabled = true
-                                visibility = View.VISIBLE
-                            }
-                            //animate the button using the handler 0.5 seconds delay
-                            Handler(mainLooper).postDelayed({
-                                headerButtonVerifyEmail.startAnimation(
-                                    AnimationUtils.loadAnimation(
-                                        this@ProductsHome,
-                                        R.anim.fadeout
-                                    )
-                                )
-                            }, 500)
-
-                            //
+                        drawerLayout, "click verify email button", Snackbar.LENGTH_INDEFINITE
+                    ).setBackgroundTint(
+                        resources.getColor(
+                            R.color.black, theme
+                        )
+                    ).setAction("Ok") {
+                        //enable the button verify email and visible
+                        headerButtonVerifyEmail.apply {
+                            isEnabled = true
+                            visibility = View.VISIBLE
                         }
-                        .setActionTextColor(Color.parseColor("#54FA08"))
-                        .show()
+                        //animate the button using the handler 0.5 seconds delay
+                        Handler(mainLooper).postDelayed({
+                            headerButtonVerifyEmail.startAnimation(
+                                AnimationUtils.loadAnimation(
+                                    this@ProductsHome, R.anim.fadeout
+                                )
+                            )
+                        }, 500)
+
+                        //
+                    }.setActionTextColor(Color.parseColor("#54FA08")).show()
                     //
 
                     //dismiss the dialog to avoid window leaked RT Exceptions
@@ -1136,11 +1070,9 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     Snackbar.make(toolbar, "account not yet approved!", Snackbar.LENGTH_LONG)
                         .setBackgroundTint(
                             resources.getColor(
-                                R.color.accent_material_light,
-                                theme
+                                R.color.accent_material_light, theme
                             )
-                        )
-                        .show()
+                        ).show()
                     //
 
                     //dismiss the dialog
@@ -1159,8 +1091,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 headerButtonVerifyEmail.visibility = View.GONE
                 //enabling the visibility of the update button since a user cannot update his/her a/c unless is verified the email
                 headerButtonUpdate.visibility = View.VISIBLE
-                //
-
                 //show notification
                 funShowApprovedAccountNotification()
                 //
@@ -1176,8 +1106,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             this@ProductsHome,
             "Congratulations",
             "account approved",
-            "you successfully verified the account email address.\n" +
-                    "now post your products freely and get your earnings from the interested members",
+            "you successfully verified the account email address.\n" + "now post your products freely and get your earnings from the interested members",
             "MarketCM approved your account\n",
             BitmapFactory.decodeResource(resources, R.drawable.cart),
             R.drawable.ic_cart,
@@ -1299,11 +1228,8 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     //dismiss the pg and show alert of failure to change password
                     progressionDialog.dismiss()
                     //show alert
-                    AlertDialog.Builder(this@ProductsHome)
-                        .setMessage(it.exception?.message)
-                        .setIcon(R.drawable.ic_warning)
-                        .show()
-                        .create()
+                    AlertDialog.Builder(this@ProductsHome).setMessage(it.exception?.message)
+                        .setIcon(R.drawable.ic_warning).show().create()
                     //
 
                 }
@@ -1316,8 +1242,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun funUpdatePasswordStore(
-        textPasswordChange: String,
-        progressionDialog: ProgressDialog
+        textPasswordChange: String, progressionDialog: ProgressDialog
     ) {
         //code begins
         //creating a firebase instance then acquiring a uniqueUID for differentiation of users Under One Collection Of Document ComradeUsers
@@ -1340,21 +1265,15 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         progressionDialog.dismiss()
                         //alert the user with new password
                         //show alert
-                        AlertDialog.Builder(this@ProductsHome)
-                            .setTitle("Congratulations!")
+                        AlertDialog.Builder(this@ProductsHome).setTitle("Congratulations!")
                             .setMessage(
-                                "password update was successful" +
-                                        "\nyour new login account password is ($textPasswordChange)"
-                            )
-                            .setIcon(R.drawable.ic_nike_done)
-                            .setCancelable(false)
+                                "password update was successful" + "\nyour new login account password is ($textPasswordChange)"
+                            ).setIcon(R.drawable.ic_nike_done).setCancelable(false)
                             .setPositiveButton("okay") { dialog, _ ->
                                 //dismiss the dialog
                                 dialog.dismiss()
                                 //
-                            }
-                            .show()
-                            .create()
+                            }.show().create()
                         //
                         //
                     }
@@ -1366,11 +1285,8 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         progressionDialog.dismiss()
                         //show alert
                         //show alert
-                        AlertDialog.Builder(this@ProductsHome)
-                            .setMessage(it.exception?.message)
-                            .setIcon(R.drawable.ic_warning)
-                            .show()
-                            .create()
+                        AlertDialog.Builder(this@ProductsHome).setMessage(it.exception?.message)
+                            .setIcon(R.drawable.ic_warning).show().create()
                         //
 
                         //
@@ -1390,8 +1306,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //animate the view
         viewUpdatePhoneNumber.startAnimation(
             AnimationUtils.loadAnimation(
-                this@ProductsHome,
-                R.anim.rotate_avg
+                this@ProductsHome, R.anim.rotate_avg
             )
         )
         val phoneNumberEntered =
@@ -1475,18 +1390,14 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     //dismiss the alert
                     progressDialogPhoneUpdate.dismiss()
                     //alert the user of error
-                    AlertDialog.Builder(this@ProductsHome)
-                        .setMessage(it.exception?.message)
-                        .setIcon(R.drawable.ic_warning)
-                        .setPositiveButton("ok") { dialog, _ ->
+                    AlertDialog.Builder(this@ProductsHome).setMessage(it.exception?.message)
+                        .setIcon(R.drawable.ic_warning).setPositiveButton("ok") { dialog, _ ->
                             //dismiss the dialog
                             dialog.dismiss()
                             //migrate products home
                             funIntentMigrateHome()
                             //
-                        }
-                        .show()
-                        .create()
+                        }.show().create()
                     //
                 }
                 //code ends
@@ -1498,8 +1409,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     @Suppress("DEPRECATION")
     private fun funUpdatePhoneInProductsPosts(
-        textPhoneEntered: String,
-        progressDialogPhoneUpdate: ProgressDialog
+        textPhoneEntered: String, progressDialogPhoneUpdate: ProgressDialog
     ) {
         //code begins
         val keyPhone = "phone"
@@ -1557,8 +1467,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //animate the view
         viewUpdateUsername.startAnimation(
             AnimationUtils.loadAnimation(
-                this@ProductsHome,
-                R.anim.rotate_avg
+                this@ProductsHome, R.anim.rotate_avg
             )
         )
         //init of first name $ lastname wit reference to the view
@@ -1613,8 +1522,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     @SuppressLint("UseCompatLoadingForDrawables")
     @Suppress("DEPRECATION")
     private fun startUpdateOfUserName(
-        firstName: String,
-        lastName: String
+        firstName: String, lastName: String
     ) {
         //code begins
         val progressDg = ProgressDialog(this@ProductsHome)
@@ -1658,11 +1566,8 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         //
 
                         //alert the user of the error
-                        AlertDialog.Builder(this@ProductsHome)
-                            .setMessage(it.exception?.message)
-                            .setIcon(R.drawable.ic_warning)
-                            .create()
-                            .show()
+                        AlertDialog.Builder(this@ProductsHome).setMessage(it.exception?.message)
+                            .setIcon(R.drawable.ic_warning).create().show()
                         //
 
                     }
@@ -1730,9 +1635,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     @Suppress("DEPRECATION")
     private fun funUpdateTheUserNameInProducts(
-        documentsID: String,
-        fullName: String,
-        progressDg: ProgressDialog
+        documentsID: String, fullName: String, progressDg: ProgressDialog
     ) {
         //code begins
         val keyName = "Owner"
@@ -1771,41 +1674,36 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun functionUpdateProfileImage() {
         //code begins
         Snackbar.make(
-            drawerLayout,
-            "select your preferred image from gallery",
-            Snackbar.LENGTH_INDEFINITE
-        )
-            .setAction("pick") {
-                //check if the permissions read_write are granted or null
-                Dexter.withContext(this@ProductsHome)
-                    .withPermissions(
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ).withListener(object : MultiplePermissionsListener {
-                        override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
+            drawerLayout, "select your preferred image from gallery", Snackbar.LENGTH_INDEFINITE
+        ).setAction("pick") {
+            //check if the permissions read_write are granted or null
+            Dexter.withContext(this@ProductsHome).withPermissions(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ).withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
 
-                            //permissions granted
-                            //launch intent update image
-                            val intentUpdatePicture = Intent()
-                            intentUpdatePicture.action = Intent.ACTION_PICK
-                            intentUpdatePicture.type = "image/*"
-                            galleryPickUpdate.launch(intentUpdatePicture)
-                            //code ends
-                            //
-                        }
+                    //permissions granted
+                    //launch intent update image
+                    val intentUpdatePicture = Intent()
+                    intentUpdatePicture.action = Intent.ACTION_PICK
+                    intentUpdatePicture.type = "image/*"
+                    galleryPickUpdate.launch(intentUpdatePicture)
+                    //code ends
+                    //
+                }
 
-                        override fun onPermissionRationaleShouldBeShown(
-                            p0: MutableList<PermissionRequest>?,
-                            p1: PermissionToken?
-                        ) {
-                            //permission not granted
-                            funShowAlertPermissionRationale()
-                            //
-                        }
-                    }).check()
-                //
+                override fun onPermissionRationaleShouldBeShown(
+                    p0: MutableList<PermissionRequest>?, p1: PermissionToken?
+                ) {
+                    //permission not granted
+                    funShowAlertPermissionRationale()
+                    //
+                }
+            }).check()
+            //
 
-            }.setBackgroundTint(resources.getColor(R.color.accent_material_light, theme)).show()
+        }.setBackgroundTint(resources.getColor(R.color.accent_material_light, theme)).show()
         //code ends
     }
 
@@ -1818,11 +1716,9 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         alertPermissionRationale.setTitle("Permissions")
         alertPermissionRationale.setIcon(R.drawable.ic_info)
         alertPermissionRationale.setMessage(
-            "Market CM requires that the requested permissions are necessary for it to function properly." +
-                    " grant the permissions to use the application"
+            "Market CM requires that the requested permissions are necessary for it to function properly." + " grant the permissions to use the application"
         )
-        alertPermissionRationale.background =
-            resources.getDrawable(R.drawable.material_six, theme)
+        alertPermissionRationale.background = resources.getDrawable(R.drawable.general_alert_dg, theme)
         alertPermissionRationale.setCancelable(false)
         alertPermissionRationale.setPositiveButton("do") { dialog, _ ->
             //start the intent of launching the settings for app info
@@ -1854,7 +1750,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         headerButtonVerifyEmail = viewHeader.findViewById(R.id.btnCompatHeaderVerify)
         headerButtonUpdate = viewHeader.findViewById(R.id.btnCompatHeaderUpdate)
         headerDateRegistration = viewHeader.findViewById(R.id.registrationDateHeader)
-        //
+
         //adding marque effect on the textVerify Email
         headerVerificationEmail.setSingleLine()
         headerVerificationEmail.ellipsize = TextUtils.TruncateAt.MARQUEE
@@ -1871,7 +1767,6 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //setting listener on the navigation View
         navView.setNavigationItemSelectedListener(this@ProductsHome)
         //code ends
-
     }
 
     private fun funInitGlobals() {
@@ -1882,14 +1777,11 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         bottomNav = findViewById(R.id.bottomNavProducts)
 
         drawerToggle = ActionBarDrawerToggle(
-            this@ProductsHome,
-            drawerLayout,
-            toolbar,
-            R.string.drawerOpen,
-            R.string.drawerClose
+            this@ProductsHome, drawerLayout, toolbar, R.string.drawerOpen, R.string.drawerClose
         )
 
-        //setting support for toolbar to enable navView Be attached Toolbar
+        //setting support for toolbar
+        //  navView Be attached Toolbar
         setSupportActionBar(toolbar)
         drawerLayout.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
@@ -1897,8 +1789,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //creating a layoutAnim controller for the drawerLayout
             val controllerAnimDrawerLayout = LayoutAnimationController(
                 AnimationUtils.loadAnimation(
-                    this@ProductsHome,
-                    R.anim.bottom_up
+                    this@ProductsHome, R.anim.bottom_up
                 )
             )
             controllerAnimDrawerLayout.delay = 0.2f
@@ -1925,18 +1816,14 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.smsDev -> {
                 //launch function to sms developer thread new
                 funSMSDev()
-                //
             }
             R.id.emailDev -> {
                 //launch function on a different thread to email developer
                 funEmailDeveloper()
-                //
-
             }
             R.id.callDev -> {
                 //launch function call developer on a different thread
                 funCallDev()
-                //
             }
 
             R.id.aboutMarketCM -> {
@@ -1945,9 +1832,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.aboutPrivacy -> {
                 funShowModalSheetPrivacy()
             }
-            R.id.checkUpdate -> {
-                Toast.makeText(this@ProductsHome, "check update", Toast.LENGTH_LONG).show()
-            }
+
             R.id.reportScammer -> {
                 funAlertReportScammer()
 
@@ -1978,6 +1863,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //code ends
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun funAlertReportScammer() {
         //code begins
         val listScammerOption: Array<String> =
@@ -2089,7 +1975,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         progressCounterfeitDialog.show()
 
         //creating an arraylist that will contain all data that will be used to match productCodes
-        var arrayHoldData = arrayListOf<DataClassProductsData>()
+        val arrayHoldData = arrayListOf<DataClassProductsData>()
         arrayHoldData.clear()
         //code begins
         //fetch all data from the store to check the existence of this product code
@@ -2118,15 +2004,13 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         if (it.productID.equals(productCode)) {
                             //boolean true code exits
                             isCodeFound = true
-                            //
                             //get the details of the suspect by grabbing the key
                             suspectUniqueUID = it.userID.toString()
                             //get product timerControl ID that will fetch all the details about the product
                             //posted as a counterfeit one
                             productTimerControllerID = it.timerControlID.toString()
                             //
-                        } else
-                            return@forEach
+                        } else return@forEach
                     }
 
 
@@ -2146,29 +2030,19 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                     //dismiss the progress dialog
                                     progressCounterfeitDialog.dismiss()
                                     //
-                                    MaterialAlertDialogBuilder(this@ProductsHome)
-                                        .setTitle("attention!")
+                                    MaterialAlertDialogBuilder(this@ProductsHome).setTitle("attention!")
                                         .setMessage(
-                                            "system confirmed that this product belongs to you\n" +
-                                                    "\nactually you are the one who posted it!\n" +
-                                                    "\nyou cannot report your own products as counterfeit"
-                                        )
-                                        .setIcon(R.drawable.ic_warning)
-                                        .setBackground(
+                                            "system confirmed that this product belongs to you\n" + "\nactually you are the one who posted it!\n" + "\nyou cannot report your own products as counterfeit"
+                                        ).setIcon(R.drawable.ic_warning).setBackground(
                                             resources.getDrawable(
-                                                R.drawable.general_alert_dg,
-                                                theme
+                                                R.drawable.general_alert_dg, theme
                                             )
-                                        )
-                                        .setPositiveButton("ok") { dialog, _ ->
+                                        ).setPositiveButton("ok") { dialog, _ ->
 
                                             //dismiss the dialog
                                             dialog.dismiss()
                                             //
-                                        }
-                                        .setCancelable(false)
-                                        .create()
-                                        .show()
+                                        }.setCancelable(false).create().show()
                                 }
                             } else {
                                 //call a new function to finalise the process of reporting the user
@@ -2273,22 +2147,14 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         //
 
                         //show an alert congrats
-                        MaterialAlertDialogBuilder(this@ProductsHome)
-                            .setIcon(R.drawable.ic_nike_done)
-                            .setTitle("report sent")
-                            .setCancelable(false)
-                            .setMessage(
-                                "your report has been received successfully.\n" +
-                                        "\nyou might be contacted in case of additional information " +
-                                        "is to be enquired by our policy violation team.\n" +
-                                        "\nthank you for choosing Market CM the better marketing option for a comrade."
-                            )
-                            .setPositiveButton("okay") { dialog, _ ->
+                        MaterialAlertDialogBuilder(this@ProductsHome).setIcon(R.drawable.ic_nike_done)
+                            .setTitle("report sent").setCancelable(false).setMessage(
+                                "your report has been received successfully.\n" + "\nyou might be contacted in case of additional information " + "is to be enquired by our policy violation team.\n" + "\nthank you for choosing Market CM the better marketing option for a comrade."
+                            ).setPositiveButton("okay") { dialog, _ ->
                                 //dismiss the dialog
                                 dialog.dismiss()
                                 //
-                            }
-                            .create().show()
+                            }.create().show()
                         //
 
                     } else if (!it.isSuccessful) {
@@ -2319,8 +2185,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var intentShareApplication = Intent(Intent.ACTION_SEND)
         intentShareApplication.type = "text/plain"
         intentShareApplication.putExtra(
-            Intent.EXTRA_TEXT,
-            getString(R.string.share_market_cm)
+            Intent.EXTRA_TEXT, getString(R.string.share_market_cm)
         )
         startActivity(Intent.createChooser(intentShareApplication, getString(R.string.share_via)))
         //code ends
@@ -2353,8 +2218,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val phoneNumber = "+254757450727"
         val messageBody =
             "hey,write your text here and send it to me, i will be glad to feedback you"
-        val intentMessaging =
-            Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phoneNumber, null))
+        val intentMessaging = Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phoneNumber, null))
         startActivity(Intent.createChooser(intentMessaging, "Launch SMS APP"))
         //code ends
 
@@ -2374,8 +2238,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private val galleryPickUpdate =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-        {
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
 
             //activity image pick successful
             if (it.resultCode == RESULT_OK) {
@@ -2391,8 +2254,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //animate the image
                 headerImage.startAnimation(
                     AnimationUtils.loadAnimation(
-                        this@ProductsHome,
-                        R.anim.rotate
+                        this@ProductsHome, R.anim.rotate
                     )
                 )
 
@@ -2416,6 +2278,11 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             dialog.dismiss()
                             //
                         }
+                        alertUserPictureUpdating.setNegativeButton("no"){
+                            dialog,_->
+                            //dismiss the dialog
+                            dialog.dismiss()
+                        }
                         alertUserPictureUpdating.create()
                         alertUserPictureUpdating.show()
 
@@ -2431,9 +2298,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //code begins
                 //show snackBar you did not pick an image from the gallery
                 Snackbar.make(
-                    bottomNav,
-                    "yo did not pick an image from gallery!",
-                    Snackbar.LENGTH_LONG
+                    bottomNav, "yo did not pick an image from gallery!", Snackbar.LENGTH_LONG
                 ).setTextColor(Color.parseColor("#EEBD09")).show()
                 //
 
@@ -2457,79 +2322,90 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //initiate the update of image at fab storage with the selected image from gallery
         //"$ComRadeUser/$currentUID/${fabUserEmail}/uri
 
-        if (currentUID != null) {
-            if (uriDataUpdatePic != null) {
-                if (fabUserEmail != null) {
-                    fabStorageInt.child(ComradeUser).child(currentUID).child(fabUserEmail)
-                        .putFile(uriDataUpdatePic).addOnCompleteListener {
-                            //code begins
-                            //successfully obtained download uri
-                            if (it.isSuccessful) {
-                                //keyToImageUri fStore
-                                val keyImageUri = "ImagePath"
-                                //get download URI from fabStorage
+        try {
+            //compress the image into a size that is convenient for uploading to the storage w/c facilitates the saving of the storage
+            val bitmap: Bitmap =
+                MediaStore.Images.Media.getBitmap(contentResolver, uriDataUpdatePic)
+            //init of the baos that will be used in the process of imageCompression
+            val byteArrayOutputStream: ByteArrayOutputStream = ByteArrayOutputStream()
+            //init of the compression process using the scale factor quality of 25
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 25, byteArrayOutputStream)
+            //init of the byteArrayCompressed image by the help of toByteArray
+            val byteArrayImageToUpdate: ByteArray = byteArrayOutputStream.toByteArray()
+            //
 
-                                it.result.storage.downloadUrl.addOnCompleteListener {
-                                    if (it.isSuccessful) {
-                                        //download uri was fetched successfully hence get the download Uri to string
-                                        //updating the pg to
-                                        progressDg.setMessage("validation")
-                                        //obtaining the uri from
-                                        val urlDownloadUrlString = it.result.toString()
-                                        //calling a function that will allow now continuation to the fStore for Storing new Update imageLink
-                                        //call function to update the mapping data in the fStore
-                                        funUpdateStoreImageUrl(
-                                            urlDownloadUrlString,
-                                            keyImageUri,
-                                            progressDg
-                                        )
-                                        //
-                                    } else if (!it.isSuccessful) {
-                                        //dismiss the progress dialog
-                                        progressDg.dismiss()
-                                        //
-                                        //alert the error to the user
-                                        AlertDialog.Builder(this@ProductsHome)
-                                            .setMessage(it.exception?.message)
-                                            .setIcon(R.drawable.ic_warning)
-                                            .create()
-                                            .show()
-                                        //
-                                        //
+            if (currentUID != null) {
+                if (uriDataUpdatePic != null) {
+                    if (fabUserEmail != null) {
+                        fabStorageInt.child(ComradeUser).child(currentUID).child(fabUserEmail)
+                            .putBytes(byteArrayImageToUpdate).addOnCompleteListener {
+                                //code begins
+                                //successfully obtained download uri
+                                if (it.isSuccessful) {
+                                    //keyToImageUri fStore
+                                    val keyImageUri = "ImagePath"
+                                    //get download URI from fabStorage
+
+                                    it.result.storage.downloadUrl.addOnCompleteListener {
+                                        if (it.isSuccessful) {
+                                            //download uri was fetched successfully hence get the download Uri to string
+                                            //updating the pg to
+                                            progressDg.setMessage("validation")
+                                            //obtaining the uri from
+                                            val urlDownloadUrlString = it.result.toString()
+                                            //calling a function that will allow now continuation to the fStore for Storing new Update imageLink
+                                            //call function to update the mapping data in the fStore
+                                            funUpdateStoreImageUrl(
+                                                urlDownloadUrlString, keyImageUri, progressDg
+                                            )
+                                            //
+                                        } else if (!it.isSuccessful) {
+                                            //dismiss the progress dialog
+                                            progressDg.dismiss()
+                                            //
+                                            //alert the error to the user
+                                            AlertDialog.Builder(this@ProductsHome)
+                                                .setMessage(it.exception?.message)
+                                                .setIcon(R.drawable.ic_warning).create().show()
+                                            //
+                                        }
 
                                     }
-
+                                    //
                                 }
-                                //
+
+                                if (!it.isSuccessful) {
+                                    //dismiss the pg
+                                    progressDg.dismiss()
+                                    //alert user of url failure
+                                    AlertDialog.Builder(this@ProductsHome)
+                                        .setMessage(it.exception?.message)
+                                        .setIcon(R.drawable.ic_warning).create().show()
+                                    //
+                                }
+
+                                //code ends
+
                             }
-
-                            if (!it.isSuccessful) {
-                                //dismiss the pg
-                                progressDg.dismiss()
-                                //
-                                //alert user of url failure
-                                AlertDialog.Builder(this@ProductsHome)
-                                    .setMessage(it.exception?.message)
-                                    .setIcon(R.drawable.ic_warning)
-                                    .create()
-                                    .show()
-                                //
-                            }
-
-                            //code ends
-
-                        }
+                    }
                 }
             }
+
+        } catch (e: Exception) {
+            //toast the error since the process of compression did not succeed
+            funToastyFail("something went wrong!")
+            //return home products
+            startActivity(
+                Intent(
+                    this@ProductsHome, ProductsHome::class.java
+                )
+            )
         }
-        //
     }
 
 
     private fun funUpdateStoreImageUrl(
-        urlDownloadUrlString: String,
-        keyImageUri: String,
-        progressDg: ProgressDialog
+        urlDownloadUrlString: String, keyImageUri: String, progressDg: ProgressDialog
     ) {
         //code begins2
         val mapData = hashMapOf(keyImageUri to urlDownloadUrlString)
@@ -2555,11 +2431,8 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         //
                         //code begins
                         //alert the user and notify of the failure
-                        AlertDialog.Builder(this@ProductsHome)
-                            .setMessage(it.exception?.message)
-                            .setIcon(R.drawable.ic_warning)
-                            .create()
-                            .show()
+                        AlertDialog.Builder(this@ProductsHome).setMessage(it.exception?.message)
+                            .setIcon(R.drawable.ic_warning).create().show()
                         //code ends
                         //code ends
 
@@ -2572,9 +2445,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun funUpdateTheImagePublicRepo(
-        currentUID: String,
-        progressDg: ProgressDialog,
-        urlDownloadUrlString: String
+        currentUID: String, progressDg: ProgressDialog, urlDownloadUrlString: String
     ) {
 
         //code begins
@@ -2641,9 +2512,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     //dismiss the progress dialog and then start activity to home products
                     //update the private/personal repo file image of the owner on the products
                     funUpdateOwnerImageOnPrivateRepo(
-                        progressDg,
-                        currentUID,
-                        mapData
+                        progressDg, currentUID, mapData
                     )
                     //
                     startActivity(Intent(this@ProductsHome, ProductsHome::class.java))
@@ -2662,9 +2531,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun funUpdateOwnerImageOnPrivateRepo(
-        progressDg: ProgressDialog,
-        currentUID: String,
-        mapData: HashMap<String, String>
+        progressDg: ProgressDialog, currentUID: String, mapData: HashMap<String, String>
     ) {
         //code begins
         val storePrivateRepo = FirebaseFirestore.getInstance()
@@ -2683,8 +2550,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                     //return home products
                                     startActivity(
                                         Intent(
-                                            this@ProductsHome,
-                                            ProductsHome::class.java
+                                            this@ProductsHome, ProductsHome::class.java
                                         )
                                     )
                                     //code ends
@@ -2697,8 +2563,7 @@ class ProductsHome : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                     //failure occurred while updating the image thus end the process by back to the progress activity
                                     startActivity(
                                         Intent(
-                                            this@ProductsHome,
-                                            ProductsHome::class.java
+                                            this@ProductsHome, ProductsHome::class.java
                                         )
                                     )
                                     //

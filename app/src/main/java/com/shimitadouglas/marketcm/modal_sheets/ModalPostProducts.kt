@@ -7,11 +7,13 @@ import android.app.Activity.RESULT_OK
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -45,6 +47,7 @@ import com.shimitadouglas.marketcm.utilities.FileSizeDeterminant
 import com.shimitadouglas.marketcm.utilities.ProductIDGenerator
 import es.dmoral.toasty.Toasty
 import kotlinx.coroutines.DelicateCoroutinesApi
+import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.random.Random
 
@@ -1066,6 +1069,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         //code ends
     }
 
+    @Suppress("DEPRECATION")
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun funBeginPostingItem(
         imageUriDataPost: Uri,
@@ -1094,92 +1098,114 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         val firebaseStorage = FirebaseStorage.getInstance().reference
         if (minorChildOneEmail != null) {
             if (minorChildTwoUniQueUID != null) {
-
-                firebaseStorage.child(parentChild).child(minorChildOneEmail)
-                    .child(combinationUIDTimerID)
-                    .putFile(imageUriDataPost).addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            //successfully uploaded to the storage now obtain the download uro
-                            it.result.storage.downloadUrl.addOnCompleteListener {
-                                if (it.isSuccessful) {
-                                    //update UI pg and obtain download uri
-                                    progD.setMessage("accepting...")
-                                    //saving the string uri for storage it to fireStore
-                                    val uriStringItemPosted = it.result.toString()
-                                    //
-                                    //call function to upload data to fStore
-                                    funUploadPostStore(
-                                        uriStringItemPosted,
-                                        titleDataPost,
-                                        descriptionDataPost,
-                                        spinnerData,
-                                        progD, priceDataPost
-                                    )
-                                    //
-                                    //
-
-                                } else if (!it.isSuccessful) {
-                                    //failed to get download uri
-                                    //alert fail
-                                    val alertFailurePost =
-                                        MaterialAlertDialogBuilder(requireActivity())
-                                    alertFailurePost.apply {
-                                        setTitle("Posting Failed")
-                                        setMessage(it.exception?.message)
-                                        setCancelable(false)
-                                        background = resources.getDrawable(
-                                            R.drawable.general_alert_dg,
-                                            requireActivity().theme
+                try {
+                    //use try-catch since process of uri conversion to bitmap and also compression may result into an exception occurring
+                    //convert the image into the bitmap and then compress it into bytes which will make it easier for uploading a larger image
+                    //converted into a small image size
+                    val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(
+                        requireActivity().contentResolver,
+                        imageUriDataPost
+                    )
+                    //init of the baos
+                    val baos: ByteArrayOutputStream = ByteArrayOutputStream()
+                    //compress the imageBitmap by int factor 25
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 25, baos)
+                    //convert the baos into byteArray using toByteArrayFun
+                    val byteArrayImageToUpload: ByteArray = baos.toByteArray()
+                    //this is the compressed image that will be uploaded to the storage
+                    firebaseStorage.child(parentChild).child(minorChildOneEmail)
+                        .child(combinationUIDTimerID)
+                        .putBytes(byteArrayImageToUpload).addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                //successfully uploaded to the storage now obtain the download uro
+                                it.result.storage.downloadUrl.addOnCompleteListener {
+                                    if (it.isSuccessful) {
+                                        //update UI pg and obtain download uri
+                                        progD.setMessage("accepting")
+                                        //saving the string uri for storage it to fireStore
+                                        val uriStringItemPosted = it.result.toString()
+                                        //call function to upload data to fStore
+                                        funUploadPostStore(
+                                            uriStringItemPosted,
+                                            titleDataPost,
+                                            descriptionDataPost,
+                                            spinnerData,
+                                            progD, priceDataPost
                                         )
+                                        //
+                                    } else if (!it.isSuccessful) {
+                                        //failed to get download uri
+                                        //alert fail
+                                        val alertFailurePost =
+                                            MaterialAlertDialogBuilder(requireActivity())
+                                        alertFailurePost.apply {
+                                            setTitle("Posting Failed")
+                                            setMessage(it.exception?.message)
+                                            setCancelable(false)
+                                            background = resources.getDrawable(
+                                                R.drawable.general_alert_dg,
+                                                requireActivity().theme
+                                            )
 
-                                        setPositiveButton("retry") { dialog, _ ->
+                                            setPositiveButton("retry") { dialog, _ ->
 
-                                            //dismiss dialog to avoid RT errors
-                                            dialog.dismiss()
-                                            //
+                                                //dismiss dialog to avoid RT errors
+                                                dialog.dismiss()
+                                                //
+                                            }
+                                            create()
+                                            show()
                                         }
-                                        create()
-                                        show()
+                                        //
+
+                                        //dismiss the pg
+                                        progD.dismiss()
+                                        //
+
+
                                     }
-                                    //
-
-                                    //dismiss the pg
-                                    progD.dismiss()
-                                    //
-
-
                                 }
-                            }
 
-                        } //failed to upload to the fStorage
-                        else if (!it.isSuccessful) {
-                            //alert fail
-                            val alertFailurePost = MaterialAlertDialogBuilder(requireActivity())
-                            alertFailurePost.apply {
-                                setTitle("Posting Failed")
-                                setMessage(it.exception?.message)
-                                setCancelable(false)
-                                background = resources.getDrawable(
-                                    R.drawable.general_alert_dg,
-                                    requireActivity().theme
-                                )
-                                setPositiveButton("retry") { dialog, _ ->
+                            } //failed to upload to the fStorage
+                            else if (!it.isSuccessful) {
+                                //alert fail
+                                val alertFailurePost = MaterialAlertDialogBuilder(requireActivity())
+                                alertFailurePost.apply {
+                                    setTitle("Posting Failed")
+                                    setMessage(it.exception?.message)
+                                    setCancelable(false)
+                                    background = resources.getDrawable(
+                                        R.drawable.general_alert_dg,
+                                        requireActivity().theme
+                                    )
+                                    setPositiveButton("retry") { dialog, _ ->
 
-                                    //dismiss
-                                    dialog.dismiss()
-                                    //
+                                        //dismiss
+                                        dialog.dismiss()
+                                        //
+                                    }
+                                    create()
+                                    show()
                                 }
-                                create()
-                                show()
+                                //
+
+                                //dismiss the pg
+                                progD.dismiss()
+                                //
+
                             }
-                            //
-
-                            //dismiss the pg
-                            progD.dismiss()
-                            //
-
                         }
-                    }
+
+                } catch (e: Exception) {
+                    //dismiss the progress Dialog
+                    progD.dismiss()
+                    //error occurred
+                    Toasty.error(requireActivity(), "something went wrong", Toasty.LENGTH_SHORT)
+                        .show()
+                    //back to home
+                    startActivity(Intent(requireActivity(), ProductsHome::class.java))
+                    //
+                }
             }
         }
         //code ends
@@ -1322,7 +1348,6 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         //code begins
         //userPost path=>(uniqueUID/combinationUIDTimer/data)
         val userUIDCollection = FirebaseAuth.getInstance().currentUser?.uid
-        //
 
         //
         val store = FirebaseFirestore.getInstance()
@@ -1334,7 +1359,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     if (it.isSuccessful) {
                         //process of posting the in the personal repo successful
                         //change progress dialog to done
-                        progressD.setMessage("done...")
+                        progressD.setMessage("done")
                         //
                         //create another collection which will be used during calamities of scamming.
                         //suspect might delete the details after malice activities thus having a backup store will make it easier
@@ -1503,9 +1528,9 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
                     val floatSizeOfItemBytes = classFileChecker.funGetSize(it.data!!.data)
                     val conversion = 1024.0f
                     val sizeItemKB = floatSizeOfItemBytes / conversion
-                    val sizeLimit = 2.5f
+                    val sizeLimit = 3.5f
                     //alert user if file size is greater than 2.5MB
-                    if (sizeItemKB > 2500) {
+                    if (sizeItemKB > 3500) {
                         alertUserFileSize(sizeItemKB, conversion, sizeLimit)
                     } else {
                         uriProduct = it.data!!.data!!
@@ -1542,12 +1567,12 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         alertCongrats.setTitle("Successful")
         alertCongrats.setIcon(R.drawable.cart)
         alertCongrats.setMessage(
-            "Congratulations! image loaded successfully.\nLet us market your product and earn your cash"
+            "Congratulations! image has been loaded successfully"
         )
         alertCongrats.background =
             resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
         alertCongrats.setCancelable(false)
-        alertCongrats.setPositiveButton("lets do it") { dialog, _ ->
+        alertCongrats.setPositiveButton("continue") { dialog, _ ->
 
             //call function to proceed image loading process to the UI front
             funProceedLoadImageItem(uriProduct)
@@ -1567,10 +1592,11 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         //code begins
         //animate the view
         Handler(Looper.getMainLooper()).postDelayed({
-            //
+
             //enable the button post since product image is availed and also the whole view of image
             appCompatButtonPost.visibility = View.VISIBLE
-            //
+
+
             //visibility true card holding the image
             cardviewProvideImage.visibility = View.VISIBLE
             appCompatButtonHint.apply {
@@ -1592,9 +1618,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             //animate whole
             animLinearParentPartB()
             //
-            //
         }, 1000)
-        //
         //
 
         //using glide library to load image onto the imageViewProduct
@@ -1710,7 +1734,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
             resources.getDrawable(R.drawable.general_alert_dg, requireActivity().theme)
         alertUserFileSize.setTitle("Image Too Large")
         alertUserFileSize.setMessage(
-            "size of the image of your product is larger than the recommended !\n" + "\nImage size of your product:\n${fileSize}KB  -> ${fileSize / conversion}MB\n" + "\nRecommended size of image:\n2500KB -> ${sizeLimit}MB\n\nImage exceeded limit by:${(fileSize - limitKB) / conversion}MB\n" + "\nConclusion:\nprovide an image less than ${sizeLimit}MB ."
+            "size of the image of your product is larger than the recommended !\n" + "\nImage size of your product:\n${fileSize}KB  -> ${fileSize / conversion}MB\n" + "\nRecommended size of image:\n3500KB -> ${sizeLimit}MB\n\nImage exceeded limit by:${(fileSize - limitKB) / conversion}MB\n" + "\nConclusion:\nprovide an image less than ${sizeLimit}MB ."
         )
         alertUserFileSize.setPositiveButton("retry") { dialog, _ ->
             //dismiss the alert dg to avoid RT Errors
@@ -1748,7 +1772,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         //code begins
         val phoneNumber = "+254757450727"
         val messageBody =
-            "hey,write your text here and send it to me, i will be glad to feedback you"
+            "write your text here and send it to me, i will be glad to feedback you"
         val intentMessaging =
             Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phoneNumber, null))
         startActivity(Intent.createChooser(intentMessaging, "Launch SMS APP"))
@@ -1763,7 +1787,7 @@ class ModalPostProducts : BottomSheetDialogFragment(), AdapterView.OnItemSelecte
         numberIntent.action = Intent.ACTION_DIAL
         numberIntent.data = Uri.parse("tel:+254757450727")
         startActivity(numberIntent)
-        //
+
         //code ends
 
     }

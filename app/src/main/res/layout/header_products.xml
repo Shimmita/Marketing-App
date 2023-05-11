@@ -122,11 +122,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
+                android:background="@drawable/material_15"
                 android:fontFamily="georgia"
                 android:padding="10dp"
                 android:text="@string/verify_account"
                 android:textAllCaps="false"
-                android:textColor="@color/accent_material_light"
+                android:textColor="@color/color_beautiful_one"
                 android:textStyle="bold|italic" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -135,11 +136,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
+                android:background="@drawable/material_15"
                 android:fontFamily="georgia"
                 android:padding="10dp"
                 android:text="@string/update_account"
                 android:textAllCaps="false"
-                android:textColor="@color/accent_material_light"
+                android:textColor="@color/color_beautiful_one"
                 android:textStyle="bold|italic"
                 android:visibility="gone" />
 
